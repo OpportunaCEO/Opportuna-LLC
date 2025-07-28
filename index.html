@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,31 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Opportuna – Home</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <script src="https://kit.fontawesome.com/a2e8b6c6de.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <nav class="top-nav">
-    <a href="index.html">Home</a>
-    <a href="profile.html">Profile</a>
-    <a href="login.html" id="logoutBtn">Logout</a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="login.html" class="nav-link" id="logoutLink">Logout</a>
+    </div>
     <div class="dropdown">
       <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
       <div class="dropdown-content">
-        <a href="profile.html">My Profile</a>
+        <a href="profile.html">Edit Profile</a>
         <a href="#">Settings</a>
-        <a href="#" onclick="logoutUser()">Logout</a>
+        <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
   </nav>
 
   <main class="container fade-in">
-    <!-- Profile Widget -->
     <aside id="profileWidget" class="profile-widget">
       <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
       <div id="widgetName">User Name</div>
     </aside>
 
-    <!-- Post Form -->
     <section id="postFormSection">
       <form id="postForm" class="form-card">
         <textarea id="postContent" placeholder="What's on your mind?" required></textarea>
@@ -38,7 +36,6 @@
       </form>
     </section>
 
-    <!-- Posts Feed -->
     <section id="postSection"></section>
   </main>
 
@@ -66,24 +63,21 @@
     document.getElementById("navProfilePic").addEventListener("click", () => {
       document.querySelector(".dropdown-content").classList.toggle("show");
     });
-
-    function logoutUser() {
+    document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
-    }
+    });
 
-    document.getElementById("postForm").addEventListener("submit", (e) => {
+    document.getElementById("postForm").addEventListener("submit", e => {
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
-
       const newPost = {
         content,
         name: userName,
         avatar: userPic,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
-
       posts.unshift(newPost);
       localStorage.setItem("posts", JSON.stringify(posts));
       document.getElementById("postContent").value = "";
@@ -92,64 +86,60 @@
 
     function displayPosts() {
       const section = document.getElementById("postSection");
-      section.innerHTML = posts.map(post => `
+      section.innerHTML = posts.map(p => `
         <div class="post-card">
           <div class="post-header">
-            <img class="post-avatar" src="${post.avatar || 'assets/default.png'}" alt="avatar">
-            <strong>${post.name || 'Anonymous'}</strong>
+            <img class="post-avatar" src="${p.avatar}" alt="avatar">
+            <strong>${p.name}</strong>
           </div>
-          <p>${post.content}</p>
+          <p>${p.content}</p>
         </div>
       `).join("");
     }
-
     displayPosts();
   </script>
 
   <style>
-    .profile-widget {
-      position: absolute;
-      top: 20px;
-      right: 20px;
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #004aad;
+      padding: 0.5rem 1rem;
+    }
+    .nav-center {
+      flex: 1;
       text-align: center;
     }
-    .widget-img, .profile-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
+    .nav-link {
+      margin: 0 1rem;
+      color: white;
+      font-weight: bold;
+      transition: opacity 0.2s;
     }
-    .profile-icon {
-      width: 35px;
-      height: 35px;
-      cursor: pointer;
+    .nav-link:hover {
+      opacity: 0.7;
     }
     .dropdown {
       position: relative;
-      display: inline-block;
     }
     .dropdown-content {
       display: none;
       position: absolute;
+      top: 45px;
       right: 0;
-      background-color: #fff;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-      z-index: 1;
-      border-radius: 8px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      z-index: 100;
     }
+    .dropdown-content.show { display: block; }
     .dropdown-content a {
+      display: block;
+      padding: 0.8rem 1.2rem;
       color: #333;
-      padding: 12px 16px;
-      text-decoration: none;
-      display: block;
     }
-    .dropdown-content a:hover {
-      background-color: #f0f0f0;
-    }
-    .dropdown-content.show {
-      display: block;
-    }
+    .dropdown-content a:hover { background: #f0f0f0; }
   </style>
 </body>
 </html>
