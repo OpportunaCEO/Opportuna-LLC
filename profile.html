@@ -1,3 +1,4 @@
+<!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,9 +53,6 @@
     const picInput = document.getElementById("profilePic");
     const picPreview = document.getElementById("picPreview");
 
-    const postForm = document.getElementById("postForm");
-    const feedContainer = document.getElementById("feedContainer");
-
     // Load saved data
     nameInput.value = userData.name || "";
     bioInput.value = userData.bio || "";
@@ -83,20 +81,23 @@
         bio: bioInput.value,
         skills: skillsInput.value,
         experience: expInput.value,
-        pic: picPreview.src || "",
+        pic: picPreview.src || userData.pic || "assets/default.png",
       };
       users[userEmail] = updatedData;
       localStorage.setItem("users", JSON.stringify(users));
       alert("Profile saved!");
     });
 
-    // Post handling
+    // Feed logic
+    const postForm = document.getElementById("postForm");
+    const feedContainer = document.getElementById("feedContainer");
+
     const loadPosts = () => {
       const posts = JSON.parse(localStorage.getItem("posts")) || [];
       feedContainer.innerHTML = posts.reverse().map(p => `
         <div class="post-card">
           <div class="post-header">
-            <img src="${p.pic || 'assets/default.jpg'}" alt="User" class="post-avatar">
+            <img src="${p.pic || 'assets/default.png'}" alt="User" class="post-avatar">
             <div>
               <strong>${p.name || "Unknown"}</strong><br>
               <small>${new Date(p.date).toLocaleString()}</small>
@@ -112,8 +113,8 @@
       const postText = document.getElementById("postText").value;
       const newPost = {
         text: postText,
-        name: userData.name,
-        pic: userData.pic,
+        name: userData.name || "Anonymous",
+        pic: userData.pic || "assets/default.png",
         date: new Date(),
       };
       const posts = JSON.parse(localStorage.getItem("posts")) || [];
