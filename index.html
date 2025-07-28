@@ -12,15 +12,15 @@
       <h1>Welcome to Opportuna</h1>
       <p>Your gateway to top jobs and exceptional talent.</p>
       <div class="search-bar">
-        <input type="text" placeholder="Search for jobs, roles, companies..." />
-        <button>Search</button>
+        <input type="text" id="jobSearch" placeholder="Search for jobs, roles, companies..." />
+        <button id="searchBtn">Search</button>
       </div>
       <nav class="hero-nav">
-        <button onclick="navigateTo('jobSeekers')">Job Seekers</button>
-        <button onclick="navigateTo('employers')">Employers</button>
-        <button onclick="navigateTo('recommended')">Recommended Jobs</button>
-        <button onclick="navigateTo('premium')">Premium</button>
-        <button onclick="navigateTo('contact')">Contact</button>
+        <button data-section="jobSeekers">Job Seekers</button>
+        <button data-section="employers">Employers</button>
+        <button data-section="recommended">Recommended Jobs</button>
+        <button data-section="premium">Premium</button>
+        <button data-section="contact">Contact</button>
       </nav>
     </div>
   </header>
