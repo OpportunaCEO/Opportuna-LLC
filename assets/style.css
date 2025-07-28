@@ -369,4 +369,25 @@ footer {
   color: #444;
   font-size: 0.95rem;
 }
+.hero {
+  background: linear-gradient(-45deg, #3b82f6, #1e3a8a, #2563eb, #60a5fa);
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+  color: white;
+  padding: 6rem 1rem 4rem;
+  text-align: center;
+  position: relative;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 }
