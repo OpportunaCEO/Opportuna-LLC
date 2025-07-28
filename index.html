@@ -69,6 +69,16 @@
     document.querySelector(".dropdown-content").classList.toggle("show");
   });
 
+   // Hide dropdown when clicking outside
+document.addEventListener("click", function (event) {
+  const dropdown = document.querySelector(".dropdown");
+  const toggle = document.getElementById("navProfilePic");
+  if (!dropdown.contains(event.target) && event.target !== toggle) {
+    document.querySelector(".dropdown-content").classList.remove("show");
+  }
+});
+
+
   // Close dropdown when clicking outside
   document.addEventListener("click", function (event) {
     const dropdown = document.querySelector(".dropdown");
