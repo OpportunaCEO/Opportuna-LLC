@@ -1,4 +1,6 @@
-/* General Reset and Base */
+/* =======================
+   General Reset and Base
+   ======================= */
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +19,9 @@ a {
   color: inherit;
 }
 
-/* Navigation */
+/* =======================
+   Top Navigation
+   ======================= */
 .top-nav {
   display: flex;
   justify-content: flex-end;
@@ -39,14 +43,18 @@ a {
   background-color: #0052a3;
 }
 
-/* Container */
+/* =======================
+   Container
+   ======================= */
 .container {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
 }
 
-/* Form Styles */
+/* =======================
+   Form Styles
+   ======================= */
 .form-card {
   background-color: white;
   padding: 1.5rem;
@@ -91,7 +99,9 @@ button:hover {
   background-color: #005ec4;
 }
 
-/* Image Preview */
+/* =======================
+   Image Preview
+   ======================= */
 .preview-img {
   max-width: 150px;
   border-radius: 50%;
@@ -99,7 +109,9 @@ button:hover {
   margin-top: 0.5rem;
 }
 
-/* Post Section */
+/* =======================
+   Post Section
+   ======================= */
 #postSection {
   margin-top: 2rem;
 }
@@ -127,7 +139,9 @@ button:hover {
   background: #ddd;
 }
 
-/* Home Page Styles */
+/* =======================
+   Home Hero Section
+   ======================= */
 .hero {
   position: relative;
   background: linear-gradient(to right, #004aad, #007bff);
@@ -151,6 +165,9 @@ button:hover {
   margin-bottom: 2rem;
 }
 
+/* =======================
+   Search Bar
+   ======================= */
 .search-bar {
   display: flex;
   justify-content: center;
@@ -178,7 +195,9 @@ button:hover {
   background-color: #002d73;
 }
 
-/* Buttons */
+/* =======================
+   Navigation Buttons
+   ======================= */
 .button-nav {
   display: flex;
   flex-wrap: wrap;
@@ -201,7 +220,9 @@ button:hover {
   color: white;
 }
 
-/* Info Sections */
+/* =======================
+   Info Sections & Cards
+   ======================= */
 .section {
   padding: 2rem 1rem;
   text-align: center;
@@ -237,48 +258,9 @@ button:hover {
   width: 220px;
 }
 
-/* Footer */
-footer {
-  background-color: #f0f0f0;
-  text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
-}
-
-/* Animations */
-.fade-in {
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-  animation-delay: 0.2s;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .search-bar input {
-    width: 100%;
-  }
-
-  .search-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .top-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .nav-button {
-    width: 100%;
-    text-align: center;
-  }
-  /* Profile Widget */
+/* =======================
+   Profile Widget
+   ======================= */
 .profile-widget {
   display: flex;
   flex-direction: column;
@@ -298,13 +280,109 @@ footer {
   margin-bottom: 0.5rem;
 }
 
-/* Timestamp Style */
 .timestamp {
   font-size: 0.75rem;
   color: #777;
 }
 
-/* Responsive Fixes for Post Feed */
+/* =======================
+   Profile Icon & Dropdown
+   ======================= */
+.profile-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 60px;
+  background-color: white;
+  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  display: block;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+/* =======================
+   Footer
+   ======================= */
+footer {
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+/* =======================
+   Animations
+   ======================= */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* =======================
+   Responsive Fixes
+   ======================= */
+@media (max-width: 600px) {
+  .search-bar input {
+    width: 100%;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 @media (max-width: 500px) {
   .post-header {
     flex-direction: column;
@@ -316,101 +394,3 @@ footer {
     height: 40px;
   }
 }
-/* === Profile Image in Top Nav === */
-.profile-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.profile-icon:hover {
-  transform: scale(1.05);
-}
-
-/* === Dropdown Container === */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-/* === Dropdown Menu Styling === */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 60px;
-  background-color: white;
-  min-width: 160px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  z-index: 10;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  display: block;
-  text-decoration: none;
-}
-
-.dropdown-content a:hover {
-  background-color: #f0f0f0;
-}
-
-/* === Show Dropdown When Active === */
-.dropdown-content.show {
-  display: block;
-}
-/* Profile Image in Nav */
-.profile-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.profile-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Dropdown Container */
-.dropdown {
-  position: relative;
-  display: inline-block;
-  margin-left: 1rem;
-}
-
-/* Dropdown Menu Hidden By Default */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 60px;
-  background-color: white;
-  min-width: 160px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  z-index: 10;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  display: block;
-  text-decoration: none;
-}
-
-.dropdown-content a:hover {
-  background-color: #f0f0f0;
-}
-
-/* Toggle with JS */
-.dropdown-content.show {
-  display: block;
-}
-
