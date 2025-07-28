@@ -3,16 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const navButtons = document.querySelectorAll('[data-section]');
   const sections = document.querySelectorAll('.section');
 
+  // Navigation logic
+  function navigateTo(sectionId) {
+    sections.forEach(section => section.classList.add('hidden'));
+
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      targetSection.classList.remove('hidden');
+      targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Set up button listeners using data-section attributes
   navButtons.forEach(button => {
     button.addEventListener('click', () => {
       const target = button.getAttribute('data-section');
-
-      sections.forEach(section => {
-        section.classList.add('hidden');
-      });
-
-      document.getElementById(target).classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      navigateTo(target);
     });
   });
 
