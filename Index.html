@@ -3,49 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CareerConnect - Your Job Match Hub</title>
+  <title>Opportuna - Empowering Careers & Companies</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
   <header>
-    <h1>CareerConnect</h1>
-    <p>Connecting Talent with Opportunity</p>
-    <nav>
-      <a href="#jobs">Jobs</a>
-      <a href="#employers">Employers</a>
-      <a href="#premium">Premium</a>
-    </nav>
+    <div class="container">
+      <h1>Opportuna</h1>
+      <nav>
+        <button onclick="navigateTo('jobSeekers')">Job Seekers</button>
+        <button onclick="navigateTo('employers')">Employers</button>
+        <button onclick="navigateTo('premium')">Premium Plans</button>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <section id="jobs" class="job-listings">
-      <h2>Latest Opportunities</h2>
-      <div class="job">
-        <h3>Software Engineer</h3>
-        <p>Remote | Full-time</p>
-        <p>Join a fast-growing startup building AI solutions.</p>
-      </div>
-      <div class="job">
-        <h3>Marketing Coordinator</h3>
-        <p>New York, NY | Part-time</p>
-        <p>Support digital campaigns and brand strategy.</p>
-      </div>
+  <main class="container">
+    <section id="jobSeekers" class="section hidden">
+      <h2>Welcome, Job Seekers</h2>
+      <p>Explore career tools, build resumes, and connect with top employers.</p>
     </section>
 
-    <section id="employers" class="employer-info">
-      <h2>For Employers</h2>
-      <p>Post jobs, find talent, and manage applications all in one place.</p>
+    <section id="employers" class="section hidden">
+      <h2>Welcome, Employers</h2>
+      <p>Find the right talent, manage applications, and streamline hiring.</p>
     </section>
 
-    <section id="premium" class="premium-feature">
-      <h2>Go Premium</h2>
-      <p>Unlock resume insights, priority placement, and custom alerts.</p>
-      <button>Upgrade Now</button>
+    <section id="premium" class="section hidden">
+      <h2>Premium Plans</h2>
+      <div class="plans">
+        <div class="plan">
+          <h3>Basic</h3>
+          <p>Free tools for job seekers and small businesses.</p>
+        </div>
+        <div class="plan">
+          <h3>Professional</h3>
+          <p>Advanced analytics, featured listings, and support.</p>
+        </div>
+        <div class="plan">
+          <h3>Enterprise</h3>
+          <p>Custom solutions for large hiring teams and agencies.</p>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+    <p>&copy; 2025 Opportuna. Empowering talent and companies.</p>
   </footer>
 
   <script src="assets/main.js"></script>
