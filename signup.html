@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up – Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <main class="container">
+    <h2>Create Account</h2>
+    <form id="signupForm" class="form-card">
+      <label>Email: <input type="email" id="signupEmail" required /></label>
+      <label>Password: <input type="password" id="signupPassword" required /></label>
+      <button type="submit">Sign Up</button>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      const users = JSON.parse(localStorage.getItem('users')) || {};
+      if (users[email]) {
+        alert('Email already exists.');
+        return;
+      }
+
+      users[email] = { password };
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Account created! You can now log in.');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
