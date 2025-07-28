@@ -1,4 +1,3 @@
-<!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,42 +52,35 @@
     const picInput = document.getElementById("profilePic");
     const picPreview = document.getElementById("picPreview");
 
-    // Load saved data
     nameInput.value = userData.name || "";
     bioInput.value = userData.bio || "";
     skillsInput.value = userData.skills || "";
     expInput.value = userData.experience || "";
-    if (userData.pic) {
-      picPreview.src = userData.pic;
-    }
+    if (userData.pic) picPreview.src = userData.pic;
 
-    picInput.addEventListener("change", () => {
-      const file = picInput.files[0];
+    picInput.addEventListener("change", e => {
+      const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = () => {
-          picPreview.src = reader.result;
-        };
+        reader.onload = () => { picPreview.src = reader.result; };
         reader.readAsDataURL(file);
       }
     });
 
-    document.getElementById("profileForm").addEventListener("submit", (e) => {
+    document.getElementById("profileForm").addEventListener("submit", e => {
       e.preventDefault();
-      const updatedData = {
+      users[userEmail] = {
         ...userData,
         name: nameInput.value,
         bio: bioInput.value,
         skills: skillsInput.value,
         experience: expInput.value,
-        pic: picPreview.src || userData.pic || "assets/default.png",
+        pic: picPreview.src || userData.pic || "assets/default.png"
       };
-      users[userEmail] = updatedData;
       localStorage.setItem("users", JSON.stringify(users));
       alert("Profile saved!");
     });
 
-    // Feed logic
     const postForm = document.getElementById("postForm");
     const feedContainer = document.getElementById("feedContainer");
 
@@ -108,7 +100,7 @@
       `).join("");
     };
 
-    postForm.addEventListener("submit", (e) => {
+    postForm.addEventListener("submit", e => {
       e.preventDefault();
       const postText = document.getElementById("postText").value;
       const newPost = {
@@ -126,7 +118,7 @@
 
     loadPosts();
 
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+    document.getElementById("logoutBtn").addEventListener("click", e => {
       e.preventDefault();
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
