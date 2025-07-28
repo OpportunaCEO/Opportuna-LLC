@@ -78,15 +78,6 @@ document.addEventListener("click", function (event) {
   }
 });
 
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function (event) {
-    const dropdown = document.querySelector(".dropdown");
-    if (!dropdown.contains(event.target)) {
-      document.querySelector(".dropdown-content").classList.remove("show");
-    }
-  });
-
   // Logout button logic
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("loggedInUser");
