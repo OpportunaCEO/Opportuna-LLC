@@ -14,7 +14,7 @@
       <a href="login.html" class="nav-link" id="logoutLink">Logout</a>
     </div>
     <div class="dropdown">
-      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User profile picture" />
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
       <div class="dropdown-content">
         <a href="profile.html">Edit Profile</a>
         <a href="#">Settings</a>
@@ -23,9 +23,13 @@
     </div>
   </nav>
 
+  <header class="profile-banner">
+    <img id="bannerPic" src="assets/banner-default.jpg" alt="Profile Banner" />
+  </header>
+
   <main class="container fade-in">
     <aside id="profileWidget" class="profile-widget">
-      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Your profile picture">
+      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
       <div id="widgetName">User Name</div>
     </aside>
 
@@ -36,7 +40,7 @@
       </form>
     </section>
 
-    <section id="postSection" class="post-feed"></section>
+    <section id="postSection"></section>
   </main>
 
   <footer>
@@ -60,17 +64,9 @@
     document.getElementById("widgetPic").src = userPic;
     document.getElementById("navProfilePic").src = userPic;
 
-    const dropdown = document.querySelector(".dropdown-content");
     document.getElementById("navProfilePic").addEventListener("click", () => {
-      dropdown.classList.toggle("show");
+      document.querySelector(".dropdown-content").classList.toggle("show");
     });
-
-    window.addEventListener("click", function (e) {
-      if (!e.target.closest(".dropdown")) {
-        dropdown.classList.remove("show");
-      }
-    });
-
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
@@ -80,12 +76,14 @@
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
-
       const newPost = {
+        id: Date.now(),
         content,
         name: userName,
         avatar: userPic,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        likes: 0,
+        comments: []
       };
       posts.unshift(newPost);
       localStorage.setItem("posts", JSON.stringify(posts));
@@ -93,30 +91,87 @@
       displayPosts();
     });
 
-    function formatDate(iso) {
-      const date = new Date(iso);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-    }
-
     function displayPosts() {
       const section = document.getElementById("postSection");
-      if (posts.length === 0) {
-        section.innerHTML = `<p style="text-align:center; color:#666;">No posts yet. Start the conversation!</p>`;
-        return;
-      }
-
       section.innerHTML = posts.map(p => `
-        <div class="post-card">
+        <div class="post-card" data-id="${p.id}">
           <div class="post-header">
-            <img class="post-avatar" src="${p.avatar}" alt="${p.name}'s avatar">
-            <div>
-              <strong>${p.name}</strong><br>
-              <small class="timestamp">${formatDate(p.timestamp)}</small>
-            </div>
+            <img class="post-avatar" src="${p.avatar}" alt="avatar">
+            <strong>${p.name}</strong>
           </div>
-          <p>${p.content}</p>
+          <p class="post-content">${p.content}</p>
+          <div class="post-actions">
+            <button class="like-btn">Like (${p.likes})</button>
+            <button class="comment-toggle">Comments (${p.comments.length})</button>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+          <div class="comment-section hidden">
+            <ul class="comment-list">
+              ${p.comments.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+            <input type="text" class="comment-input" placeholder="Write a comment...">
+          </div>
         </div>
       `).join("");
+
+      document.querySelectorAll(".like-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const id = getPostId(e.target);
+          const post = posts.find(p => p.id === id);
+          post.likes++;
+          localStorage.setItem("posts", JSON.stringify(posts));
+          displayPosts();
+        });
+      });
+
+      document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const postCard = e.target.closest(".post-card");
+          const id = getPostId(e.target);
+          const post = posts.find(p => p.id === id);
+          const contentEl = postCard.querySelector(".post-content");
+          const newText = prompt("Edit your post:", post.content);
+          if (newText !== null) {
+            post.content = newText;
+            localStorage.setItem("posts", JSON.stringify(posts));
+            displayPosts();
+          }
+        });
+      });
+
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const id = getPostId(e.target);
+          posts = posts.filter(p => p.id !== id);
+          localStorage.setItem("posts", JSON.stringify(posts));
+          displayPosts();
+        });
+      });
+
+      document.querySelectorAll(".comment-toggle").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const postCard = e.target.closest(".post-card");
+          postCard.querySelector(".comment-section").classList.toggle("hidden");
+        });
+      });
+
+      document.querySelectorAll(".comment-input").forEach(input => {
+        input.addEventListener("keypress", e => {
+          if (e.key === "Enter" && input.value.trim()) {
+            const id = getPostId(input);
+            const post = posts.find(p => p.id === id);
+            post.comments.push(input.value.trim());
+            localStorage.setItem("posts", JSON.stringify(posts));
+            input.value = "";
+            displayPosts();
+          }
+        });
+      });
+    }
+
+    function getPostId(el) {
+      return Number(el.closest(".post-card").dataset.id);
     }
 
     displayPosts();
