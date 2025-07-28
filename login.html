@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Log In – Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <main class="container">
+    <h2>Log In</h2>
+    <form id="loginForm" class="form-card">
+      <label>Email: <input type="email" id="loginEmail" required /></label>
+      <label>Password: <input type="password" id="loginPassword" required /></label>
+      <button type="submit">Log In</button>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const users = JSON.parse(localStorage.getItem('users')) || {};
+      if (users[email] && users[email].password === password) {
+        localStorage.setItem('loggedInUser', email);
+        alert('Login successful!');
+        window.location.href = 'profile.html';
+      } else {
+        alert('Invalid credentials.');
+      }
+    });
+  </script>
+</body>
+</html>
