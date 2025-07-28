@@ -321,4 +321,19 @@ footer {
   color: #555;
   margin-top: 0.5rem;
 }
+  .hero-nav a {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  margin: 5px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.hero-nav a:hover {
+  background-color: #0056b3;
+}
 }
