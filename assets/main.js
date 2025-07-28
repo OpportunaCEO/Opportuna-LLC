@@ -1,8 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("CareerConnect loaded!");
-
-  const upgradeBtn = document.querySelector('button');
-  upgradeBtn.addEventListener('click', () => {
-    alert('Premium feature coming soon! Stay tuned.');
+function navigateTo(sectionId) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.add('hidden');
   });
-});
+  document.getElementById(sectionId).classList.remove('hidden');
+}
