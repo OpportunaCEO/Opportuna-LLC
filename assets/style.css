@@ -278,4 +278,43 @@ footer {
     width: 100%;
     text-align: center;
   }
+  /* Profile Widget */
+.profile-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.widget-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+/* Timestamp Style */
+.timestamp {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+/* Responsive Fixes for Post Feed */
+@media (max-width: 500px) {
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 }
