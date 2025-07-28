@@ -2,65 +2,81 @@ body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f8f9fa;
-  color: #333;
+  background: #f9fafc;
+  color: #222;
 }
 
 header {
-  background: #0d6efd;
+  background: #1e3a8a;
   color: white;
-  padding: 1.5rem;
-  text-align: center;
+  padding: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
 }
 
 nav {
   margin-top: 1rem;
 }
 
-nav a {
+nav button {
+  background: #3b82f6;
   color: white;
-  margin: 0 1rem;
-  text-decoration: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
   font-weight: bold;
 }
 
+nav button:hover {
+  background: #2563eb;
+}
+
 main {
-  padding: 2rem;
+  padding: 2rem 0;
 }
 
-h2 {
-  color: #0d6efd;
-}
-
-.job-listings .job {
-  background: white;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-left: 4px solid #0d6efd;
-  border-radius: 4px;
-}
-
-.employer-info,
-.premium-feature {
-  background: #ffffff;
-  padding: 1.5rem;
+.section {
   margin-top: 2rem;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-button {
-  background: #198754;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 5px;
-  cursor: pointer;
+.hidden {
+  display: none;
+}
+
+.plans {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.plan {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex: 1 1 250px;
+}
+
+.plan h3 {
+  color: #1e40af;
 }
 
 footer {
+  background: #f3f4f6;
   text-align: center;
-  padding: 1rem;
-  background: #e9ecef;
+  padding: 1rem 0;
   margin-top: 3rem;
 }
