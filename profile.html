@@ -2,51 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Profile – Opportuna</title>
+  <title>Your Profile – Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="hero-overlay">
-      <h1>Your Profile</h1>
-      <nav class="hero-nav">
-        <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        <a href="edit-profile.html"><i class="fas fa-edit"></i> Edit Profile</a>
-      </nav>
-    </div>
-  </header>
+  <nav class="top-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="login.html" id="logoutBtn">🚪 Logout</a>
+  </nav>
 
   <main class="container">
-    <section class="profile-card">
-      <img src="assets/default-avatar.png" alt="Profile Picture" class="avatar" />
-      <h2>John Doe</h2>
-      <p><strong>Bio:</strong> Passionate developer looking for new opportunities in full-stack roles.</p>
-      <p><strong>Skills:</strong> HTML, CSS, JavaScript, React, Node.js</p>
-      <p><strong>Past Jobs:</strong></p>
-      <ul>
-        <li>Software Engineer at ABC Corp (2022–2024)</li>
-        <li>Intern at TechStart (2021)</li>
-      </ul>
-      <p><strong>Resume:</strong> <a href="#">Download PDF</a></p>
-    </section>
+    <h2>Your Profile</h2>
+    <form id="profileForm" class="form-card">
+      <label>Full Name: <input type="text" id="fullName" /></label>
+      <label>Bio: <textarea id="bio" rows="3"></textarea></label>
+      <label>Skills (comma separated): <input type="text" id="skills" /></label>
+      <label>Work Experience: <textarea id="experience" rows="4"></textarea></label>
+      <label>Upload Profile Picture:
+        <input type="file" id="profilePic" accept="image/*" />
+      </label>
+      <img id="picPreview" src="" alt="Preview" class="preview-img" />
+      <button type="submit">Save Profile</button>
+    </form>
 
-    <section class="post-feed">
-      <h3>Job Updates & Posts</h3>
-      <div class="post">
-        <p><strong>John Doe:</strong> Just wrapped up an amazing project with my team at ABC Corp!</p>
-        <span class="timestamp">Posted 2 days ago</span>
-      </div>
-      <div class="post">
-        <p><strong>John Doe:</strong> Actively looking for frontend roles in Chicago – open to remote too!</p>
-        <span class="timestamp">Posted 5 days ago</span>
-      </div>
+    <hr />
+
+    <section id="postSection">
+      <h2>Post to Your Feed</h2>
+      <form id="postForm" class="form-card">
+        <textarea id="postText" placeholder="Share an update, opportunity, or experience..." rows="3" required></textarea>
+        <button type="submit">Post</button>
+      </form>
+      <div id="feedContainer"></div>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Opportuna.</p>
-  </footer>
+  <script>
+    const userEmail = localStorage.getItem("loggedInUser");
+    if (!userEmail) window.location.href = "login.html";
+
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+    const userData = users[userEmail] || {};
+
+    const nameInput = document.getElementById("fullName");
+    const bioInput = document.getElementById("bio");
+    const skillsInput = document.getElementById("skills");
+    const expInput = document.getElementById("experience");
+    const picInput = document.getElementById("profilePic");
+    const picPreview = document.getElementById("picPreview");
+
+    const postForm = document.getElementById("postForm");
+    const feedContainer = document.getElementById("feedContainer");
+
+    // Load saved data
+    nameInput.value = userData.name || "";
+    bioInput.value = userData.bio || "";
+    skillsInput.value = userData.skills || "";
+    expInput.value = userData.experience || "";
+    if (userData.pic) {
+      picPreview.src = userData.pic;
+    }
+
+    picInput.addEventListener("change", () => {
+      const file = picInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          picPreview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("profileForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const updatedData = {
+        ...userData,
+        name: nameInput.value,
+        bio: bioInput.value,
+        skills: skillsInput.value,
+        experience: expInput.value,
+        pic: picPreview.src || "",
+      };
+      users[userEmail] = updatedData;
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Profile saved!");
+    });
+
+    // Post handling
+    const loadPosts = () => {
+      const posts = JSON.parse(localStorage.getItem("posts")) || [];
+      feedContainer.innerHTML = posts.reverse().map(p => `
+        <div class="post-card">
+          <div class="post-header">
+            <img src="${p.pic || 'assets/default.jpg'}" alt="User" class="post-avatar">
+            <div>
+              <strong>${p.name || "Unknown"}</strong><br>
+              <small>${new Date(p.date).toLocaleString()}</small>
+            </div>
+          </div>
+          <p>${p.text}</p>
+        </div>
+      `).join("");
+    };
+
+    postForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const postText = document.getElementById("postText").value;
+      const newPost = {
+        text: postText,
+        name: userData.name,
+        pic: userData.pic,
+        date: new Date(),
+      };
+      const posts = JSON.parse(localStorage.getItem("posts")) || [];
+      posts.push(newPost);
+      localStorage.setItem("posts", JSON.stringify(posts));
+      postForm.reset();
+      loadPosts();
+    });
+
+    loadPosts();
+
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    });
+  </script>
 </body>
 </html>
