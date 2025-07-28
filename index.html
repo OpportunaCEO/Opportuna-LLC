@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +13,8 @@
     <a href="index.html">Home</a>
     <a href="profile.html">Profile</a>
     <a href="login.html" id="logoutBtn">Logout</a>
-    <div id="userDropdown" class="dropdown">
-      <img id="navProfilePic" class="profile-icon" src="" alt="User" />
+    <div class="dropdown">
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
       <div class="dropdown-content">
         <a href="profile.html">My Profile</a>
         <a href="#">Settings</a>
@@ -23,25 +24,9 @@
   </nav>
 
   <main class="container fade-in">
-    <section class="hero">
-      <div class="hero-overlay">
-        <h1>Welcome to Opportuna</h1>
-        <p>Connect, grow, and discover new opportunities.</p>
-        <div class="search-bar">
-          <input type="text" placeholder="Search jobs, people, or posts..." />
-          <button>Search</button>
-        </div>
-        <div class="button-nav">
-          <a class="nav-button" href="signup.html">Join Now</a>
-          <a class="nav-button" href="login.html">Log In</a>
-          <a class="nav-button" href="profile.html">My Profile</a>
-        </div>
-      </div>
-    </section>
-
     <!-- Profile Widget -->
     <aside id="profileWidget" class="profile-widget">
-      <img id="widgetPic" class="widget-img" src="" alt="Profile Picture">
+      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
       <div id="widgetName">User Name</div>
     </aside>
 
@@ -54,9 +39,7 @@
     </section>
 
     <!-- Posts Feed -->
-    <section id="postSection">
-      <!-- Posts will be injected here -->
-    </section>
+    <section id="postSection"></section>
   </main>
 
   <footer>
@@ -66,62 +49,58 @@
   <script>
     const loggedInUser = localStorage.getItem("loggedInUser");
     const users = JSON.parse(localStorage.getItem("users")) || {};
-    const posts = JSON.parse(localStorage.getItem("posts")) || [];
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-    // Populate profile widget
-    if (loggedInUser && users[loggedInUser]) {
-      const user = users[loggedInUser];
-      document.getElementById("widgetName").textContent = user.name || "Unnamed";
-      const img = user.profilePic || "assets/default.png";
-      document.getElementById("widgetPic").src = img;
-      document.getElementById("navProfilePic").src = img;
+    if (!loggedInUser || !users[loggedInUser]) {
+      window.location.href = "login.html";
     }
 
-    // Dropdown Toggle
+    const user = users[loggedInUser];
+    const userName = user.name || "Unnamed";
+    const userPic = user.pic || "assets/default.png";
+
+    document.getElementById("widgetName").textContent = userName;
+    document.getElementById("widgetPic").src = userPic;
+    document.getElementById("navProfilePic").src = userPic;
+
     document.getElementById("navProfilePic").addEventListener("click", () => {
       document.querySelector(".dropdown-content").classList.toggle("show");
     });
 
-    // Logout function
     function logoutUser() {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
     }
 
-    // Submit post
     document.getElementById("postForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
+
       const newPost = {
         content,
-        user: loggedInUser,
-        name: users[loggedInUser].name || "Anonymous",
-        avatar: users[loggedInUser].profilePic || "assets/default.png",
-        timestamp: new Date().toISOString()
+        name: userName,
+        avatar: userPic,
+        timestamp: new Date().toISOString(),
       };
+
       posts.unshift(newPost);
       localStorage.setItem("posts", JSON.stringify(posts));
       document.getElementById("postContent").value = "";
       displayPosts();
     });
 
-    // Display all posts
     function displayPosts() {
       const section = document.getElementById("postSection");
-      section.innerHTML = "";
-      posts.forEach(post => {
-        const postEl = document.createElement("div");
-        postEl.className = "post-card";
-        postEl.innerHTML = `
+      section.innerHTML = posts.map(post => `
+        <div class="post-card">
           <div class="post-header">
-            <img class="post-avatar" src="${post.avatar}" alt="avatar">
-            <strong>${post.name}</strong>
+            <img class="post-avatar" src="${post.avatar || 'assets/default.png'}" alt="avatar">
+            <strong>${post.name || 'Anonymous'}</strong>
           </div>
           <p>${post.content}</p>
-        `;
-        section.appendChild(postEl);
-      });
+        </div>
+      `).join("");
     }
 
     displayPosts();
@@ -134,7 +113,7 @@
       right: 20px;
       text-align: center;
     }
-    .widget-img {
+    .widget-img, .profile-icon {
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -143,8 +122,6 @@
     .profile-icon {
       width: 35px;
       height: 35px;
-      border-radius: 50%;
-      object-fit: cover;
       cursor: pointer;
     }
     .dropdown {
