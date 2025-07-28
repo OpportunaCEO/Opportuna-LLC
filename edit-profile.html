@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile – Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-overlay">
+      <h1>Edit Your Profile</h1>
+      <nav class="hero-nav">
+        <a href="profile.html"><i class="fas fa-user"></i> View Profile</a>
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <form id="profileForm" class="form-card">
+      <label>
+        Full Name:
+        <input type="text" id="name" required />
+      </label>
+
+      <label>
+        Bio:
+        <textarea id="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+      </label>
+
+      <label>
+        Skills (comma-separated):
+        <input type="text" id="skills" placeholder="e.g., JavaScript, Python, UX" />
+      </label>
+
+      <label>
+        Past Jobs:
+        <textarea id="jobs" rows="3" placeholder="e.g., Software Engineer at ABC Corp..."></textarea>
+      </label>
+
+      <label>
+        Upload Resume:
+        <input type="file" id="resume" accept=".pdf,.doc,.docx" />
+      </label>
+
+      <label>
+        Profile Picture:
+        <input type="file" id="avatar" accept="image/*" />
+      </label>
+
+      <button type="submit">Save Profile</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Opportuna.</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const userData = {
+        name: document.getElementById('name').value,
+        bio: document.getElementById('bio').value,
+        skills: document.getElementById('skills').value,
+        jobs: document.getElementById('jobs').value
+      };
+
+      localStorage.setItem('userProfile', JSON.stringify(userData));
+      alert('Profile saved! Now go view your profile.');
+
+      // You could redirect:
+      // window.location.href = 'profile.html';
+    });
+  </script>
+</body>
+</html>
