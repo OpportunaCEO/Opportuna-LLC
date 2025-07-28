@@ -14,7 +14,7 @@
       <a href="login.html" class="nav-link" id="logoutLink">Logout</a>
     </div>
     <div class="dropdown">
-      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User profile picture" />
       <div class="dropdown-content">
         <a href="profile.html">Edit Profile</a>
         <a href="#">Settings</a>
@@ -25,7 +25,7 @@
 
   <main class="container fade-in">
     <aside id="profileWidget" class="profile-widget">
-      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
+      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Your profile picture">
       <div id="widgetName">User Name</div>
     </aside>
 
@@ -36,7 +36,7 @@
       </form>
     </section>
 
-    <section id="postSection"></section>
+    <section id="postSection" class="post-feed"></section>
   </main>
 
   <footer>
@@ -60,9 +60,17 @@
     document.getElementById("widgetPic").src = userPic;
     document.getElementById("navProfilePic").src = userPic;
 
+    const dropdown = document.querySelector(".dropdown-content");
     document.getElementById("navProfilePic").addEventListener("click", () => {
-      document.querySelector(".dropdown-content").classList.toggle("show");
+      dropdown.classList.toggle("show");
     });
+
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest(".dropdown")) {
+        dropdown.classList.remove("show");
+      }
+    });
+
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
@@ -72,6 +80,7 @@
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
+
       const newPost = {
         content,
         name: userName,
@@ -84,62 +93,33 @@
       displayPosts();
     });
 
+    function formatDate(iso) {
+      const date = new Date(iso);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+    }
+
     function displayPosts() {
       const section = document.getElementById("postSection");
+      if (posts.length === 0) {
+        section.innerHTML = `<p style="text-align:center; color:#666;">No posts yet. Start the conversation!</p>`;
+        return;
+      }
+
       section.innerHTML = posts.map(p => `
         <div class="post-card">
           <div class="post-header">
-            <img class="post-avatar" src="${p.avatar}" alt="avatar">
-            <strong>${p.name}</strong>
+            <img class="post-avatar" src="${p.avatar}" alt="${p.name}'s avatar">
+            <div>
+              <strong>${p.name}</strong><br>
+              <small class="timestamp">${formatDate(p.timestamp)}</small>
+            </div>
           </div>
           <p>${p.content}</p>
         </div>
       `).join("");
     }
+
     displayPosts();
   </script>
-
-  <style>
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #004aad;
-      padding: 0.5rem 1rem;
-    }
-    .nav-center {
-      flex: 1;
-      text-align: center;
-    }
-    .nav-link {
-      margin: 0 1rem;
-      color: white;
-      font-weight: bold;
-      transition: opacity 0.2s;
-    }
-    .nav-link:hover {
-      opacity: 0.7;
-    }
-    .dropdown {
-      position: relative;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 45px;
-      right: 0;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      z-index: 100;
-    }
-    .dropdown-content.show { display: block; }
-    .dropdown-content a {
-      display: block;
-      padding: 0.8rem 1.2rem;
-      color: #333;
-    }
-    .dropdown-content a:hover { background: #f0f0f0; }
-  </style>
 </body>
 </html>
