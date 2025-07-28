@@ -1,82 +1,232 @@
-body {
-  font-family: 'Segoe UI', sans-serif;
+/* Base reset and global styles */
+* {
   margin: 0;
   padding: 0;
-  background: #f9fafc;
-  color: #222;
+  box-sizing: border-box;
 }
 
-header {
-  background: #1e3a8a;
+body {
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(to right, #3b82f6, #1e3a8a);
   color: white;
-  padding: 1.5rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 6rem 1rem 4rem;
+  text-align: center;
+  position: relative;
 }
 
+.hero-overlay {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin: 1rem 0 2rem;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.search-bar input {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90%;
+}
+
+.search-bar button {
+  background: #16a34a;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background: #15803d;
+}
+
+/* Hero navigation */
+.hero-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hero-nav button {
+  background: white;
+  color: #1e3a8a;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hero-nav button:hover {
+  background: #e0e7ff;
+}
+
+/* Main container and sections */
 .container {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 1rem;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-nav {
-  margin-top: 1rem;
-}
-
-nav button {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  margin-right: 0.5rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-nav button:hover {
-  background: #2563eb;
-}
-
-main {
-  padding: 2rem 0;
+  padding: 2rem 1rem;
 }
 
 .section {
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .hidden {
   display: none;
 }
 
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #1e3a8a;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  flex: 1 1 280px;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Recommended Jobs */
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.job-card {
+  background: #fff;
+  padding: 1.25rem;
+  border-left: 4px solid #3b82f6;
+  border-radius: 6px;
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Premium Plans */
 .plans {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 1rem;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .plan {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  flex: 1 1 250px;
+  background: white;
+  flex: 1 1 260px;
+  padding: 1.75rem;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
 }
 
 .plan h3 {
-  color: #1e40af;
+  margin-bottom: 0.75rem;
+  color: #2563eb;
 }
 
+/* Contact Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+form input,
+form textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+form textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+form button {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: max-content;
+}
+
+form button:hover {
+  background: #3749b5;
+}
+
+/* Footer */
 footer {
-  background: #f3f4f6;
+  background: #f1f5f9;
   text-align: center;
-  padding: 1rem 0;
-  margin-top: 3rem;
+  padding: 2rem 1rem;
+  margin-top: 4rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.25rem;
+  }
+
+  .plans,
+  .grid {
+    flex-direction: column;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-nav {
+    flex-direction: column;
+  }
 }
