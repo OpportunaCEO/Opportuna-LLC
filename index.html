@@ -119,18 +119,44 @@
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
-  <!-- Main JS logic -->
-  <script>
+  <!-- Firebase SDK + Real-time Post Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      onSnapshot,
+      serverTimestamp,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const postsRef = collection(db, "posts");
+    const postsQuery = query(postsRef, orderBy("timestamp", "desc"));
+
+    // Auth/User Setup
     let users = {};
     try {
       users = JSON.parse(localStorage.getItem("users")) || {};
     } catch (e) {
-      console.error("Error parsing users:", e);
+      console.error("User parse error:", e);
     }
 
     const loggedInUser = localStorage.getItem("loggedInUser");
-    let posts = JSON.parse(localStorage.getItem("posts")) || [];
-
     if (!loggedInUser || !users[loggedInUser]) {
       window.location.href = "login.html";
     }
@@ -139,6 +165,7 @@
     const userName = user.name || "Unnamed";
     const userPic = user.pic && user.pic.trim() !== "" ? user.pic : "assets/default.png";
 
+    // Update UI with user info
     document.getElementById("widgetName").textContent = userName;
     document.getElementById("widgetPic").src = userPic;
     document.getElementById("navProfilePic").src = userPic;
@@ -148,6 +175,7 @@
       window.location.href = "login.html";
     });
 
+    // Modal UI
     const modal = document.getElementById("postModal");
     const overlay = document.getElementById("overlay");
     const openBtn = document.getElementById("createPostBtn");
@@ -162,83 +190,58 @@
       overlay.classList.remove("show");
     });
 
-    document.getElementById("postForm").addEventListener("submit", e => {
+    // Submit post to Firestore
+    document.getElementById("postForm").addEventListener("submit", async e => {
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
 
-      const newPost = {
-        id: Date.now(),
-        content,
-        name: userName,
-        avatar: userPic,
-        timestamp: new Date().toISOString(),
-        likes: 0,
-        comments: []
-      };
+      try {
+        await addDoc(postsRef, {
+          content,
+          name: userName,
+          avatar: userPic,
+          timestamp: serverTimestamp(),
+          likes: 0,
+          comments: []
+        });
 
-      posts.unshift(newPost);
-      localStorage.setItem("posts", JSON.stringify(posts));
-      document.getElementById("postContent").value = "";
-      modal.classList.remove("open");
-      overlay.classList.remove("show");
-      displayPosts();
+        document.getElementById("postContent").value = "";
+        modal.classList.remove("open");
+        overlay.classList.remove("show");
+      } catch (err) {
+        console.error("Error posting:", err);
+        alert("Post failed.");
+      }
     });
 
-    function displayPosts() {
+    // Real-time post listener
+    onSnapshot(postsQuery, snapshot => {
       const section = document.getElementById("postSection");
-      section.innerHTML = '';
-      posts.forEach(p => {
+      section.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const p = doc.data();
         const div = document.createElement('div');
         div.className = "post-card";
-        div.dataset.id = p.id;
+        div.dataset.id = doc.id;
+
         div.innerHTML = `
           <div class="post-header">
             <img class="post-avatar" src="${p.avatar}" alt="avatar">
             <strong>${p.name}</strong>
-            <small>${new Date(p.timestamp).toLocaleString()}</small>
+            <small>${new Date(p.timestamp?.toDate?.() || Date.now()).toLocaleString()}</small>
           </div>
         `;
+
         const contentP = document.createElement('p');
         contentP.className = "post-content";
         contentP.textContent = p.content;
+
         div.appendChild(contentP);
         section.appendChild(div);
       });
-    }
-
-    displayPosts();
-  </script>
-
-  <!-- Firebase SDK (loaded separately as ES module) -->
-  <script type="module">
-    // Firebase SDK Initialization
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      getDocs,
-      onSnapshot,
-      serverTimestamp,
-      query,
-      orderBy
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-      authDomain: "opportuna-a14bb.firebaseapp.com",
-      projectId: "opportuna-a14bb",
-      storageBucket: "opportuna-a14bb.appspot.com",
-      messagingSenderId: "906149069855",
-      appId: "1:906149069855:web:618ed823248443db30812a",
-      measurementId: "G-GJGCWL01W4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.firebaseDB = db; // Optional global exposure
+    });
   </script>
 </body>
 </html>
