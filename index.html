@@ -2,95 +2,220 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Opportuna</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script defer src="main.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Opportuna – Home</title>
+  <meta name="description" content="Opportuna is your personalized job and networking platform. Connect, share, and grow your career." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background: #f2f2f2; }
+    nav.top-nav {
+      background: #007bff; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    nav.top-nav a { color: white; text-decoration: none; margin-right: 1rem; }
+    nav.top-nav .nav-center { display: flex; align-items: center; }
+    nav.top-nav .profile-icon { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
 
-  <!-- Firebase SDKs -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    .main-layout {
+      max-width: 960px; margin: 1.5rem auto; padding: 0 1rem;
+    }
+    .feed {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
 
-  <!-- Firebase Configuration -->
-  <script defer>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+    #createPostBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      z-index: 1100;
+    }
+    .post-card {
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .post-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+    }
+    .post-content {
+      margin: 0.5rem 0 0 50px;
+      white-space: pre-wrap;
+    }
+    .post-actions {
+      margin-left: auto;
+    }
+    .edit-btn, .delete-btn {
+      background: transparent;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 0.9rem;
+    }
+    .edit-btn:hover { text-decoration: underline; }
+    .delete-btn:hover { color: #dc3545; text-decoration: underline; }
+
+    /* Modal styles */
+    #overlay, #authOverlay {
+      position: fixed;
+      top:0; left:0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1200;
+    }
+    #overlay.show, #authOverlay.show {
+      display: block;
+    }
+    #postModal, #authModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      transform: translate(-50%, -50%);
+      z-index: 1300;
+      display: none;
+    }
+    #postModal.open, #authModal.open {
+      display: block;
+    }
+    #authModal h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    #authModal button {
+      cursor: pointer;
+    }
+    #authChoiceButtons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    #signInBtn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      flex: 2;
+    }
+    #signUpBtn {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      flex: 1;
+    }
+    #authForm {
+      display: none;
+      flex-direction: column;
+    }
+    #authForm label {
+      margin-top: 0.5rem;
+    }
+    #authForm input {
+      padding: 8px;
+      font-size: 1rem;
+      margin-top: 0.25rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    #authForm button[type="submit"] {
+      margin-top: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 0;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #authError {
+      color: red;
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
-
 <body>
-  <!-- Top Navigation -->
-  <div class="top-nav">
-    <a href="index.html">Home</a>
-    <a href="premium.html">Premium</a>
-    <a href="#" id="loginBtn">Sign In</a>
-  </div>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-overlay">
-      <h1>Welcome to Opportuna</h1>
-      <p>Your gateway to better opportunities.</p>
+  <nav class="top-nav">
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
     </div>
-  </section>
-
-  <!-- Main Content -->
-  <main class="container">
-    <!-- Search and Navigation -->
-    <div class="search-bar">
-      <input type="text" placeholder="Search jobs or skills..." />
-      <button>Search</button>
-    </div>
-
-    <div class="button-nav">
-      <button class="nav-button">Recommended</button>
-      <button class="nav-button">Remote</button>
-      <button class="nav-button">Internships</button>
-      <button class="nav-button">Saved</button>
-    </div>
-
-    <!-- Feed Layout -->
-    <div class="main-feed-layout">
-      <div class="feed-container" id="postSection">
-        <!-- Posts will be injected here -->
+    <div class="dropdown" style="display:none" id="userDropdown">
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+      <div class="dropdown-content">
+        <a href="profile.html">Edit Profile</a>
+        <a href="#" id="logoutBtn">Logout</a>
       </div>
-
-      <aside class="slideout-panel">
-        <div class="profile-widget">
-          <img src="assets/default-profile.png" class="widget-img" alt="Profile" />
-          <p id="currentUserEmail">Not signed in</p>
-        </div>
-      </aside>
     </div>
-  </main>
+  </nav>
 
-  <!-- Sign In / Sign Up Popup -->
-  <div id="authModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>Sign In / Sign Up</h2>
-      <input type="email" id="authEmail" placeholder="Email" required />
-      <input type="password" id="authPassword" placeholder="Password" required />
-      <button id="signIn">Sign In</button>
-      <button id="signUp">Sign Up</button>
+  <div class="main-layout">
+    <div class="feed">
+      <h2>📰 Social Feed</h2>
+      <section id="postSection"></section>
     </div>
   </div>
 
-  <!-- Floating Post Button -->
-  <button class="toggle-post-btn" id="togglePostBtn">+ Post</button>
+  <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
 
-  <footer>
+  <div id="overlay"></div>
+  <div id="postModal">
+    <h3>Create a New Post</h3>
+    <form id="postForm">
+      <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
+      <button type="submit">Post</button>
+    </form>
+  </div>
+
+  <!-- Auth modal -->
+  <div id="authOverlay"></div>
+  <div id="authModal">
+    <h2>Welcome to Opportuna</h2>
+    <p>Please sign in or sign up to continue.</p>
+    <div id="authChoiceButtons">
+      <button id="signInBtn">Sign In</button>
+      <button id="signUpBtn">Sign Up</button>
+    </div>
+
+    <form id="authForm">
+      <label for="emailInput">Email</label>
+      <input type="email" id="emailInput" required />
+      <label for="passwordInput">Password</label>
+      <input type="password" id="passwordInput" required minlength="6" />
+      <button type="submit" id="authSubmitBtn">Sign In</button>
+      <div id="authError"></div>
+    </form>
+  </div>
+
+  <footer style="text-align:center; margin:2rem 0 1rem 0; color:#777;">
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
+
+  <!-- Load your modular JS with Firebase integration -->
+  <script type="module" src="assets/main.js"></script>
 </body>
 </html>
