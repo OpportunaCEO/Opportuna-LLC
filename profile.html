@@ -86,16 +86,16 @@
 
     const loadPosts = () => {
       const posts = JSON.parse(localStorage.getItem("posts")) || [];
-      feedContainer.innerHTML = posts.reverse().map(p => `
+      feedContainer.innerHTML = posts.map(p => `
         <div class="post-card">
           <div class="post-header">
-            <img src="${p.pic || 'assets/default.png'}" alt="User" class="post-avatar">
+            <img src="${p.avatar || 'assets/default.png'}" alt="User" class="post-avatar">
             <div>
               <strong>${p.name || "Unknown"}</strong><br>
-              <small>${new Date(p.date).toLocaleString()}</small>
+              <small>${new Date(p.timestamp).toLocaleString()}</small>
             </div>
           </div>
-          <p>${p.text}</p>
+          <p>${p.content}</p>
         </div>
       `).join("");
     };
@@ -104,25 +104,28 @@
       e.preventDefault();
       const postText = document.getElementById("postText").value;
       const newPost = {
-        text: postText,
+        id: Date.now(),
+        content: postText,
         name: userData.name || "Anonymous",
-        pic: userData.pic || "assets/default.png",
-        date: new Date(),
+        avatar: userData.pic || "assets/default.png",
+        timestamp: new Date().toISOString(),
+        likes: 0,
+        comments: []
       };
       const posts = JSON.parse(localStorage.getItem("posts")) || [];
-      posts.push(newPost);
+      posts.unshift(newPost);
       localStorage.setItem("posts", JSON.stringify(posts));
       postForm.reset();
       loadPosts();
     });
-
-    loadPosts();
 
     document.getElementById("logoutBtn").addEventListener("click", e => {
       e.preventDefault();
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
     });
+
+    loadPosts();
   </script>
 </body>
 </html>
