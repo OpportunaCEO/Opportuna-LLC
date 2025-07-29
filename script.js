@@ -113,30 +113,32 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Profile form saving logic
   const profileForm = document.getElementById("profileForm");
-  if (profileForm) {
-    profileForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You must be logged in to save your profile.");
-        return;
-      }
+if (profileForm) {
+  profileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const bio = document.getElementById("bio").value.trim();
-      const skills = document.getElementById("skills").value.trim();
-      const experience = document.getElementById("experience").value.trim();
-      const profilePic = document.getElementById("profilePic").files[0];
+    const saveBtn = profileForm.querySelector('button[type="submit"]');
+    saveBtn.disabled = true; // Disable button immediately
 
-      let photoURL = "";
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to save your profile.");
+      saveBtn.disabled = false;
+      return;
+    }
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const bio = document.getElementById("bio").value.trim();
+    const skills = document.getElementById("skills").value.trim();
+    const experience = document.getElementById("experience").value.trim();
+    const profilePic = document.getElementById("profilePic").files[0];
+
+    let photoURL = "";
+    try {
       if (profilePic) {
         const picRef = ref(storage, `profilePictures/${user.uid}`);
         await uploadBytes(picRef, profilePic);
         photoURL = await getDownloadURL(picRef);
-      } else {
-        // Keep existing photo if no new one uploaded
-        const existingDoc = await getDoc(doc(db, "profiles", user.uid));
-        photoURL = existingDoc.exists() ? existingDoc.data().photoURL || "" : "";
       }
 
       await setDoc(doc(db, "profiles", user.uid), {
@@ -148,6 +150,11 @@ window.addEventListener('DOMContentLoaded', () => {
       });
 
       alert("Profile saved successfully!");
-    });
-  }
-});
+    } catch (error) {
+      alert("Error saving profile: " + error.message);
+    } finally {
+      saveBtn.disabled = false;  // Re-enable button no matter what
+    }
+  });
+}
+
