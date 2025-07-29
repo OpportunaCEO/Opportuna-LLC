@@ -11,10 +11,25 @@
   <header class="hero">
     <div class="hero-overlay">
       <h1>Edit Your Profile</h1>
-      <nav class="hero-nav">
-        <a href="profile.html"><i class="fas fa-user"></i> View Profile</a>
-        <a href="index.html"><i class="fas fa-home"></i> Home</a>
-      </nav>
+      <nav class="top-nav">
+  <div class="nav-center">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
+    <a href="employers.html" class="nav-link">Employers</a>
+    <a href="premium.html" class="nav-link">Premium</a>
+    <a href="recommended.html" class="nav-link">Recommended Jobs</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+  <div class="dropdown" id="userDropdown" style="display:none;">
+    <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+    <div class="dropdown-content">
+      <a href="profile.html" id="profileLink">My Profile</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+  <a href="login.html" id="loginLink">Login</a>
+</nav>
+
     </div>
   </header>
 
