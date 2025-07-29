@@ -88,7 +88,6 @@ signInBtn.addEventListener("click", () => showAuthModal(false));
 signUpBtn.addEventListener("click", () => showAuthModal(true));
 authOverlay.addEventListener("click", hideAuthModal);
 
-const authBack = document.getElementById("authBack");
 if (authBack) {
   authBack.addEventListener("click", () => {
     authForm.style.display = "none";
