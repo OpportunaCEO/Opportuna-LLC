@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Opportuna – Home</title>
+  <meta name="description" content="Opportuna is your personalized job and networking platform. Connect, share, and grow your career." />
   <link rel="stylesheet" href="assets/style.css" />
   <style>
     .main-layout {
@@ -23,7 +24,6 @@
       background-color: #f9f9f9;
       text-align: center;
     }
-
     #createPostBtn {
       position: fixed;
       bottom: 30px;
@@ -37,7 +37,6 @@
       cursor: pointer;
       box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     }
-
     #postModal {
       position: fixed;
       top: 0;
@@ -50,11 +49,9 @@
       padding: 20px;
       z-index: 1000;
     }
-
     #postModal.open {
       right: 0;
     }
-
     #overlay {
       position: fixed;
       top: 0;
@@ -65,9 +62,17 @@
       display: none;
       z-index: 999;
     }
-
     #overlay.show {
       display: block;
+    }
+    #postForm button {
+      margin-top: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -93,23 +98,20 @@
       <h2>📰 Social Feed</h2>
       <section id="postSection"></section>
     </div>
-
     <aside id="profileWidget" class="profile-widget">
       <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
       <div id="widgetName">User Name</div>
     </aside>
   </div>
 
-  <!-- Floating Button -->
   <button id="createPostBtn">+</button>
 
-  <!-- Slide-out Post Modal -->
   <div id="overlay"></div>
   <div id="postModal">
     <h3>Create a New Post</h3>
     <form id="postForm">
       <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
-      <button type="submit" style="margin-top: 10px;">Post</button>
+      <button type="submit">Post</button>
     </form>
   </div>
 
@@ -117,9 +119,16 @@
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
+  <!-- Main JS logic -->
   <script>
+    let users = {};
+    try {
+      users = JSON.parse(localStorage.getItem("users")) || {};
+    } catch (e) {
+      console.error("Error parsing users:", e);
+    }
+
     const loggedInUser = localStorage.getItem("loggedInUser");
-    const users = JSON.parse(localStorage.getItem("users")) || {};
     let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
     if (!loggedInUser || !users[loggedInUser]) {
@@ -128,7 +137,7 @@
 
     const user = users[loggedInUser];
     const userName = user.name || "Unnamed";
-    const userPic = user.pic || "assets/default.png";
+    const userPic = user.pic && user.pic.trim() !== "" ? user.pic : "assets/default.png";
 
     document.getElementById("widgetName").textContent = userName;
     document.getElementById("widgetPic").src = userPic;
@@ -139,7 +148,6 @@
       window.location.href = "login.html";
     });
 
-    // Modal functionality
     const modal = document.getElementById("postModal");
     const overlay = document.getElementById("overlay");
     const openBtn = document.getElementById("createPostBtn");
@@ -179,42 +187,58 @@
 
     function displayPosts() {
       const section = document.getElementById("postSection");
-      section.innerHTML = posts.map(p => `
-        <div class="post-card" data-id="${p.id}">
+      section.innerHTML = '';
+      posts.forEach(p => {
+        const div = document.createElement('div');
+        div.className = "post-card";
+        div.dataset.id = p.id;
+        div.innerHTML = `
           <div class="post-header">
             <img class="post-avatar" src="${p.avatar}" alt="avatar">
             <strong>${p.name}</strong>
             <small>${new Date(p.timestamp).toLocaleString()}</small>
           </div>
-          <p class="post-content">${p.content}</p>
-        </div>
-      `).join("");
+        `;
+        const contentP = document.createElement('p');
+        contentP.className = "post-content";
+        contentP.textContent = p.content;
+        div.appendChild(contentP);
+        section.appendChild(div);
+      });
     }
 
     displayPosts();
-    <!-- Firebase SDK -->
-<script type="module">
-  // Import the functions you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  </script>
 
-  // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-    authDomain: "opportuna-a14bb.firebaseapp.com",
-    projectId: "opportuna-a14bb",
-    storageBucket: "opportuna-a14bb.firebasestorage.app",
-    messagingSenderId: "906149069855",
-    appId: "1:906149069855:web:618ed823248443db30812a",
-    measurementId: "G-GJGCWL01W4"
-  };
+  <!-- Firebase SDK (loaded separately as ES module) -->
+  <script type="module">
+    // Firebase SDK Initialization
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      onSnapshot,
+      serverTimestamp,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
 
-  window.firebaseDB = db; // Expose for global use
-</script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebaseDB = db; // Optional global exposure
   </script>
 </body>
 </html>
