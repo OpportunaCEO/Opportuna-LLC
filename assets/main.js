@@ -231,6 +231,14 @@ function listenForPosts() {
         if (confirm("Are you sure you want to delete this post?")) {
           await deleteDoc(doc(db, "posts", postId));
         }
+        // Force logout button for testing
+const forceLogoutBtn = document.getElementById("forceLogoutBtn");
+if (forceLogoutBtn) {
+  forceLogoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    alert("You have been logged out for testing.");
+  });
+}
       });
     });
   });
