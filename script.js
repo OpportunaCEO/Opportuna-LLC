@@ -112,18 +112,25 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Profile form saving logic
-  const profileForm = document.getElementById("profileForm");
+const profileForm = document.getElementById("profileForm");
 if (profileForm) {
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const saveBtn = profileForm.querySelector('button[type="submit"]');
-    saveBtn.disabled = true; // Disable button immediately
+    const saveBtn = document.getElementById("saveProfileBtn");
+    const saveBtnText = document.getElementById("saveBtnText");
+    const saveBtnSpinner = document.getElementById("saveBtnSpinner");
+
+    saveBtn.disabled = true;
+    saveBtnText.style.display = "none";
+    saveBtnSpinner.style.display = "inline-block";
 
     const user = auth.currentUser;
     if (!user) {
       alert("You must be logged in to save your profile.");
       saveBtn.disabled = false;
+      saveBtnText.style.display = "inline";
+      saveBtnSpinner.style.display = "none";
       return;
     }
 
@@ -153,8 +160,9 @@ if (profileForm) {
     } catch (error) {
       alert("Error saving profile: " + error.message);
     } finally {
-      saveBtn.disabled = false;  // Re-enable button no matter what
+      saveBtn.disabled = false;
+      saveBtnText.style.display = "inline";
+      saveBtnSpinner.style.display = "none";
     }
   });
 }
-
