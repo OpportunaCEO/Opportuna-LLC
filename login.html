@@ -2,45 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login | Opportuna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="logo">Opportuna</a>
-    </div>
-  </nav>
-
-  <main class="container auth-container">
-    <h1>Login or Sign Up</h1>
-
-    <form id="authForm" aria-label="Login or Sign Up Form">
-      <label for="email">Email</label>
-      <input type="email" id="email" required autocomplete="username" />
-
-      <label for="password">Password</label>
-      <input type="password" id="password" required autocomplete="current-password" />
-
-      <button type="submit">Login</button>
+  <div class="auth-container">
+    <h2 id="authTitle">Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="text" id="displayName" placeholder="Display Name (for signup only)" style="display:none" />
+      <button type="submit" id="authActionBtn">Login</button>
+      <p class="toggle-link">Don't have an account? <a href="#" id="toggleAuth">Sign up</a></p>
     </form>
+    <div class="divider">or</div>
+    <button id="googleLoginBtn" class="google-btn">Continue with Google</button>
+  </div>
 
-    <p>Don't have an account? <button id="toggleSignup" class="link-btn">Sign Up here</button></p>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      updateProfile,
+      onAuthStateChanged,
+      signInWithPopup,
+      GoogleAuthProvider
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    <form id="signupForm" aria-label="Sign Up Form" hidden>
-      <label for="signupEmail">Email</label>
-      <input type="email" id="signupEmail" required autocomplete="email" />
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
 
-      <label for="signupPassword">Password</label>
-      <input type="password" id="signupPassword" required autocomplete="new-password" />
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-      <button type="submit">Sign Up</button>
-    </form>
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const displayNameInput = document.getElementById("displayName");
+    const toggleAuth = document.getElementById("toggleAuth");
+    const authTitle = document.getElementById("authTitle");
+    const authActionBtn = document.getElementById("authActionBtn");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
 
-    <p id="errorMsg" role="alert" style="color:#ff4500;"></p>
-  </main>
+    let isLogin = true;
 
-  <script type="module" src="assets/scripts.js"></script>
+    toggleAuth.addEventListener("click", e => {
+      e.preventDefault();
+      isLogin = !isLogin;
+      authTitle.textContent = isLogin ? "Login" : "Sign Up";
+      authActionBtn.textContent = isLogin ? "Login" : "Sign Up";
+      toggleAuth.textContent = isLogin ? "Sign up" : "Login";
+      displayNameInput.style.display = isLogin ? "none" : "block";
+    });
+
+    loginForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      const displayName = displayNameInput.value;
+
+      try {
+        if (isLogin) {
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          const userCred = await createUserWithEmailAndPassword(auth, email, password);
+          await updateProfile(userCred.user, { displayName });
+        }
+        window.location.href = "index.html";
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    googleLoginBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("Google sign-in error: " + error.message);
+      }
+    });
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
 </body>
 </html>
