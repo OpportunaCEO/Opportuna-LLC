@@ -59,11 +59,3 @@ if (dropdownToggle && dropdownMenu) {
   });
 }
 
-// Redirect logged-in users away from login page
-if (window.location.pathname.endsWith("login.html")) {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      window.location.href = "index.html";
-    }
-  });
-}
