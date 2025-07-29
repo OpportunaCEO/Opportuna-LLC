@@ -2,48 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Opportuna Seeker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Opportuna – Home</title>
+  <meta name="description" content="Opportuna is your personalized job and networking platform. Connect, share, and grow your career." />
+  <link rel="stylesheet" href="assets/style.css" />
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
     }
 
-    nav {
-      background: #333;
+    nav.top-nav {
+      background: #007bff;
       color: white;
-      padding: 10px 20px;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav.top-nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+
+    nav.top-nav .nav-center {
       display: flex;
       align-items: center;
-      justify-content: space-between;
     }
 
-    nav img {
-      width: 32px;
-      height: 32px;
+    nav.top-nav .profile-icon {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       cursor: pointer;
     }
 
-    .section {
-      padding: 20px;
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000;
+      border-radius: 6px;
+    }
+
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .dropdown-content {
+      display: none;
+    }
+
+    .dropdown.open .dropdown-content {
+      display: block;
+    }
+
+    .main-layout {
+      max-width: 960px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .feed {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    #createPostBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      z-index: 1100;
+      display: none;
     }
 
     .post-card {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
     }
 
     .post-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 1rem;
     }
 
     .post-avatar {
@@ -52,144 +125,227 @@
       border-radius: 50%;
     }
 
-    .modal {
+    .post-content {
+      margin: 0.5rem 0 0 50px;
+      white-space: pre-wrap;
+    }
+
+    .post-actions {
+      margin-left: auto;
+    }
+
+    .edit-btn, .delete-btn {
+      background: transparent;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 0.9rem;
+    }
+
+    .edit-btn:hover {
+      text-decoration: underline;
+    }
+
+    .delete-btn:hover {
+      color: #dc3545;
+      text-decoration: underline;
+    }
+
+    /* Modal styles */
+    #overlay, #authOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1200;
+    }
+
+    #overlay.show, #authOverlay.show {
+      display: block;
+    }
+
+    #postModal, #authModal {
       position: fixed;
       top: 50%;
       left: 50%;
+      width: 400px;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
       transform: translate(-50%, -50%);
-      z-index: 999;
+      z-index: 1300;
       display: none;
     }
 
-    .modal.open {
+    #postModal.open, #authModal.open {
       display: block;
     }
 
-    .overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      z-index: 998;
+    #authModal h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
     }
 
-    .overlay.show {
-      display: block;
+    #authModal button {
+      cursor: pointer;
     }
 
-    #userDropdown {
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      background: white;
-      border: 1px solid #ccc;
-      display: none;
-      padding: 10px;
-    }
-
-    #userDropdown.open {
-      display: block;
-    }
-
-    .user-result {
-      background: white;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 10px;
+    #authChoiceButtons {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
-    .result-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+    #signInBtn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      flex: 2;
+    }
+
+    #signUpBtn {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      flex: 1;
+    }
+
+    #authForm {
+      display: none;
+      flex-direction: column;
+      margin-top: 1rem;
+    }
+
+    #authForm label {
+      margin-top: 0.5rem;
+      text-align: left;
+    }
+
+    #authForm input {
+      padding: 8px;
+      font-size: 1rem;
+      margin-top: 0.25rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    #authForm button[type="submit"] {
+      margin-top: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 0;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #authError {
+      color: red;
+      margin-top: 0.5rem;
+      min-height: 1.2em;
+    }
+
+    #authBack {
+      margin-top: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      color: #007bff;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    #authBack:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-
-  <!-- Navbar -->
-  <nav>
-    <div>
-      <strong>Opportuna Seeker</strong>
-      <button id="createPostBtn">Post</button>
-      <button id="myProfileBtn">My Profile</button>
+  <nav class="top-nav">
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
     </div>
-    <div>
-      <img src="assets/default.png" id="navProfilePic" />
-      <div id="userDropdown">
-        <button id="logoutBtn">Logout</button>
+    <div class="dropdown" id="userDropdown" style="display: none;">
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+      <div class="dropdown-content">
+        <a href="#" id="profileLink">My Profile</a>
+        <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
   </nav>
 
-  <!-- Post Section -->
-  <section class="section" id="postSection">
-    <!-- Posts go here -->
-  </section>
-
-  <!-- Auth Modal -->
-  <div id="authOverlay" class="overlay show"></div>
-  <div id="authModal" class="modal open">
-    <h2>Welcome</h2>
-    <div style="display: flex; gap: 10px;">
-      <button id="signInBtn">Sign In</button>
-      <button id="signUpBtn">Sign Up</button>
+  <div class="main-layout">
+    <div class="feed">
+      <h2>📰 Social Feed</h2>
+      <section id="postSection"></section>
     </div>
-    <form id="authForm" style="display: none; flex-direction: column; gap: 10px; margin-top: 10px;">
-      <input type="email" id="emailInput" placeholder="Email" required />
-      <input type="password" id="passwordInput" placeholder="Password" required />
-      <button id="authSubmitBtn">Submit</button>
-      <button type="button" id="authBack">Back</button>
-      <div id="authError" style="color: red;"></div>
-    </form>
   </div>
 
-  <!-- Post Modal -->
-  <div id="overlay" class="overlay"></div>
-  <div id="postModal" class="modal">
-    <h2>Create Post</h2>
+  <button id="createPostBtn" title="Create New Post">+</button>
+
+  <div id="overlay"></div>
+  <div id="postModal">
+    <h3>Create a New Post</h3>
     <form id="postForm">
-      <textarea id="postContent" rows="4" placeholder="What's on your mind?" required></textarea>
+      <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
       <button type="submit">Post</button>
     </form>
   </div>
 
-  <!-- Profile Modal -->
-  <div id="profileOverlay" class="overlay"></div>
-  <div id="profileModal" class="modal">
-    <h2>My Profile</h2>
-    <form id="profileForm">
-      <label>Profile Picture:
-        <input type="file" id="profilePicInput" accept="image/*" />
-      </label>
-      <label>Bio:
-        <textarea id="bioInput"></textarea>
-      </label>
-      <label>Work Experience:
-        <textarea id="workInput"></textarea>
-      </label>
-      <label>Skills (comma separated):
-        <input type="text" id="skillsInput" />
-      </label>
-      <button type="submit">Save Profile</button>
+  <!-- Auth Modal -->
+  <div id="authOverlay"></div>
+  <div id="authModal">
+    <h2>Welcome to Opportuna</h2>
+    <p>Please sign in or sign up to continue.</p>
+    <div id="authChoiceButtons">
+      <button id="signInBtn">Sign In</button>
+      <button id="signUpBtn">Sign Up</button>
+    </div>
+
+    <form id="authForm">
+      <label for="emailInput">Email</label>
+      <input type="email" id="emailInput" required />
+      <label for="passwordInput">Password</label>
+      <input type="password" id="passwordInput" required minlength="6" />
+      <button type="submit" id="authSubmitBtn">Sign In</button>
+      <div id="authBack">← Back</div>
+      <div id="authError"></div>
     </form>
   </div>
 
-  <!-- User Search -->
-  <div class="section">
-    <input type="text" id="userSearchInput" placeholder="Search users by email or skills..." />
-    <div id="userSearchResults"></div>
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Profile</h3>
+      <form id="profileForm">
+        <label>Profile Picture:</label>
+        <input type="file" id="profilePicInput" accept="image/*">
+        <label>Bio:</label>
+        <textarea id="bioInput" rows="3"></textarea>
+        <label>Work Experience:</label>
+        <textarea id="experienceInput" rows="3"></textarea>
+        <label>Skills (comma-separated):</label>
+        <input type="text" id="skillsInput" />
+        <button type="submit">Save</button>
+      </form>
+    </div>
   </div>
 
-  <!-- Main JS -->
-  <script type="module" src="main.js"></script>
+  <footer style="text-align:center; margin:2rem 0 1rem 0; color:#777;">
+    <p>&copy; 2025 Opportuna. All rights reserved.</p>
+  </footer>
 
+  <script type="module" src="assets/main.js"></script>
 </body>
 </html>
