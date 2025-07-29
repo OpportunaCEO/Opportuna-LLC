@@ -108,6 +108,27 @@
     .dropdown-content a:hover {
       background-color: #ddd;
     }
+
+    /* Edit/Delete buttons */
+    .post-actions {
+      display: inline-block;
+      margin-left: auto;
+    }
+    .edit-btn, .delete-btn {
+      background-color: transparent;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 0.9rem;
+    }
+    .edit-btn:hover {
+      text-decoration: underline;
+    }
+    .delete-btn:hover {
+      color: #dc3545;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -168,7 +189,11 @@
       onSnapshot,
       serverTimestamp,
       query,
-      orderBy
+      orderBy,
+      doc,
+      updateDoc,
+      deleteDoc,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Firebase Config
@@ -261,6 +286,7 @@
           content,
           name: user.displayName || "Unnamed",
           avatar: user.photoURL || "assets/default.png",
+          authorUid: user.uid,
           timestamp: serverTimestamp(),
           likes: 0,
           comments: []
@@ -274,27 +300,62 @@
       }
     });
 
-    // Real-time Firestore listener for posts
+    // Real-time Firestore listener for posts with Edit/Delete
     function listenForPosts() {
       const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
       onSnapshot(postsQuery, snapshot => {
         postSection.innerHTML = "";
-        snapshot.forEach(doc => {
-          const p = doc.data();
+        snapshot.forEach(docSnap => {
+          const p = docSnap.data();
           const postDiv = document.createElement("div");
           postDiv.className = "post-card";
+
+          let buttonsHTML = "";
+          if (auth.currentUser && p.authorUid === auth.currentUser.uid) {
+            buttonsHTML = `
+              <button class="edit-btn" data-id="${docSnap.id}">Edit</button>
+              <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
+            `;
+          }
 
           postDiv.innerHTML = `
             <div class="post-header">
               <img class="post-avatar" src="${p.avatar || 'assets/default.png'}" alt="avatar" />
               <strong>${p.name}</strong>
               <small>${p.timestamp?.toDate ? p.timestamp.toDate().toLocaleString() : ''}</small>
+              <div class="post-actions">${buttonsHTML}</div>
             </div>
             <p class="post-content"></p>
           `;
 
           postDiv.querySelector(".post-content").textContent = p.content;
           postSection.appendChild(postDiv);
+        });
+
+        // Attach event listeners for edit/delete buttons after rendering
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.addEventListener("click", async e => {
+            const postId = e.target.dataset.id;
+            const postDocRef = doc(db, "posts", postId);
+            const postDoc = await getDoc(postDocRef);
+            const postData = postDoc.data();
+
+            const newContent = prompt("Edit your post:", postData.content);
+            if (newContent !== null && newContent.trim() !== "") {
+              await updateDoc(postDocRef, {
+                content: newContent.trim()
+              });
+            }
+          });
+        });
+
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", async e => {
+            const postId = e.target.dataset.id;
+            if (confirm("Are you sure you want to delete this post?")) {
+              await deleteDoc(doc(db, "posts", postId));
+            }
+          });
         });
       });
     }
