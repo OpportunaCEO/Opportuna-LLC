@@ -2,27 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recommended Jobs – Opportuna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recommended | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <script defer src="assets/recommended.js"></script>
 </head>
-<body class="fade-in">
-  <header class="hero internal">
-    <h1>Recommended Jobs</h1>
-    <p>Curated roles just for you – based on your interests and skills.</p>
-  </header>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">Opportuna</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Feed</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="employers.html">Employers</a></li>
+        <li><a href="jobSeekers.html">Job Seekers</a></li>
+        <li><a href="premium.html">Premium</a></li>
+        <li><a href="recommended.html" aria-current="page">Recommended</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+      </ul>
+    </div>
+  </nav>
 
   <main class="container">
-    <a href="index.html" class="back-button">← Back to Home</a>
+    <h1>Recommended For You</h1>
+    <p>Based on your profile and activity, here are some jobs and connections you might like:</p>
 
-    <section class="job-list" id="recommendedJobs">
-      <!-- Dynamically filled by JS -->
+    <section>
+      <h2>Jobs</h2>
+      <ul>
+        <li>Product Manager at InnovateX</li>
+        <li>UX Designer at CreativeStudio</li>
+        <li>DevOps Engineer at CloudWorks</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Connections</h2>
+      <ul>
+        <li>Jane Doe - Software Engineer</li>
+        <li>John Smith - Marketing Expert</li>
+        <li>Lisa Ray - Data Scientist</li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Opportuna. Discover opportunities that match your path.</p>
-  </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain
+      : "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
 </body>
 </html>
