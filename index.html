@@ -38,6 +38,7 @@
       cursor: pointer;
       box-shadow: 0 5px 10px rgba(0,0,0,0.2);
       z-index: 1100;
+      display: none; /* Initially hidden */
     }
     .post-card {
       border-bottom: 1px solid #ddd;
@@ -131,9 +132,11 @@
     #authForm {
       display: none;
       flex-direction: column;
+      margin-top: 1rem;
     }
     #authForm label {
       margin-top: 0.5rem;
+      text-align: left;
     }
     #authForm input {
       padding: 8px;
@@ -155,6 +158,18 @@
     #authError {
       color: red;
       margin-top: 0.5rem;
+      min-height: 1.2em;
+    }
+    #authBack {
+      margin-top: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      color: #007bff;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+    #authBack:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -180,7 +195,7 @@
     </div>
   </div>
 
-  <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
+  <button id="createPostBtn" title="Create New Post">+</button>
 
   <div id="overlay"></div>
   <div id="postModal">
@@ -207,6 +222,7 @@
       <label for="passwordInput">Password</label>
       <input type="password" id="passwordInput" required minlength="6" />
       <button type="submit" id="authSubmitBtn">Sign In</button>
+      <div id="authBack">← Back</div>
       <div id="authError"></div>
     </form>
   </div>
@@ -219,3 +235,4 @@
   <script type="module" src="assets/main.js"></script>
 </body>
 </html>
+
