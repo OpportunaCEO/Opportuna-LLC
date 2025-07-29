@@ -30,7 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
       userDropdown && (userDropdown.style.display = "inline-block");
       navProfilePic && (navProfilePic.src = user.photoURL || "assets/default.png");
 
-      // Load profile data
+      // Load profile data from Firestore
       const docRef = doc(db, "profiles", user.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -40,7 +40,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("skills").value = data.skills || "";
         document.getElementById("experience").value = data.experience || "";
         if (data.photoURL) {
-          document.getElementById("picPreview").src = data.photoURL;
+          const picPreview = document.getElementById("picPreview");
+          picPreview.src = data.photoURL;
+          picPreview.style.display = "block"; // Make sure preview is visible
         }
       }
     } else {
@@ -115,7 +117,10 @@ window.addEventListener('DOMContentLoaded', () => {
     profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user) {
+        alert("You must be logged in to save your profile.");
+        return;
+      }
 
       const fullName = document.getElementById("fullName").value.trim();
       const bio = document.getElementById("bio").value.trim();
@@ -128,6 +133,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const picRef = ref(storage, `profilePictures/${user.uid}`);
         await uploadBytes(picRef, profilePic);
         photoURL = await getDownloadURL(picRef);
+      } else {
+        // Keep existing photo if no new one uploaded
+        const existingDoc = await getDoc(doc(db, "profiles", user.uid));
+        photoURL = existingDoc.exists() ? existingDoc.data().photoURL || "" : "";
       }
 
       await setDoc(doc(db, "profiles", user.uid), {
