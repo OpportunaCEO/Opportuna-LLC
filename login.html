@@ -1,26 +1,54 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login – Opportuna</title>
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <main class="login-container">
-    <h1>Welcome Back</h1>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">Opportuna</a>
+    </div>
+  </nav>
+
+  <main class="container auth-container">
+    <h1>Login or Sign Up</h1>
+
+    <form id="authForm" aria-label="Login or Sign Up Form">
+      <label for="email">Email</label>
+      <input type="email" id="email" required autocomplete="username" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password" />
+
       <button type="submit">Login</button>
     </form>
-    <p>Don’t have an account? <a href="register.html">Sign up here</a></p>
+
+    <p>Don't have an account? <button id="toggleSignup" class="link-btn">Sign Up here</button></p>
+
+    <form id="signupForm" aria-label="Sign Up Form" hidden>
+      <label for="signupEmail">Email</label>
+      <input type="email" id="signupEmail" required autocomplete="email" />
+
+      <label for="signupPassword">Password</label>
+      <input type="password" id="signupPassword" required autocomplete="new-password" />
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <p id="errorMsg" role="alert" style="color:#ff4500;"></p>
   </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
@@ -35,24 +63,57 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    const authForm = document.getElementById("authForm");
+    const signupForm = document.getElementById("signupForm");
+    const toggleSignup = document.getElementById("toggleSignup");
+    const errorMsg = document.getElementById("errorMsg");
+
+    // Toggle forms
+    toggleSignup.addEventListener("click", () => {
+      if (signupForm.hidden) {
+        signupForm.hidden = false;
+        authForm.hidden = true;
+        errorMsg.textContent = "";
+      } else {
+        signupForm.hidden = true;
+        authForm.hidden = false;
+        errorMsg.textContent = "";
+      }
+    });
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = "";
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (error) {
+        errorMsg.textContent = error.message;
+      }
+    });
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = "";
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (error) {
+        errorMsg.textContent = error.message;
+      }
+    });
+
+    // If already logged in, redirect
     onAuthStateChanged(auth, user => {
       if (user) {
         window.location.href = "index.html";
       }
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", e => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch(err => {
-          alert("Login failed: " + err.message);
-        });
     });
   </script>
 </body>
