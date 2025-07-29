@@ -19,39 +19,5 @@
   </main>
 
   <script type="module" src="assets/scripts.js"></script>
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-      authDomain: "opportuna-a14bb.firebaseapp.com",
-      projectId: "opportuna-a14bb",
-      storageBucket: "opportuna-a14bb.appspot.com",
-      messagingSenderId: "906149069855",
-      appId: "1:906149069855:web:618ed823248443db30812a",
-      measurementId: "G-GJGCWL01W4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    document.getElementById("registerForm").addEventListener("submit", e => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredential => {
-          return updateProfile(userCredential.user, { displayName: name });
-        })
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch(err => {
-          alert("Registration failed: " + err.message);
-        });
-    });
-  </script>
 </body>
 </html>
