@@ -2,35 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Job Seekers – Opportuna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job Seekers | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <script defer src="assets/jobSeekers.js"></script>
 </head>
-<body class="fade-in">
-  <header class="hero internal">
-    <h1>For Job Seekers</h1>
-    <p>Build your future with tailored resources and career tools.</p>
-  </header>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">Opportuna</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Feed</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="employers.html">Employers</a></li>
+        <li><a href="jobSeekers.html" aria-current="page">Job Seekers</a></li>
+        <li><a href="premium.html">Premium</a></li>
+        <li><a href="recommended.html">Recommended</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+      </ul>
+    </div>
+  </nav>
 
   <main class="container">
-    <a href="index.html" class="back-button">← Back to Home</a>
+    <h1>Welcome Job Seekers</h1>
+    <p>Find job openings, build your professional profile, and connect with top employers.</p>
 
-    <section class="grid">
-      <div class="card upload-resume">
-        <h3>📝 Upload Your Resume</h3>
-        <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" />
-        <p class="upload-status">No file uploaded</p>
-      </div>
-      <div class="card">🔔 Job Alerts</div>
-      <div class="card">💡 Career Advice</div>
-      <div class="card">📈 Skill Growth Paths</div>
-      <div class="card">🎯 Personalized Job Matches</div>
+    <section>
+      <h2>Job Listings</h2>
+      <ul>
+        <li>Software Engineer at TechCorp</li>
+        <li>Marketing Specialist at BrightMedia</li>
+        <li>Data Analyst at FinSolve</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Career Resources</h2>
+      <ul>
+        <li>Resume building tips</li>
+        <li>Interview preparation guides</li>
+        <li>Networking best practices</li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Opportuna. Empowering job seekers worldwide.</p>
-  </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
 </body>
 </html>
