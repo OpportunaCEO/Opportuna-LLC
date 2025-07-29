@@ -2,48 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sign Up – Opportuna</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register – Opportuna</title>
+  <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-  <main class="container">
-    <h2>Create Account</h2>
-    <form id="signupForm" class="form-card">
-      <label for="signupName">Full Name:</label>
-      <input type="text" id="signupName" required />
-
-      <label for="signupEmail">Email:</label>
-      <input type="email" id="signupEmail" required />
-
-      <label for="signupPassword">Password:</label>
-      <input type="password" id="signupPassword" required />
-
-      <button type="submit">Sign Up</button>
+  <main class="login-container">
+    <h1>Create Account</h1>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Register</button>
     </form>
-
-    <p>Already have an account? <a href="login.html">Log in here</a>.</p>
+    <p>Already have an account? <a href="login.html">Log in</a></p>
   </main>
 
-  <script>
-    document.getElementById('signupForm').addEventListener('submit', (e) => {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("registerForm").addEventListener("submit", e => {
       e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-
-      const users = JSON.parse(localStorage.getItem('users')) || {};
-
-      if (users[email]) {
-        alert('Email already exists. Please use a different one.');
-        return;
-      }
-
-      users[email] = { name, password };
-      localStorage.setItem('users', JSON.stringify(users));
-
-      alert('Account created! You can now log in.');
-      window.location.href = 'login.html';
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          return updateProfile(userCredential.user, { displayName: name });
+        })
+        .then(() => {
+          window.location.href = "index.html";
+        })
+        .catch(err => {
+          alert("Registration failed: " + err.message);
+        });
     });
   </script>
 </body>
