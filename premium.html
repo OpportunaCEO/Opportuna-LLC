@@ -2,76 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Premium Plans – Opportuna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Premium | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body class="fade-in">
-  <header class="hero internal">
-    <h1>Premium Plans</h1>
-    <p>Get the most out of your job search or hiring with flexible, feature-rich plans.</p>
-  </header>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">Opportuna</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Feed</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="employers.html">Employers</a></li>
+        <li><a href="jobSeekers.html">Job Seekers</a></li>
+        <li><a href="premium.html" aria-current="page">Premium</a></li>
+        <li><a href="recommended.html">Recommended</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+      </ul>
+    </div>
+  </nav>
 
   <main class="container">
-    <a href="index.html" class="back-button">← Back to Home</a>
+    <h1>Premium Membership</h1>
+    <p>Upgrade to Premium to unlock exclusive features:</p>
+    <ul>
+      <li>Advanced job matching</li>
+      <li>Profile spotlight</li>
+      <li>Direct messaging with employers</li>
+      <li>Access to premium resources</li>
+    </ul>
 
-    <section class="section fade-in">
-      <h2>Plans for Job Seekers</h2>
-      <div class="plans">
-        <div class="plan">
-          <h3>Starter (Free)</h3>
-          <p>✔ Resume builder<br/>✔ Email job alerts<br/>✔ Limited job access</p>
-        </div>
-        <div class="plan">
-          <h3>Pro Seeker – $19/mo</h3>
-          <p>
-            ✔ Unlimited job matches<br/>
-            ✔ Priority application support<br/>
-            ✔ Resume optimization tools<br/>
-            ✔ Interview prep guides<br/>
-            ✔ Analytics to track views & interest
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <h2>Plans for Employers</h2>
-      <div class="plans">
-        <div class="plan">
-          <h3>Basic (Free)</h3>
-          <p>✔ Post up to 2 jobs<br/>✔ Basic applicant tracking<br/>✔ Profile visibility</p>
-        </div>
-        <div class="plan">
-          <h3>Pro Recruiter – $49/mo</h3>
-          <p>
-            ✔ Unlimited job postings<br/>
-            ✔ Advanced applicant filtering<br/>
-            ✔ Company branding tools<br/>
-            ✔ Talent recommendations<br/>
-            ✔ Dedicated account support
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <h2>Where Your Money Goes</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>For Job Seekers</h3>
-          <p>We reinvest in career tools, personalized job matching, resume analysis, and mentorship features to help you grow faster.</p>
-        </div>
-        <div class="card">
-          <h3>For Employers</h3>
-          <p>Your subscription powers smarter hiring tools, better exposure for your listings, and ongoing platform innovation.</p>
-        </div>
-      </div>
-    </section>
+    <button id="upgradeBtn">Upgrade Now</button>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Opportuna. Premium services for premium results.</p>
-  </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    const upgradeBtn = document.getElementById("upgradeBtn");
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    upgradeBtn.addEventListener("click", () => {
+      alert("Premium upgrade functionality coming soon!");
+    });
+  </script>
 </body>
 </html>
