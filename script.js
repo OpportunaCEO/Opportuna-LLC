@@ -54,4 +54,40 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Contact form submission (added from assets/script.js)
+  const contactForm = document.getElementById("contactForm");
+  const contactStatus = document.getElementById("contactStatus");
+
+  if (contactForm && contactStatus) {
+    contactForm.addEventListener("submit", e => {
+      e.preventDefault();
+      contactStatus.textContent = "";
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !email || !message) {
+        contactStatus.style.color = "#ff4500";
+        contactStatus.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      // Placeholder: Add real contact form submission logic here
+      contactStatus.style.color = "#32cd32";
+      contactStatus.textContent = "Thank you for contacting us! We'll get back to you shortly.";
+      contactForm.reset();
+    });
+  }
+
+  // Dropdown menu toggle on profile page (added from assets/script.js)
+  const dropdownToggle = document.getElementById("dropdownToggle");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+
+  if (dropdownToggle && dropdownMenu) {
+    dropdownToggle.addEventListener("click", () => {
+      dropdownMenu.classList.toggle("show");
+    });
+  }
 });
