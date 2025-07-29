@@ -47,146 +47,142 @@
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
- <script>
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  const users = JSON.parse(localStorage.getItem("users")) || {};
-  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  <script>
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    const users = JSON.parse(localStorage.getItem("users")) || {};
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  if (!loggedInUser || !users[loggedInUser]) {
-    window.location.href = "login.html";
-  }
+    if (!loggedInUser || !users[loggedInUser]) {
+      window.location.href = "login.html";
+    }
 
-  const user = users[loggedInUser];
-  const userName = user.name || "Unnamed";
-  const userPic = user.pic || "assets/default.png";
+    const user = users[loggedInUser];
+    const userName = user.name || "Unnamed";
+    const userPic = user.pic || "assets/default.png";
 
-  document.getElementById("widgetName").textContent = userName;
-  document.getElementById("widgetPic").src = userPic;
-  document.getElementById("navProfilePic").src = userPic;
+    document.getElementById("widgetName").textContent = userName;
+    document.getElementById("widgetPic").src = userPic;
+    document.getElementById("navProfilePic").src = userPic;
 
-  // Toggle dropdown on click
-  document.getElementById("navProfilePic").addEventListener("click", () => {
-    document.querySelector(".dropdown-content").classList.toggle("show");
-  });
+    document.getElementById("navProfilePic").addEventListener("click", () => {
+      document.querySelector(".dropdown-content").classList.toggle("show");
+    });
 
-   // Hide dropdown when clicking outside
-document.addEventListener("click", function (event) {
-  const dropdown = document.querySelector(".dropdown");
-  const toggle = document.getElementById("navProfilePic");
-  if (!dropdown.contains(event.target) && event.target !== toggle) {
-    document.querySelector(".dropdown-content").classList.remove("show");
-  }
-});
+    document.addEventListener("click", function (event) {
+      const dropdown = document.querySelector(".dropdown");
+      const toggle = document.getElementById("navProfilePic");
+      if (!dropdown.contains(event.target) && event.target !== toggle) {
+        document.querySelector(".dropdown-content").classList.remove("show");
+      }
+    });
 
-  // Logout button logic
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-  });
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    });
 
-  document.getElementById("postForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const content = document.getElementById("postContent").value.trim();
-    if (!content) return;
-    const newPost = {
-      id: Date.now(),
-      content,
-      name: userName,
-      avatar: userPic,
-      timestamp: new Date().toISOString(),
-      likes: 0,
-      comments: []
-    };
-    posts.unshift(newPost);
-    localStorage.setItem("posts", JSON.stringify(posts));
-    document.getElementById("postContent").value = "";
-    displayPosts();
-  });
+    document.getElementById("postForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const content = document.getElementById("postContent").value.trim();
+      if (!content) return;
+      const newPost = {
+        id: Date.now(),
+        content,
+        name: userName,
+        avatar: userPic,
+        timestamp: new Date().toISOString(),
+        likes: 0,
+        comments: []
+      };
+      posts.unshift(newPost);
+      localStorage.setItem("posts", JSON.stringify(posts));
+      document.getElementById("postContent").value = "";
+      displayPosts();
+    });
 
-  function displayPosts() {
-    const section = document.getElementById("postSection");
-    section.innerHTML = posts.map(p => `
-      <div class="post-card" data-id="${p.id}">
-        <div class="post-header">
-          <img class="post-avatar" src="${p.avatar}" alt="avatar">
-          <strong>${p.name}</strong>
+    function displayPosts() {
+      const section = document.getElementById("postSection");
+      section.innerHTML = posts.map(p => `
+        <div class="post-card" data-id="${p.id}">
+          <div class="post-header">
+            <img class="post-avatar" src="${p.avatar}" alt="avatar">
+            <strong>${p.name}</strong>
+            <small>${new Date(p.timestamp).toLocaleString()}</small>
+          </div>
+          <p class="post-content">${p.content}</p>
+          <div class="post-actions">
+            <button class="like-btn">Like (${p.likes})</button>
+            <button class="comment-toggle">Comments (${p.comments.length})</button>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+          <div class="comment-section hidden">
+            <ul class="comment-list">
+              ${p.comments.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+            <input type="text" class="comment-input" placeholder="Write a comment...">
+          </div>
         </div>
-        <p class="post-content">${p.content}</p>
-        <div class="post-actions">
-          <button class="like-btn">Like (${p.likes})</button>
-          <button class="comment-toggle">Comments (${p.comments.length})</button>
-          <button class="edit-btn">Edit</button>
-          <button class="delete-btn">Delete</button>
-        </div>
-        <div class="comment-section hidden">
-          <ul class="comment-list">
-            ${p.comments.map(c => `<li>${c}</li>`).join('')}
-          </ul>
-          <input type="text" class="comment-input" placeholder="Write a comment...">
-        </div>
-      </div>
-    `).join("");
+      `).join("");
 
-    document.querySelectorAll(".like-btn").forEach(btn => {
-      btn.addEventListener("click", e => {
-        const id = getPostId(e.target);
-        const post = posts.find(p => p.id === id);
-        post.likes++;
-        localStorage.setItem("posts", JSON.stringify(posts));
-        displayPosts();
-      });
-    });
-
-    document.querySelectorAll(".edit-btn").forEach(btn => {
-      btn.addEventListener("click", e => {
-        const postCard = e.target.closest(".post-card");
-        const id = getPostId(e.target);
-        const post = posts.find(p => p.id === id);
-        const contentEl = postCard.querySelector(".post-content");
-        const newText = prompt("Edit your post:", post.content);
-        if (newText !== null) {
-          post.content = newText;
-          localStorage.setItem("posts", JSON.stringify(posts));
-          displayPosts();
-        }
-      });
-    });
-
-    document.querySelectorAll(".delete-btn").forEach(btn => {
-      btn.addEventListener("click", e => {
-        const id = getPostId(e.target);
-        posts = posts.filter(p => p.id !== id);
-        localStorage.setItem("posts", JSON.stringify(posts));
-        displayPosts();
-      });
-    });
-
-    document.querySelectorAll(".comment-toggle").forEach(btn => {
-      btn.addEventListener("click", e => {
-        const postCard = e.target.closest(".post-card");
-        postCard.querySelector(".comment-section").classList.toggle("hidden");
-      });
-    });
-
-    document.querySelectorAll(".comment-input").forEach(input => {
-      input.addEventListener("keypress", e => {
-        if (e.key === "Enter" && input.value.trim()) {
-          const id = getPostId(input);
+      document.querySelectorAll(".like-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const id = getPostId(e.target);
           const post = posts.find(p => p.id === id);
-          post.comments.push(input.value.trim());
+          post.likes++;
           localStorage.setItem("posts", JSON.stringify(posts));
-          input.value = "";
           displayPosts();
-        }
+        });
       });
-    });
-  }
 
-  function getPostId(el) {
-    return Number(el.closest(".post-card").dataset.id);
-  }
+      document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const id = getPostId(e.target);
+          const post = posts.find(p => p.id === id);
+          const newText = prompt("Edit your post:", post.content);
+          if (newText !== null) {
+            post.content = newText;
+            localStorage.setItem("posts", JSON.stringify(posts));
+            displayPosts();
+          }
+        });
+      });
 
-  displayPosts();
-</script>
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const id = getPostId(e.target);
+          posts = posts.filter(p => p.id !== id);
+          localStorage.setItem("posts", JSON.stringify(posts));
+          displayPosts();
+        });
+      });
+
+      document.querySelectorAll(".comment-toggle").forEach(btn => {
+        btn.addEventListener("click", e => {
+          const postCard = e.target.closest(".post-card");
+          postCard.querySelector(".comment-section").classList.toggle("hidden");
+        });
+      });
+
+      document.querySelectorAll(".comment-input").forEach(input => {
+        input.addEventListener("keypress", e => {
+          if (e.key === "Enter" && input.value.trim()) {
+            const id = getPostId(input);
+            const post = posts.find(p => p.id === id);
+            post.comments.push(input.value.trim());
+            localStorage.setItem("posts", JSON.stringify(posts));
+            input.value = "";
+            displayPosts();
+          }
+        });
+      });
+    }
+
+    function getPostId(el) {
+      return Number(el.closest(".post-card").dataset.id);
+    }
+
+    displayPosts();
+  </script>
 </body>
 </html>
