@@ -5,52 +5,206 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Job Seekers | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    /* Quick inline styles for layout - we can move to CSS file later */
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: #f5f5f5;
+      margin: 0; padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1, h2 {
+      color: #ff6600;
+    }
+    .search-filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .search-bar {
+      flex: 1 1 400px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      border: none;
+      font-size: 1rem;
+    }
+    .filter-panel {
+      flex: 0 0 300px;
+      background: #222;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 15px rgba(255,102,0,0.4);
+    }
+    .filter-panel h3 {
+      margin-top: 0;
+      color: #ffa64d;
+    }
+    .filter-group {
+      margin-bottom: 1rem;
+    }
+    .filter-group label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .filter-group select,
+    .filter-group input[type="text"],
+    .filter-group input[type="checkbox"] {
+      width: 100%;
+      padding: 0.3rem 0.5rem;
+      border-radius: 5px;
+      border: none;
+      font-size: 0.9rem;
+      background: #333;
+      color: #f5f5f5;
+    }
+    .job-listings {
+      margin-top: 2rem;
+    }
+    .job-card {
+      background: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 0 10px rgba(255,102,0,0.3);
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .job-card:hover {
+      background: #333;
+    }
+    .job-logo {
+      width: 50px;
+      height: 50px;
+      background: #555;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .job-info {
+      flex: 1;
+    }
+    .job-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .job-company {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .job-location {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    .apply-btn {
+      background: #ff6600;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .apply-btn:hover {
+      background: #e65500;
+    }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
-  <div class="nav-center">
-    <a href="index.html" class="nav-link">Home</a>
-    <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
-    <a href="employers.html" class="nav-link">Employers</a>
-    <a href="premium.html" class="nav-link">Premium</a>
-    <a href="recommended.html" class="nav-link">Recommended Jobs</a>
-    <a href="contact.html" class="nav-link">Contact</a>
-  </div>
-  <div class="dropdown" id="userDropdown" style="display:none;">
-    <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
-    <div class="dropdown-content">
-      <a href="profile.html" id="profileLink">My Profile</a>
-      <a href="#" id="logoutBtn">Logout</a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
+      <a href="employers.html" class="nav-link">Employers</a>
+      <a href="premium.html" class="nav-link">Premium</a>
+      <a href="recommended.html" class="nav-link">Recommended Jobs</a>
+      <a href="contact.html" class="nav-link">Contact</a>
     </div>
-  </div>
-  <a href="login.html" id="loginLink">Login</a>
-</nav>
-
+    <div class="dropdown" id="userDropdown" style="display:none;">
+      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+      <div class="dropdown-content">
+        <a href="profile.html" id="profileLink">My Profile</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+    <a href="login.html" id="loginLink">Login</a>
+  </nav>
 
   <main class="container">
-    <h1>Welcome Job Seekers</h1>
-    <p>Find job openings, build your professional profile, and connect with top employers.</p>
+    <h1>Find Your Next Opportunity</h1>
 
-    <section>
-      <h2>Job Listings</h2>
-      <ul>
-        <li>Software Engineer at TechCorp</li>
-        <li>Marketing Specialist at BrightMedia</li>
-        <li>Data Analyst at FinSolve</li>
-      </ul>
-    </section>
+    <div class="search-filter-bar">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search jobs or companies..." />
+      </div>
 
-    <section>
-      <h2>Career Resources</h2>
-      <ul>
-        <li>Resume building tips</li>
-        <li>Interview preparation guides</li>
-        <li>Networking best practices</li>
-      </ul>
+      <div class="filter-panel">
+        <h3>Filters</h3>
+
+        <div class="filter-group">
+          <label for="locationInput">Location</label>
+          <input type="text" id="locationInput" placeholder="e.g., New York, NY" />
+        </div>
+
+        <div class="filter-group">
+          <label for="jobTypeSelect">Job Type</label>
+          <select id="jobTypeSelect">
+            <option value="">Any</option>
+            <option value="fulltime">Full-time</option>
+            <option value="parttime">Part-time</option>
+            <option value="internship">Internship</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="workSetupSelect">Work Setup</label>
+          <select id="workSetupSelect">
+            <option value="">Any</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="inperson">In-Person</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="salaryRangeSelect">Salary Range</label>
+          <select id="salaryRangeSelect">
+            <option value="">Any</option>
+            <option value="0-50000">$0 - $50,000</option>
+            <option value="50000-100000">$50,000 - $100,000</option>
+            <option value="100000-150000">$100,000 - $150,000</option>
+            <option value="150000+">$150,000+</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="qualificationInput">Qualifications</label>
+          <input type="text" id="qualificationInput" placeholder="e.g., Bachelor's, MBA, etc." />
+        </div>
+      </div>
+    </div>
+
+    <section class="job-listings" id="jobListings">
+      <!-- Job cards inserted here dynamically -->
     </section>
   </main>
 
   <script type="module" src="assets/main.js"></script>
-  <script type="module" src="script.js"></script>
+  <script type="module" src="jobSeekers.js"></script>
 </body>
 </html>
