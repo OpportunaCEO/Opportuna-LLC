@@ -67,9 +67,13 @@
       background-color: #f1f1f1;
     }
 
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
+    .dropdown-content {
+  display: none;
+}
+
+.dropdown.open .dropdown-content {
+  display: block;
+}
 
     .main-layout {
       max-width: 960px;
