@@ -1,41 +1,58 @@
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Log In – Opportuna</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Opportuna</title>
+  <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-  <main class="container">
-    <h2>Log In</h2>
-    <form id="loginForm" class="form-card">
-      <label for="loginEmail">Email:</label>
-      <input type="email" id="loginEmail" required />
-
-      <label for="loginPassword">Password:</label>
-      <input type="password" id="loginPassword" required />
-
-      <button type="submit">Log In</button>
+  <main class="login-container">
+    <h1>Welcome Back</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
     </form>
-
-    <p>Don't have an account? <a href="signup.html">Sign up here</a>.</p>
+    <p>Don’t have an account? <a href="register.html">Sign up here</a></p>
   </main>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
 
-      const users = JSON.parse(localStorage.getItem('users')) || {};
-      if (users[email] && users[email].password === password) {
-        localStorage.setItem('loggedInUser', email);
-        alert(`Welcome back, ${users[email].name || 'User'}!`);
-        window.location.href = 'profile.html';
-      } else {
-        alert('Invalid credentials. Please try again.');
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        window.location.href = "index.html";
       }
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = "index.html";
+        })
+        .catch(err => {
+          alert("Login failed: " + err.message);
+        });
     });
   </script>
 </body>
