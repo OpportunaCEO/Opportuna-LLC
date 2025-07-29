@@ -7,16 +7,38 @@
   <meta name="description" content="Opportuna is your personalized job and networking platform. Connect, share, and grow your career." />
   <link rel="stylesheet" href="assets/style.css" />
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background: #f2f2f2; }
-    nav.top-nav {
-      background: #007bff; color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
     }
-    nav.top-nav a { color: white; text-decoration: none; margin-right: 1rem; }
-    nav.top-nav .nav-center { display: flex; align-items: center; }
-    nav.top-nav .profile-icon { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
-
+    nav.top-nav {
+      background: #007bff;
+      color: white;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav.top-nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+    nav.top-nav .nav-center {
+      display: flex;
+      align-items: center;
+    }
+    nav.top-nav .profile-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
     .main-layout {
-      max-width: 960px; margin: 1.5rem auto; padding: 0 1rem;
+      max-width: 960px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
     }
     .feed {
       background: white;
@@ -24,7 +46,6 @@
       border-radius: 8px;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-
     #createPostBtn {
       position: fixed;
       bottom: 30px;
@@ -50,7 +71,9 @@
       gap: 1rem;
     }
     .post-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
     }
     .post-content {
       margin: 0.5rem 0 0 50px;
@@ -59,7 +82,8 @@
     .post-actions {
       margin-left: auto;
     }
-    .edit-btn, .delete-btn {
+    .edit-btn,
+    .delete-btn {
       background: transparent;
       border: none;
       color: #007bff;
@@ -67,23 +91,32 @@
       margin-left: 8px;
       font-size: 0.9rem;
     }
-    .edit-btn:hover { text-decoration: underline; }
-    .delete-btn:hover { color: #dc3545; text-decoration: underline; }
+    .edit-btn:hover {
+      text-decoration: underline;
+    }
+    .delete-btn:hover {
+      color: #dc3545;
+      text-decoration: underline;
+    }
 
     /* Modal styles */
-    #overlay, #authOverlay {
+    #overlay,
+    #authOverlay {
       position: fixed;
-      top:0; left:0;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       z-index: 1200;
     }
-    #overlay.show, #authOverlay.show {
+    #overlay.show,
+    #authOverlay.show {
       display: block;
     }
-    #postModal, #authModal {
+    #postModal,
+    #authModal {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -91,12 +124,13 @@
       background: white;
       padding: 1.5rem;
       border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       transform: translate(-50%, -50%);
       z-index: 1300;
       display: none;
     }
-    #postModal.open, #authModal.open {
+    #postModal.open,
+    #authModal.open {
       display: block;
     }
     #authModal h2 {
@@ -171,20 +205,6 @@
     #authBack:hover {
       text-decoration: underline;
     }
-    <button id="forceLogoutBtn" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 6px;
-  cursor: pointer;
-  z-index: 9999;
-">
-  Force Logout
-</button>
   </style>
 </head>
 <body>
@@ -245,8 +265,23 @@
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
+  <!-- Force Logout Button for Testing -->
+  <button id="forceLogoutBtn" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 9999;
+  ">
+    Force Logout
+  </button>
+
   <!-- Load your modular JS with Firebase integration -->
   <script type="module" src="assets/main.js"></script>
 </body>
 </html>
-
