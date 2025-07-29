@@ -2,30 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Employers – Opportuna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Employers | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body class="fade-in">
-  <header class="hero internal">
-    <h1>For Employers</h1>
-    <p>Post openings, discover talent, and hire smarter.</p>
-  </header>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">Opportuna</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Feed</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="employers.html" aria-current="page">Employers</a></li>
+        <li><a href="jobSeekers.html">Job Seekers</a></li>
+        <li><a href="premium.html">Premium</a></li>
+        <li><a href="recommended.html">Recommended</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+      </ul>
+    </div>
+  </nav>
 
   <main class="container">
-    <a href="index.html" class="back-button">← Back to Home</a>
+    <h1>Employers Portal</h1>
+    <p>Post job openings, review candidates, and manage your company profile.</p>
 
-    <section class="grid">
-      <div class="card">📢 Post a Job</div>
-      <div class="card">📊 Applicant Insights</div>
-      <div class="card">🚀 Premium Boosting</div>
-      <div class="card">👥 Talent Pool Access</div>
-      <div class="card">🤖 AI-Powered Screening</div>
+    <section>
+      <h2>Post a Job</h2>
+      <form id="jobPostForm">
+        <label for="jobTitle">Job Title</label>
+        <input id="jobTitle" type="text" required />
+
+        <label for="jobDesc">Description</label>
+        <textarea id="jobDesc" rows="4" required></textarea>
+
+        <button type="submit">Post Job</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Active Listings</h2>
+      <ul id="jobListings">
+        <li>No active listings yet.</li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Opportuna. Trusted by hiring teams globally.</p>
-  </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    const jobPostForm = document.getElementById("jobPostForm");
+    const jobListings = document.getElementById("jobListings");
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    jobPostForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("jobTitle").value.trim();
+      const desc = document.getElementById("jobDesc").value.trim();
+
+      if (!title || !desc) return;
+
+      // Save to localStorage for now
+      let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+      jobs.unshift({ id: Date.now(), title, desc });
+      localStorage.setItem("jobs", JSON.stringify(jobs));
+      renderJobs();
+      jobPostForm.reset();
+    });
+
+    function renderJobs() {
+      let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+      if (jobs.length === 0) {
+        jobListings.innerHTML = "<li>No active listings yet.</li>";
+        return;
+      }
+      jobListings.innerHTML = jobs.map(job => `<li><strong>${job.title}</strong><br>${job.desc}</li>`).join("");
+    }
+
+    renderJobs();
+  </script>
 </body>
 </html>
