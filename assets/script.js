@@ -14,13 +14,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Redirect to login if user is not authenticated
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
-});
-
 // Logout button
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
