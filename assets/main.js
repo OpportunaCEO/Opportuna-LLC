@@ -118,6 +118,7 @@ authForm.addEventListener("submit", async (e) => {
 });
 
 onAuthStateChanged(auth, (user) => {
+  console.log("Auth state changed:", user);
   if (user) {
     userDropdown.style.display = "inline-block";
     createPostBtn.style.display = "inline-block";
