@@ -74,6 +74,40 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    /* Profile icon in navbar */
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    /* Dropdown styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #f9f9f9;
+      min-width: 150px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      border-radius: 4px;
+      z-index: 1001;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .dropdown-content a {
+      color: black;
+      padding: 10px 12px;
+      text-decoration: none;
+      display: block;
+    }
+    .dropdown-content a:hover {
+      background-color: #ddd;
+    }
   </style>
 </head>
 <body>
@@ -81,7 +115,7 @@
     <div class="nav-center">
       <a href="index.html" class="nav-link">Home</a>
       <a href="profile.html" class="nav-link">Profile</a>
-      <a href="login.html" class="nav-link" id="logoutLink">Logout</a>
+      <a href="login.html" class="nav-link" id="logoutLink" style="display:none;">Logout</a>
     </div>
     <div class="dropdown">
       <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
@@ -99,12 +133,12 @@
       <section id="postSection"></section>
     </div>
     <aside id="profileWidget" class="profile-widget">
-      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
+      <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture" style="width:100px; height:100px; border-radius:50%;" />
       <div id="widgetName">User Name</div>
     </aside>
   </div>
 
-  <button id="createPostBtn">+</button>
+  <button id="createPostBtn" title="Create New Post">+</button>
 
   <div id="overlay"></div>
   <div id="postModal">
@@ -119,9 +153,14 @@
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
-  <!-- Firebase SDK + Real-time Post Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
     import {
       getFirestore,
       collection,
@@ -144,45 +183,60 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
-    const postsRef = collection(db, "posts");
-    const postsQuery = query(postsRef, orderBy("timestamp", "desc"));
 
-    // Auth/User Setup
-    let users = {};
-    try {
-      users = JSON.parse(localStorage.getItem("users")) || {};
-    } catch (e) {
-      console.error("User parse error:", e);
-    }
+    // Elements
+    const widgetName = document.getElementById("widgetName");
+    const widgetPic = document.getElementById("widgetPic");
+    const navProfilePic = document.getElementById("navProfilePic");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const logoutLink = document.getElementById("logoutLink");
+    const postSection = document.getElementById("postSection");
+    const postForm = document.getElementById("postForm");
+    const postContent = document.getElementById("postContent");
+    const modal = document.getElementById("postModal");
+    const overlay = document.getElementById("overlay");
+    const createPostBtn = document.getElementById("createPostBtn");
 
-    const loggedInUser = localStorage.getItem("loggedInUser");
-    if (!loggedInUser || !users[loggedInUser]) {
-      window.location.href = "login.html";
-    }
+    // Redirect if not logged in and update UI if logged in
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const displayName = user.displayName || "Unnamed";
+        const photoURL = user.photoURL || "assets/default.png";
 
-    const user = users[loggedInUser];
-    const userName = user.name || "Unnamed";
-    const userPic = user.pic && user.pic.trim() !== "" ? user.pic : "assets/default.png";
+        widgetName.textContent = displayName;
+        widgetPic.src = photoURL;
+        navProfilePic.src = photoURL;
 
-    // Update UI with user info
-    document.getElementById("widgetName").textContent = userName;
-    document.getElementById("widgetPic").src = userPic;
-    document.getElementById("navProfilePic").src = userPic;
+        logoutLink.style.display = "inline-block";
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("loggedInUser");
+        // Show posts in real-time
+        listenForPosts();
+
+      } else {
+        // Not logged in → redirect to login page
+        window.location.href = "login.html";
+      }
+    });
+
+    // Logout handler
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
       window.location.href = "login.html";
     });
 
-    // Modal UI
-    const modal = document.getElementById("postModal");
-    const overlay = document.getElementById("overlay");
-    const openBtn = document.getElementById("createPostBtn");
+    logoutLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
-    openBtn.addEventListener("click", () => {
+    // Modal open/close handlers
+    createPostBtn.addEventListener("click", () => {
       modal.classList.add("open");
       overlay.classList.add("show");
+      postContent.focus();
     });
 
     overlay.addEventListener("click", () => {
@@ -190,58 +244,60 @@
       overlay.classList.remove("show");
     });
 
-    // Submit post to Firestore
-    document.getElementById("postForm").addEventListener("submit", async e => {
+    // Submit new post to Firestore
+    postForm.addEventListener("submit", async e => {
       e.preventDefault();
-      const content = document.getElementById("postContent").value.trim();
+      const content = postContent.value.trim();
       if (!content) return;
 
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to post.");
+        return;
+      }
+
       try {
-        await addDoc(postsRef, {
+        await addDoc(collection(db, "posts"), {
           content,
-          name: userName,
-          avatar: userPic,
+          name: user.displayName || "Unnamed",
+          avatar: user.photoURL || "assets/default.png",
           timestamp: serverTimestamp(),
           likes: 0,
           comments: []
         });
-
-        document.getElementById("postContent").value = "";
+        postContent.value = "";
         modal.classList.remove("open");
         overlay.classList.remove("show");
       } catch (err) {
         console.error("Error posting:", err);
-        alert("Post failed.");
+        alert("Failed to post.");
       }
     });
 
-    // Real-time post listener
-    onSnapshot(postsQuery, snapshot => {
-      const section = document.getElementById("postSection");
-      section.innerHTML = "";
+    // Real-time Firestore listener for posts
+    function listenForPosts() {
+      const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+      onSnapshot(postsQuery, snapshot => {
+        postSection.innerHTML = "";
+        snapshot.forEach(doc => {
+          const p = doc.data();
+          const postDiv = document.createElement("div");
+          postDiv.className = "post-card";
 
-      snapshot.forEach(doc => {
-        const p = doc.data();
-        const div = document.createElement('div');
-        div.className = "post-card";
-        div.dataset.id = doc.id;
+          postDiv.innerHTML = `
+            <div class="post-header">
+              <img class="post-avatar" src="${p.avatar || 'assets/default.png'}" alt="avatar" />
+              <strong>${p.name}</strong>
+              <small>${p.timestamp?.toDate ? p.timestamp.toDate().toLocaleString() : ''}</small>
+            </div>
+            <p class="post-content"></p>
+          `;
 
-        div.innerHTML = `
-          <div class="post-header">
-            <img class="post-avatar" src="${p.avatar}" alt="avatar">
-            <strong>${p.name}</strong>
-            <small>${new Date(p.timestamp?.toDate?.() || Date.now()).toLocaleString()}</small>
-          </div>
-        `;
-
-        const contentP = document.createElement('p');
-        contentP.className = "post-content";
-        contentP.textContent = p.content;
-
-        div.appendChild(contentP);
-        section.appendChild(div);
+          postDiv.querySelector(".post-content").textContent = p.content;
+          postSection.appendChild(postDiv);
+        });
       });
-    });
+    }
   </script>
 </body>
 </html>
