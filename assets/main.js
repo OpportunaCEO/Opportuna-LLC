@@ -16,13 +16,15 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// ✅ Corrected Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSy...your-key...",
-  authDomain: "yourapp.firebaseapp.com",
-  projectId: "yourapp",
-  storageBucket: "yourapp.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
+  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+  authDomain: "opportuna-a14bb.firebaseapp.com",
+  projectId: "opportuna-a14bb",
+  storageBucket: "opportuna-a14bb.appspot.com", // FIXED HERE
+  messagingSenderId: "906149069855",
+  appId: "1:906149069855:web:618ed823248443db30812a",
+  measurementId: "G-GJGCWL01W4"
 };
 
 // Init
