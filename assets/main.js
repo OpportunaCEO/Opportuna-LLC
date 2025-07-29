@@ -178,6 +178,7 @@ function loadPosts() {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     // User is signed in
+    loginLink.style.display = "none"; // Hide login link if logged in
     createPostBtn.style.display = "block";
     userDropdown.style.display = "block";
     loginLink.style.display = "none";  // ADD THIS
@@ -193,6 +194,7 @@ onAuthStateChanged(auth, async (user) => {
     loadPosts();
   } else {
     // User is signed out
+    loginLink.style.display = "inline-block"; // Show login link if logged out
     createPostBtn.style.display = "none";
     userDropdown.style.display = "none";
     loginLink.style.display = "inline-block"; // ADD THIS
