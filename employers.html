@@ -7,21 +7,25 @@
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="logo">Opportuna</a>
-      <ul class="nav-links">
-        <li><a href="index.html">Feed</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="employers.html" aria-current="page">Employers</a></li>
-        <li><a href="jobSeekers.html">Job Seekers</a></li>
-        <li><a href="premium.html">Premium</a></li>
-        <li><a href="recommended.html">Recommended</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
-      </ul>
+  <nav class="top-nav">
+  <div class="nav-center">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
+    <a href="employers.html" class="nav-link">Employers</a>
+    <a href="premium.html" class="nav-link">Premium</a>
+    <a href="recommended.html" class="nav-link">Recommended Jobs</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+  </div>
+  <div class="dropdown" id="userDropdown" style="display:none;">
+    <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+    <div class="dropdown-content">
+      <a href="profile.html" id="profileLink">My Profile</a>
+      <a href="#" id="logoutBtn">Logout</a>
     </div>
-  </nav>
+  </div>
+  <a href="login.html" id="loginLink">Login</a>
+</nav>
+
 
   <main class="container">
     <h1>Employers Portal</h1>
