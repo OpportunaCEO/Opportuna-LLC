@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
@@ -13,6 +15,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 window.addEventListener('DOMContentLoaded', () => {
   const loginLink = document.getElementById("loginLink");
@@ -20,14 +24,28 @@ window.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const navProfilePic = document.getElementById("navProfilePic");
 
-  onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, async user => {
     if (user) {
-      loginLink.style.display = "none";
-      userDropdown.style.display = "inline-block";
-      navProfilePic.src = user.photoURL || "assets/default.png";
+      loginLink && (loginLink.style.display = "none");
+      userDropdown && (userDropdown.style.display = "inline-block");
+      navProfilePic && (navProfilePic.src = user.photoURL || "assets/default.png");
+
+      // Load profile data
+      const docRef = doc(db, "profiles", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("fullName").value = data.fullName || "";
+        document.getElementById("bio").value = data.bio || "";
+        document.getElementById("skills").value = data.skills || "";
+        document.getElementById("experience").value = data.experience || "";
+        if (data.photoURL) {
+          document.getElementById("picPreview").src = data.photoURL;
+        }
+      }
     } else {
-      loginLink.style.display = "inline-block";
-      userDropdown.style.display = "none";
+      loginLink && (loginLink.style.display = "inline-block");
+      userDropdown && (userDropdown.style.display = "none");
     }
   });
 
@@ -88,6 +106,39 @@ window.addEventListener('DOMContentLoaded', () => {
   if (dropdownToggle && dropdownMenu) {
     dropdownToggle.addEventListener("click", () => {
       dropdownMenu.classList.toggle("show");
+    });
+  }
+
+  // Profile form saving logic
+  const profileForm = document.getElementById("profileForm");
+  if (profileForm) {
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+      const skills = document.getElementById("skills").value.trim();
+      const experience = document.getElementById("experience").value.trim();
+      const profilePic = document.getElementById("profilePic").files[0];
+
+      let photoURL = "";
+      if (profilePic) {
+        const picRef = ref(storage, `profilePictures/${user.uid}`);
+        await uploadBytes(picRef, profilePic);
+        photoURL = await getDownloadURL(picRef);
+      }
+
+      await setDoc(doc(db, "profiles", user.uid), {
+        fullName,
+        bio,
+        skills,
+        experience,
+        photoURL
+      });
+
+      alert("Profile saved successfully!");
     });
   }
 });
