@@ -62,6 +62,7 @@ const authSubmitBtn = document.getElementById("authSubmitBtn");
 const authBack = document.getElementById("authBack");
 const authError = document.getElementById("authError");
 const logoutBtn = document.getElementById("logoutBtn");
+const loginLink = document.getElementById("loginLink");
 const navProfilePic = document.getElementById("navProfilePic");
 const userDropdown = document.getElementById("userDropdown");
 const myProfileBtn = document.getElementById("myProfileBtn");
@@ -179,10 +180,28 @@ onAuthStateChanged(auth, async (user) => {
     // User is signed in
     createPostBtn.style.display = "block";
     userDropdown.style.display = "block";
-    navProfilePic.src = "assets/default.png"; // You could use user.photoURL if available
-    navProfilePic.src = "assets/default.png";
+    loginLink.style.display = "none";  // ADD THIS
+    navProfilePic.src = "assets/default.png"; // or user.photoURL if you have it
+
     authModal.classList.remove("open");
     authOverlay.classList.remove("show");
+
+    // Load posts (your existing code)
+    // ...
+
+    loadUserProfile();
+    loadPosts();
+  } else {
+    // User is signed out
+    createPostBtn.style.display = "none";
+    userDropdown.style.display = "none";
+    loginLink.style.display = "inline-block"; // ADD THIS
+
+    authForm.style.display = "none";
+    authModal.classList.add("open");
+    authOverlay.classList.add("show");
+  }
+});
 
     // Load posts
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
