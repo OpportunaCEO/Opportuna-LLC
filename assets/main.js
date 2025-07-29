@@ -53,6 +53,7 @@ const authError = document.getElementById("authError");
 const navProfilePic = document.getElementById("navProfilePic");
 const userDropdown = document.getElementById("userDropdown");
 const logoutBtn = document.getElementById("logoutBtn");
+const forceLogoutBtn = document.getElementById("forceLogoutBtn");
 const createPostBtn = document.getElementById("createPostBtn");
 const postModal = document.getElementById("postModal");
 const overlay = document.getElementById("overlay");
@@ -88,18 +89,15 @@ signInBtn.addEventListener("click", () => showAuthModal(false));
 signUpBtn.addEventListener("click", () => showAuthModal(true));
 authOverlay.addEventListener("click", hideAuthModal);
 
-if (authBack) {
-  authBack.addEventListener("click", () => {
-    authForm.style.display = "none";
-    authChoiceButtons.style.display = "flex";
-    authError.textContent = "";
-  });
-}
+authBack?.addEventListener("click", () => {
+  authForm.style.display = "none";
+  authChoiceButtons.style.display = "flex";
+  authError.textContent = "";
+});
 
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   authError.textContent = "";
-
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
@@ -128,11 +126,11 @@ onAuthStateChanged(auth, (user) => {
     createPostBtn.style.display = "none";
     navProfilePic.src = "assets/default.png";
     showAuthModal(false);
-    postSection.innerHTML = ""; // Clear posts when signed out
+    postSection.innerHTML = "";
   }
 });
 
-logoutBtn.addEventListener("click", async () => {
+logoutBtn?.addEventListener("click", async () => {
   await signOut(auth);
 });
 
@@ -209,7 +207,6 @@ function listenForPosts() {
       postSection.appendChild(postDiv);
     });
 
-    // Edit button handlers
     document.querySelectorAll(".edit-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const postId = e.target.dataset.id;
@@ -224,22 +221,21 @@ function listenForPosts() {
       });
     });
 
-    // Delete button handlers
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const postId = e.target.dataset.id;
         if (confirm("Are you sure you want to delete this post?")) {
           await deleteDoc(doc(db, "posts", postId));
         }
-        // Force logout button for testing
-const forceLogoutBtn = document.getElementById("forceLogoutBtn");
+      });
+    });
+  });
+}
+
+// ----------------- Force Logout Button -----------------
 if (forceLogoutBtn) {
   forceLogoutBtn.addEventListener("click", async () => {
     await signOut(auth);
     alert("You have been logged out for testing.");
-  });
-}
-      });
-    });
   });
 }
