@@ -192,6 +192,29 @@
     }
 
     displayPosts();
+    <!-- Firebase SDK -->
+<script type="module">
+  // Import the functions you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+    authDomain: "opportuna-a14bb.firebaseapp.com",
+    projectId: "opportuna-a14bb",
+    storageBucket: "opportuna-a14bb.firebasestorage.app",
+    messagingSenderId: "906149069855",
+    appId: "1:906149069855:web:618ed823248443db30812a",
+    measurementId: "G-GJGCWL01W4"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.firebaseDB = db; // Expose for global use
+</script>
   </script>
 </body>
 </html>
