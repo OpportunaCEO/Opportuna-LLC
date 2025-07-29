@@ -514,4 +514,19 @@ footer {
   #postModal, #authModal {
     width: 90%;
   }
+.spinner {
+  border: 3px solid #ffb380;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+  }
 }
