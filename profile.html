@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Your Profile – Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <nav class="top-nav">
@@ -22,7 +23,7 @@
       <label>Upload Profile Picture:
         <input type="file" id="profilePic" accept="image/*" />
       </label>
-      <img id="picPreview" src="" alt="Preview" class="preview-img" />
+      <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:block; margin-top:8px;" />
       <button type="submit">Save Profile</button>
     </form>
 
@@ -38,94 +39,132 @@
     </section>
   </main>
 
-  <script>
-    const userEmail = localStorage.getItem("loggedInUser");
-    if (!userEmail) window.location.href = "login.html";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const users = JSON.parse(localStorage.getItem("users")) || {};
-    const userData = users[userEmail] || {};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+      authDomain: "opportuna-a14bb.firebaseapp.com",
+      projectId: "opportuna-a14bb",
+      storageBucket: "opportuna-a14bb.appspot.com",
+      messagingSenderId: "906149069855",
+      appId: "1:906149069855:web:618ed823248443db30812a",
+      measurementId: "G-GJGCWL01W4"
+    };
 
-    const nameInput = document.getElementById("fullName");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const fullNameInput = document.getElementById("fullName");
     const bioInput = document.getElementById("bio");
     const skillsInput = document.getElementById("skills");
-    const expInput = document.getElementById("experience");
-    const picInput = document.getElementById("profilePic");
+    const experienceInput = document.getElementById("experience");
+    const profilePicInput = document.getElementById("profilePic");
     const picPreview = document.getElementById("picPreview");
 
-    nameInput.value = userData.name || "";
-    bioInput.value = userData.bio || "";
-    skillsInput.value = userData.skills || "";
-    expInput.value = userData.experience || "";
-    if (userData.pic) picPreview.src = userData.pic;
+    const profileForm = document.getElementById("profileForm");
+    const postForm = document.getElementById("postForm");
+    const feedContainer = document.getElementById("feedContainer");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    picInput.addEventListener("change", e => {
+    let currentUser = null;
+    let userProfileData = {};
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        currentUser = user;
+        loadProfile();
+        loadPosts();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async e => {
+      e.preventDefault();
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    function loadProfile() {
+      const users = JSON.parse(localStorage.getItem("users")) || {};
+      userProfileData = users[currentUser.email] || {};
+      fullNameInput.value = userProfileData.name || currentUser.displayName || "";
+      bioInput.value = userProfileData.bio || "";
+      skillsInput.value = userProfileData.skills || "";
+      experienceInput.value = userProfileData.experience || "";
+      picPreview.src = userProfileData.pic || currentUser.photoURL || "assets/default.png";
+    }
+
+    profilePicInput.addEventListener("change", e => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = () => { picPreview.src = reader.result; };
+        reader.onload = () => {
+          picPreview.src = reader.result;
+        };
         reader.readAsDataURL(file);
       }
     });
 
-    document.getElementById("profileForm").addEventListener("submit", e => {
+    profileForm.addEventListener("submit", e => {
       e.preventDefault();
-      users[userEmail] = {
-        ...userData,
-        name: nameInput.value,
+      const users = JSON.parse(localStorage.getItem("users")) || {};
+      users[currentUser.email] = {
+        name: fullNameInput.value,
         bio: bioInput.value,
         skills: skillsInput.value,
-        experience: expInput.value,
-        pic: picPreview.src || userData.pic || "assets/default.png"
+        experience: experienceInput.value,
+        pic: picPreview.src
       };
       localStorage.setItem("users", JSON.stringify(users));
       alert("Profile saved!");
     });
 
-    const postForm = document.getElementById("postForm");
-    const feedContainer = document.getElementById("feedContainer");
-
-    const loadPosts = () => {
-      const posts = JSON.parse(localStorage.getItem("posts")) || [];
-      feedContainer.innerHTML = posts.map(p => `
-        <div class="post-card">
-          <div class="post-header">
-            <img src="${p.avatar || 'assets/default.png'}" alt="User" class="post-avatar">
-            <div>
-              <strong>${p.name || "Unknown"}</strong><br>
-              <small>${new Date(p.timestamp).toLocaleString()}</small>
-            </div>
-          </div>
-          <p>${p.content}</p>
-        </div>
-      `).join("");
-    };
-
     postForm.addEventListener("submit", e => {
       e.preventDefault();
-      const postText = document.getElementById("postText").value;
-      const newPost = {
+      const content = document.getElementById("postText").value.trim();
+      if (!content) return;
+
+      const posts = JSON.parse(localStorage.getItem("posts")) || [];
+      posts.unshift({
         id: Date.now(),
-        content: postText,
-        name: userData.name || "Anonymous",
-        avatar: userData.pic || "assets/default.png",
+        content,
+        name: fullNameInput.value || currentUser.displayName || "Anonymous",
+        avatar: picPreview.src || currentUser.photoURL || "assets/default.png",
         timestamp: new Date().toISOString(),
         likes: 0,
         comments: []
-      };
-      const posts = JSON.parse(localStorage.getItem("posts")) || [];
-      posts.unshift(newPost);
+      });
       localStorage.setItem("posts", JSON.stringify(posts));
       postForm.reset();
       loadPosts();
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", e => {
-      e.preventDefault();
-      localStorage.removeItem("loggedInUser");
-      window.location.href = "login.html";
-    });
-
-    loadPosts();
+    function loadPosts() {
+      const posts = JSON.parse(localStorage.getItem("posts")) || [];
+      if (posts.length === 0) {
+        feedContainer.innerHTML = "<p>No posts yet.</p>";
+        return;
+      }
+      feedContainer.innerHTML = posts.map(p => `
+        <article class="post-card">
+          <header class="post-header">
+            <img src="${p.avatar}" alt="${p.name}" class="post-avatar" />
+            <div>
+              <strong>${p.name}</strong><br />
+              <small>${new Date(p.timestamp).toLocaleString()}</small>
+            </div>
+          </header>
+          <p class="post-content">${p.content}</p>
+        </article>
+      `).join("");
+    }
   </script>
 </body>
 </html>
