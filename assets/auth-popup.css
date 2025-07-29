@@ -1,0 +1,14 @@
+/* auth-popup.css */
+#authOverlay, #authModal {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#authModal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+#authModal {
+  opacity: 0;
+  visibility: hidden;
+}
