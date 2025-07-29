@@ -1,90 +1,82 @@
-// main.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
-  onSnapshot,
   query,
   orderBy,
-  doc,
-  deleteDoc,
-  updateDoc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD-_wEzEbFST5NfI6PbmngG0emHwR-ot9k",
-  authDomain: "opportuna-34ac6.firebaseapp.com",
-  projectId: "opportuna-34ac6",
-  storageBucket: "opportuna-34ac6.appspot.com",
-  messagingSenderId: "373706197348",
-  appId: "1:373706197348:web:3793cfd8d33b2db59f5a89"
+  apiKey: "AIzaSy...your-key...",
+  authDomain: "yourapp.firebaseapp.com",
+  projectId: "yourapp",
+  storageBucket: "yourapp.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abc123"
 };
 
+// Init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// UI references
-const postSection = document.getElementById("postSection");
-const postForm = document.getElementById("postForm");
-const postContent = document.getElementById("postContent");
+// DOM
 const createPostBtn = document.getElementById("createPostBtn");
-const postModal = document.getElementById("postModal");
 const overlay = document.getElementById("overlay");
-const logoutBtn = document.getElementById("logoutBtn");
-const userDropdown = document.getElementById("userDropdown");
-const navProfilePic = document.getElementById("navProfilePic");
-const viewProfile = document.getElementById("viewProfile");
-
-// Auth UI
-const authOverlay = document.getElementById("authOverlay");
+const postModal = document.getElementById("postModal");
+const postForm = document.getElementById("postForm");
+const postSection = document.getElementById("postSection");
 const authModal = document.getElementById("authModal");
+const authOverlay = document.getElementById("authOverlay");
 const signInBtn = document.getElementById("signInBtn");
 const signUpBtn = document.getElementById("signUpBtn");
 const authForm = document.getElementById("authForm");
 const authSubmitBtn = document.getElementById("authSubmitBtn");
 const authBack = document.getElementById("authBack");
 const authError = document.getElementById("authError");
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
+const logoutBtn = document.getElementById("logoutBtn");
+const navProfilePic = document.getElementById("navProfilePic");
+const userDropdown = document.getElementById("userDropdown");
 
-let currentUser = null;
+// Show post modal
+createPostBtn.addEventListener("click", () => {
+  overlay.classList.add("show");
+  postModal.classList.add("open");
+});
 
-// Auth state
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUser = user;
-    authOverlay.classList.remove("show");
-    authModal.classList.remove("open");
-    userDropdown.style.display = "block";
-    createPostBtn.style.display = "block";
+overlay.addEventListener("click", () => {
+  overlay.classList.remove("show");
+  postModal.classList.remove("open");
+});
 
-    const profileDoc = await getDoc(doc(db, "profiles", user.uid));
-    const avatar = profileDoc.exists() ? profileDoc.data().avatar || "assets/default.png" : "assets/default.png";
-    navProfilePic.src = avatar;
-
-    viewProfile.href = `profile.html?uid=${user.uid}`;
-    loadPosts();
-  } else {
-    currentUser = null;
-    authOverlay.classList.add("show");
-    authModal.classList.add("open");
-    userDropdown.style.display = "none";
-    createPostBtn.style.display = "none";
+postForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const content = document.getElementById("postContent").value.trim();
+  const user = auth.currentUser;
+  if (user && content) {
+    await addDoc(collection(db, "posts"), {
+      uid: user.uid,
+      email: user.email,
+      content,
+      timestamp: serverTimestamp()
+    });
+    postForm.reset();
+    overlay.classList.remove("show");
+    postModal.classList.remove("open");
   }
 });
 
-// Auth handling
+// Auth modal
 signInBtn.addEventListener("click", () => {
   authForm.style.display = "flex";
   authSubmitBtn.textContent = "Sign In";
@@ -100,108 +92,74 @@ authBack.addEventListener("click", () => {
   authError.textContent = "";
 });
 
+// Auth submit
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const email = emailInput.value;
-  const password = passwordInput.value;
+  const email = document.getElementById("emailInput").value;
+  const password = document.getElementById("passwordInput").value;
   try {
     if (authSubmitBtn.textContent === "Sign In") {
       await signInWithEmailAndPassword(auth, email, password);
     } else {
       await createUserWithEmailAndPassword(auth, email, password);
     }
-  } catch (err) {
-    authError.textContent = err.message;
+    authModal.classList.remove("open");
+    authOverlay.classList.remove("show");
+  } catch (error) {
+    authError.textContent = error.message;
   }
 });
 
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
+// Logout
+logoutBtn.addEventListener("click", () => {
+  signOut(auth);
 });
 
-// Post logic
-function loadPosts() {
-  const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-  onSnapshot(postsQuery, (snapshot) => {
-    postSection.innerHTML = "";
-    snapshot.forEach((doc) => {
-      const post = doc.data();
-      const postElement = document.createElement("div");
-      postElement.className = "post-card";
-      postElement.innerHTML = `
-        <div class="post-header">
-          <img src="${post.avatar || "assets/default.png"}" class="post-avatar" />
-          <div>
-            <strong>${post.name || "User"}</strong>
-            <div style="font-size:0.85rem; color:gray;">${new Date(post.timestamp?.toDate()).toLocaleString()}</div>
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in
+    createPostBtn.style.display = "block";
+    userDropdown.style.display = "block";
+    navProfilePic.src = "assets/default.png"; // You could use user.photoURL if available
+    authModal.classList.remove("open");
+    authOverlay.classList.remove("show");
+
+    // Load posts
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+      postSection.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const post = doc.data();
+        const postEl = document.createElement("div");
+        postEl.className = "post-card";
+        postEl.innerHTML = `
+          <div class="post-header">
+            <img class="post-avatar" src="assets/default.png" />
+            <strong>${post.email}</strong>
           </div>
-          ${currentUser && post.uid === currentUser.uid ? `
-            <div class="post-actions">
-              <button class="edit-btn" data-id="${doc.id}">Edit</button>
-              <button class="delete-btn" data-id="${doc.id}">Delete</button>
-            </div>` : ""}
-        </div>
-        <div class="post-content">${post.content}</div>
-      `;
-      postSection.appendChild(postElement);
-    });
-
-    document.querySelectorAll(".edit-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-id");
-        const docRef = doc(db, "posts", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const postData = docSnap.data();
-          postContent.value = postData.content;
-          postModal.classList.add("open");
-          overlay.classList.add("show");
-
-          postForm.onsubmit = async (e) => {
-            e.preventDefault();
-            await updateDoc(docRef, {
-              content: postContent.value,
-              timestamp: new Date()
-            });
-            postModal.classList.remove("open");
-            overlay.classList.remove("show");
-            postForm.reset();
-          };
-        }
+          <div class="post-content">${post.content}</div>
+        `;
+        postSection.appendChild(postEl);
       });
     });
+  } else {
+    // User is signed out
+    createPostBtn.style.display = "none";
+    userDropdown.style.display = "none";
+    authForm.style.display = "none";
+    authModal.classList.add("open");
+    authOverlay.classList.add("show");
+  }
+});
 
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-id");
-        await deleteDoc(doc(db, "posts", id));
-      });
-    });
+// === Dropdown Toggle Behavior ===
+if (userDropdown && navProfilePic) {
+  navProfilePic.addEventListener("click", (e) => {
+    e.stopPropagation();
+    userDropdown.classList.toggle("open");
+  });
+
+  document.addEventListener("click", () => {
+    userDropdown.classList.remove("open");
   });
 }
-
-createPostBtn.addEventListener("click", () => {
-  postModal.classList.add("open");
-  overlay.classList.add("show");
-});
-
-overlay.addEventListener("click", () => {
-  postModal.classList.remove("open");
-  overlay.classList.remove("show");
-  postForm.reset();
-});
-
-postForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!currentUser) return;
-  await addDoc(collection(db, "posts"), {
-    content: postContent.value,
-    uid: currentUser.uid,
-    name: currentUser.email,
-    avatar: navProfilePic.src,
-    timestamp: new Date()
-  });
-  postModal.classList.remove("open");
-  overlay.classList.remove("show");
-  postForm.reset();
-});
