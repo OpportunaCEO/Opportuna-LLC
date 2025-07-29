@@ -1,55 +1,4 @@
-// Handle navigation between sections
-document.addEventListener('DOMContentLoaded', () => {
-  const navButtons = document.querySelectorAll('[data-section]');
-  const sections = document.querySelectorAll('.section');
-
-  // Navigation logic
-  function navigateTo(sectionId) {
-    sections.forEach(section => section.classList.add('hidden'));
-
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-      targetSection.classList.remove('hidden');
-      targetSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  // Set up button listeners using data-section attributes
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const target = button.getAttribute('data-section');
-      navigateTo(target);
-    });
-  });
-
-  // Simple contact form feedback
-  const contactForm = document.querySelector('form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Thank you! Your message has been sent.');
-      contactForm.reset();
-    });
-  }
-
-  // Basic job search functionality (placeholder)
-  const searchInput = document.getElementById('jobSearch');
-  const searchButton = document.getElementById('searchBtn');
-
-  if (searchInput && searchButton) {
-    searchButton.addEventListener('click', () => {
-      const term = searchInput.value.trim().toLowerCase();
-      const jobs = document.querySelectorAll('.job-card');
-      if (!term) return;
-
-      jobs.forEach(job => {
-        job.style.display = job.textContent.toLowerCase().includes(term) ? 'block' : 'none';
-      });
-    });
-  }
-});
-
-// ---------------- Firebase Auth and Firestore Posts -----------------
+// ----------------- Firebase Imports -----------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
@@ -73,6 +22,7 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// ----------------- Firebase Config -----------------
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
@@ -87,12 +37,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// UI Elements
+// ----------------- UI Elements -----------------
 const authModal = document.getElementById("authModal");
 const authOverlay = document.getElementById("authOverlay");
 const signInBtn = document.getElementById("signInBtn");
 const signUpBtn = document.getElementById("signUpBtn");
 const authForm = document.getElementById("authForm");
+const authChoiceButtons = document.getElementById("authChoiceButtons");
+const authBack = document.getElementById("authBack");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const authSubmitBtn = document.getElementById("authSubmitBtn");
@@ -110,12 +62,14 @@ const postSection = document.getElementById("postSection");
 
 let isSignUp = false;
 
+// ----------------- Navigation & UI Helpers -----------------
 function showAuthModal(signUp = false) {
   isSignUp = signUp;
   authModal.classList.add("open");
   authOverlay.classList.add("show");
   authError.textContent = "";
   authForm.style.display = "flex";
+  authChoiceButtons.style.display = "none";
   authSubmitBtn.textContent = signUp ? "Sign Up" : "Sign In";
   emailInput.value = "";
   passwordInput.value = "";
@@ -124,15 +78,26 @@ function showAuthModal(signUp = false) {
 function hideAuthModal() {
   authModal.classList.remove("open");
   authOverlay.classList.remove("show");
+  authForm.style.display = "none";
+  authChoiceButtons.style.display = "flex";
+  authError.textContent = "";
 }
 
+// ----------------- Event Listeners -----------------
 signInBtn.addEventListener("click", () => showAuthModal(false));
 signUpBtn.addEventListener("click", () => showAuthModal(true));
 authOverlay.addEventListener("click", hideAuthModal);
 
+authBack.addEventListener("click", () => {
+  authForm.style.display = "none";
+  authChoiceButtons.style.display = "flex";
+  authError.textContent = "";
+});
+
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   authError.textContent = "";
+
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
@@ -160,6 +125,7 @@ onAuthStateChanged(auth, (user) => {
     createPostBtn.style.display = "none";
     navProfilePic.src = "assets/default.png";
     showAuthModal(false);
+    postSection.innerHTML = ""; // Clear posts when signed out
   }
 });
 
@@ -208,6 +174,7 @@ postForm.addEventListener("submit", async (e) => {
   }
 });
 
+// ----------------- Listen for Posts and Render -----------------
 function listenForPosts() {
   const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
@@ -239,7 +206,7 @@ function listenForPosts() {
       postSection.appendChild(postDiv);
     });
 
-    // Add event listeners to edit/delete buttons
+    // Edit button handlers
     document.querySelectorAll(".edit-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const postId = e.target.dataset.id;
@@ -249,13 +216,12 @@ function listenForPosts() {
 
         const newContent = prompt("Edit your post:", postData.content);
         if (newContent !== null && newContent.trim() !== "") {
-          await updateDoc(postDocRef, {
-            content: newContent.trim(),
-          });
+          await updateDoc(postDocRef, { content: newContent.trim() });
         }
       });
     });
 
+    // Delete button handlers
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const postId = e.target.dataset.id;
