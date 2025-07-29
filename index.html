@@ -5,6 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Opportuna – Home</title>
   <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    .main-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .feed {
+      flex: 3;
+    }
+    .profile-widget {
+      flex: 1;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    #createPostBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    #postModal {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100%;
+      background: white;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+      transition: right 0.3s ease-in-out;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    #postModal.open {
+      right: 0;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 999;
+    }
+
+    #overlay.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
@@ -23,25 +88,30 @@
     </div>
   </nav>
 
-  <header class="profile-banner">
-    <img id="bannerPic" src="assets/banner-default.jpg" alt="Profile Banner" />
-  </header>
+  <div class="main-layout">
+    <div class="feed">
+      <h2>📰 Social Feed</h2>
+      <section id="postSection"></section>
+    </div>
 
-  <main class="container fade-in">
     <aside id="profileWidget" class="profile-widget">
       <img id="widgetPic" class="widget-img" src="assets/default.png" alt="Profile Picture">
       <div id="widgetName">User Name</div>
     </aside>
+  </div>
 
-    <section id="postFormSection">
-      <form id="postForm" class="form-card">
-        <textarea id="postContent" placeholder="What's on your mind?" required></textarea>
-        <button type="submit">Post</button>
-      </form>
-    </section>
+  <!-- Floating Button -->
+  <button id="createPostBtn">+</button>
 
-    <section id="postSection"></section>
-  </main>
+  <!-- Slide-out Post Modal -->
+  <div id="overlay"></div>
+  <div id="postModal">
+    <h3>Create a New Post</h3>
+    <form id="postForm">
+      <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
+      <button type="submit" style="margin-top: 10px;">Post</button>
+    </form>
+  </div>
 
   <footer>
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
@@ -64,27 +134,31 @@
     document.getElementById("widgetPic").src = userPic;
     document.getElementById("navProfilePic").src = userPic;
 
-    document.getElementById("navProfilePic").addEventListener("click", () => {
-      document.querySelector(".dropdown-content").classList.toggle("show");
-    });
-
-    document.addEventListener("click", function (event) {
-      const dropdown = document.querySelector(".dropdown");
-      const toggle = document.getElementById("navProfilePic");
-      if (!dropdown.contains(event.target) && event.target !== toggle) {
-        document.querySelector(".dropdown-content").classList.remove("show");
-      }
-    });
-
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
+    });
+
+    // Modal functionality
+    const modal = document.getElementById("postModal");
+    const overlay = document.getElementById("overlay");
+    const openBtn = document.getElementById("createPostBtn");
+
+    openBtn.addEventListener("click", () => {
+      modal.classList.add("open");
+      overlay.classList.add("show");
+    });
+
+    overlay.addEventListener("click", () => {
+      modal.classList.remove("open");
+      overlay.classList.remove("show");
     });
 
     document.getElementById("postForm").addEventListener("submit", e => {
       e.preventDefault();
       const content = document.getElementById("postContent").value.trim();
       if (!content) return;
+
       const newPost = {
         id: Date.now(),
         content,
@@ -94,9 +168,12 @@
         likes: 0,
         comments: []
       };
+
       posts.unshift(newPost);
       localStorage.setItem("posts", JSON.stringify(posts));
       document.getElementById("postContent").value = "";
+      modal.classList.remove("open");
+      overlay.classList.remove("show");
       displayPosts();
     });
 
@@ -110,76 +187,8 @@
             <small>${new Date(p.timestamp).toLocaleString()}</small>
           </div>
           <p class="post-content">${p.content}</p>
-          <div class="post-actions">
-            <button class="like-btn">Like (${p.likes})</button>
-            <button class="comment-toggle">Comments (${p.comments.length})</button>
-            <button class="edit-btn">Edit</button>
-            <button class="delete-btn">Delete</button>
-          </div>
-          <div class="comment-section hidden">
-            <ul class="comment-list">
-              ${p.comments.map(c => `<li>${c}</li>`).join('')}
-            </ul>
-            <input type="text" class="comment-input" placeholder="Write a comment...">
-          </div>
         </div>
       `).join("");
-
-      document.querySelectorAll(".like-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const id = getPostId(e.target);
-          const post = posts.find(p => p.id === id);
-          post.likes++;
-          localStorage.setItem("posts", JSON.stringify(posts));
-          displayPosts();
-        });
-      });
-
-      document.querySelectorAll(".edit-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const id = getPostId(e.target);
-          const post = posts.find(p => p.id === id);
-          const newText = prompt("Edit your post:", post.content);
-          if (newText !== null) {
-            post.content = newText;
-            localStorage.setItem("posts", JSON.stringify(posts));
-            displayPosts();
-          }
-        });
-      });
-
-      document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const id = getPostId(e.target);
-          posts = posts.filter(p => p.id !== id);
-          localStorage.setItem("posts", JSON.stringify(posts));
-          displayPosts();
-        });
-      });
-
-      document.querySelectorAll(".comment-toggle").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const postCard = e.target.closest(".post-card");
-          postCard.querySelector(".comment-section").classList.toggle("hidden");
-        });
-      });
-
-      document.querySelectorAll(".comment-input").forEach(input => {
-        input.addEventListener("keypress", e => {
-          if (e.key === "Enter" && input.value.trim()) {
-            const id = getPostId(input);
-            const post = posts.find(p => p.id === id);
-            post.comments.push(input.value.trim());
-            localStorage.setItem("posts", JSON.stringify(posts));
-            input.value = "";
-            displayPosts();
-          }
-        });
-      });
-    }
-
-    function getPostId(el) {
-      return Number(el.closest(".post-card").dataset.id);
     }
 
     displayPosts();
