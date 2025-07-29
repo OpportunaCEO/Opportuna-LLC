@@ -24,7 +24,10 @@
         <input type="file" id="profilePic" accept="image/*" />
       </label>
       <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:block; margin-top:8px;" />
-      <button type="submit">Save Profile</button>
+      <button type="submit" id="saveProfileBtn">
+  <span id="saveBtnText">Save Profile</span>
+  <span id="saveBtnSpinner" style="display: none;">⏳ Saving...</span>
+</button>
     </form>
 
     <hr />
