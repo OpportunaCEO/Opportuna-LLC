@@ -88,11 +88,14 @@ signInBtn.addEventListener("click", () => showAuthModal(false));
 signUpBtn.addEventListener("click", () => showAuthModal(true));
 authOverlay.addEventListener("click", hideAuthModal);
 
-authBack.addEventListener("click", () => {
-  authForm.style.display = "none";
-  authChoiceButtons.style.display = "flex";
-  authError.textContent = "";
-});
+const authBack = document.getElementById("authBack");
+if (authBack) {
+  authBack.addEventListener("click", () => {
+    authForm.style.display = "none";
+    authChoiceButtons.style.display = "flex";
+    authError.textContent = "";
+  });
+}
 
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
