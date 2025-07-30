@@ -1,174 +1,163 @@
-// === Existing jobs and loading posted jobs ===
-const jobs = [...]; // Keep your original jobs list here
+// ======= Firebase SDK imports =======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { 
+  getFirestore, collection, addDoc, query, orderBy, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-function loadPostedJobs() {
-  const storedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
-  return storedJobs.map((job, index) => ({
-    id: 1000 + index,
-    title: job.title,
-    company: job.postedBy || "Unknown Company",
-    location: job.location || "Various",
-    jobType: job.category || "",
-    workSetup: job.workSetup || "",
-    salary: job.salary || 0,
-    qualifications: job.qualifications || [],
-    logo: "assets/default-company-logo.png",
-    description: job.desc || "",
-  }));
-}
+// ======= Your Firebase config =======
+const firebaseConfig = {
+  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+  authDomain: "opportuna-a14bb.firebaseapp.com",
+  projectId: "opportuna-a14bb",
+  storageBucket: "opportuna-a14bb.appspot.com",
+  messagingSenderId: "906149069855",
+  appId: "1:906149069855:web:618ed823248443db30812a",
+  measurementId: "G-GJGCWL01W4"
+};
 
-const postedJobs = loadPostedJobs();
-const allJobs = [...jobs, ...postedJobs];
+// ======= Initialize Firebase =======
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// === Render logic (same as yours) ===
-function renderJobs(filteredJobs) {
-  const jobListings = document.getElementById("jobListings");
-  jobListings.innerHTML = "";
-  if (filteredJobs.length === 0) {
-    jobListings.innerHTML = "<p>No jobs found matching your criteria.</p>";
-    return;
-  }
-  filteredJobs.forEach(job => {
-    const jobCard = document.createElement("div");
-    jobCard.classList.add("job-card");
-    jobCard.innerHTML = `
-      <div class="job-logo" style="background-image: url('${job.logo}');"></div>
-      <div class="job-info">
-        <p class="job-title">${job.title}</p>
-        <p class="job-company">${job.company}</p>
-        <p class="job-location">${job.location}</p>
-      </div>
-      <button class="apply-btn">Apply</button>
-    `;
-    jobListings.appendChild(jobCard);
-  });
-}
+// ======= Existing jobs array - keep your original jobs here =======
+const jobs = [
+  {
+    id: 1,
+    title: "Software Engineer",
+    company: "TechCorp",
+    location: "New York, NY",
+    jobType: "fulltime",
+    workSetup: "hybrid",
+    salary: 120000,
+    qualifications: ["Bachelor's Degree", "3+ years experience"],
+    logo: "assets/techcorp-logo.png",
+  },
+  {
+    id: 2,
+    title: "Marketing Specialist",
+    company: "BrightMedia",
+    location: "Remote",
+    jobType: "parttime",
+    workSetup: "remote",
+    salary: 60000,
+    qualifications: ["Bachelor's Degree", "Marketing experience"],
+    logo: "assets/brightmedia-logo.png",
+  },
+  {
+    id: 3,
+    title: "Data Analyst",
+    company: "FinSolve",
+    location: "San Francisco, CA",
+    jobType: "fulltime",
+    workSetup: "inperson",
+    salary: 90000,
+    qualifications: ["Bachelor's Degree", "SQL, Excel"],
+    logo: "assets/finsolve-logo.png",
+  },
+  // Add more jobs as needed
+];
 
-renderJobs(allJobs);
+// ======= DOM references for filter inputs and listings =======
+const jobListings = document.getElementById("jobListings");
+const searchInput = document.getElementById("searchInput");
+const locationInput = document.getElementById("locationInput");
+const jobTypeSelect = document.getElementById("jobTypeSelect");
+const workSetupSelect = document.getElementById("workSetupSelect");
+const salaryRangeSelect = document.getElementById("salaryRangeSelect");
+const qualificationInput = document.getElementById("qualificationInput");
 
-// === Filtering logic (same as yours, using allJobs) ===
-function filterJobs() {
-  const searchTerm = searchInput.value.toLowerCase();
-  const locationTerm = locationInput.value.toLowerCase();
-  const jobType = jobTypeSelect.value;
-  const workSetup = workSetupSelect.value;
-  const salaryRange = salaryRangeSelect.value;
-  const qualificationTerm = qualificationInput.value.toLowerCase();
-
-  const filtered = allJobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm) ||
-                          job.company.toLowerCase().includes(searchTerm);
-    const matchesLocation = locationTerm === "" || job.location.toLowerCase().includes(locationTerm);
-    const matchesJobType = jobType === "" || job.jobType === jobType;
-    const matchesWorkSetup = workSetup === "" || job.workSetup === workSetup;
-    let matchesSalary = true;
-    if (salaryRange !== "") {
-      if (job.salary) {
-        if (salaryRange.includes("+")) {
-          matchesSalary = job.salary >= parseInt(salaryRange);
-        } else {
-          const [min, max] = salaryRange.split("-").map(s => parseInt(s));
-          matchesSalary = job.salary >= min && job.salary <= max;
-        }
-      } else {
-        matchesSalary = false;
-      }
-    }
-    const matchesQualification = qualificationTerm === "" ||
-      (job.qualifications && job.qualifications.some(q => q.toLowerCase().includes(qualificationTerm)));
-    return matchesSearch && matchesLocation && matchesJobType && matchesWorkSetup && matchesSalary && matchesQualification;
-  });
-
-  renderJobs(filtered);
-}
-
-searchInput.addEventListener("input", filterJobs);
-locationInput.addEventListener("input", filterJobs);
-jobTypeSelect.addEventListener("change", filterJobs);
-workSetupSelect.addEventListener("change", filterJobs);
-salaryRangeSelect.addEventListener("change", filterJobs);
-qualificationInput.addEventListener("input", filterJobs);
-
-// === Sign-up & Sign-in logic ===
-let signedInEmail = localStorage.getItem("signedInEmail") || null;
-const employerAccounts = JSON.parse(localStorage.getItem("employerAccounts") || "[]");
-
+// ======= Forms and buttons =======
 const signUpForm = document.getElementById("signUpForm");
 const signInForm = document.getElementById("signInForm");
 const signOutBtn = document.getElementById("signOutBtn");
 const signInStatus = document.getElementById("signInStatus");
 const jobPostForm = document.getElementById("jobPostForm");
 
-function updateUIOnSignIn(email) {
-  signedInEmail = email;
-  localStorage.setItem("signedInEmail", email);
-  signInStatus.textContent = `Signed in as: ${email}`;
+// ======= UI helper functions =======
+function updateUIOnSignIn(user) {
+  signInStatus.textContent = `Signed in as: ${user.email}`;
   signOutBtn.style.display = "inline-block";
   signInForm.style.display = "none";
   signUpForm.style.display = "none";
   jobPostForm.style.display = "block";
+  // Load jobs real-time when signed in
+  loadJobsRealtime();
 }
 
-function signOut() {
-  signedInEmail = null;
-  localStorage.removeItem("signedInEmail");
+function resetUIOnSignOut() {
   signInStatus.textContent = "";
   signOutBtn.style.display = "none";
   signInForm.style.display = "block";
-  signUpForm.style.display = "block";
+  signUpForm.style.display = "none";
   jobPostForm.style.display = "none";
+  renderJobs(jobs); // Show original jobs only when signed out
 }
 
-// === Sign Up Event ===
-signUpForm.addEventListener("submit", e => {
+// ======= Toggle between sign-up and sign-in forms =======
+document.getElementById("showSignUp").addEventListener("click", e => {
+  e.preventDefault();
+  signInForm.style.display = "none";
+  signUpForm.style.display = "block";
+});
+document.getElementById("showSignIn").addEventListener("click", e => {
+  e.preventDefault();
+  signUpForm.style.display = "none";
+  signInForm.style.display = "block";
+});
+
+// ======= Sign Up handler =======
+signUpForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("signUpEmail").value.trim();
   const password = document.getElementById("signUpPassword").value.trim();
-
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account created! You are now signed in.");
+    updateUIOnSignIn(userCredential.user);
+    signUpForm.reset();
+  } catch (error) {
+    alert("Error creating account: " + error.message);
   }
-
-  const alreadyExists = employerAccounts.find(acc => acc.email === email);
-  if (alreadyExists) {
-    alert("Account already exists. Please sign in instead.");
-    return;
-  }
-
-  employerAccounts.push({ email, password });
-  localStorage.setItem("employerAccounts", JSON.stringify(employerAccounts));
-  alert("Account created! You can now sign in.");
-  signUpForm.reset();
 });
 
-// === Sign In Event ===
-signInForm.addEventListener("submit", e => {
+// ======= Sign In handler =======
+signInForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("companyEmail").value.trim();
   const password = document.getElementById("companyPassword").value.trim();
-
-  const match = employerAccounts.find(acc => acc.email === email && acc.password === password);
-  if (match) {
-    updateUIOnSignIn(email);
-  } else {
-    alert("Invalid credentials. Please try again.");
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    updateUIOnSignIn(userCredential.user);
+    signInForm.reset();
+  } catch (error) {
+    alert("Invalid credentials: " + error.message);
   }
 });
 
-signOutBtn.addEventListener("click", signOut);
+// ======= Sign Out handler =======
+signOutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  resetUIOnSignOut();
+});
 
-// === On page load ===
-if (signedInEmail) {
-  updateUIOnSignIn(signedInEmail);
-} else {
-  signOut();
-}
+// ======= Auth state listener (persists login on refresh) =======
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    updateUIOnSignIn(user);
+  } else {
+    resetUIOnSignOut();
+  }
+});
 
-// === Job posting logic (same as yours with small fix) ===
-jobPostForm.addEventListener("submit", e => {
+// ======= Job posting handler =======
+jobPostForm.addEventListener("submit", async e => {
   e.preventDefault();
-  if (!signedInEmail) {
+  const user = auth.currentUser;
+  if (!user) {
     alert("Please sign in first.");
     return;
   }
@@ -189,29 +178,131 @@ jobPostForm.addEventListener("submit", e => {
 
   const qualifications = qualificationsRaw.split(",").map(q => q.trim()).filter(Boolean);
 
-  const newJob = {
-    title, desc, category, skillLevel, location, workSetup, salary, qualifications,
-    postedBy: signedInEmail, postedAt: new Date().toISOString()
-  };
+  try {
+    await addDoc(collection(db, "jobs"), {
+      title,
+      description: desc,
+      category,
+      skillLevel,
+      location,
+      workSetup,
+      salary,
+      qualifications,
+      postedBy: user.email,
+      postedAt: new Date(),
+    });
+    alert("Job posted successfully!");
+    jobPostForm.reset();
+  } catch (error) {
+    alert("Failed to post job: " + error.message);
+  }
+});
 
-  const postedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
-  postedJobs.push(newJob);
-  localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+// ======= Real-time job loading and rendering =======
+function renderJobs(jobsToRender) {
+  jobListings.innerHTML = "";
+  if (!jobsToRender || jobsToRender.length === 0) {
+    jobListings.innerHTML = "<p>No jobs found matching your criteria.</p>";
+    return;
+  }
+  jobsToRender.forEach(job => {
+    const jobCard = document.createElement("div");
+    jobCard.classList.add("job-card");
+    jobCard.innerHTML = `
+      <div class="job-logo" style="background-image: url('${job.logo || "assets/default-company-logo.png"}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+      <div class="job-info">
+        <p class="job-title">${job.title}</p>
+        <p class="job-company">${job.company}</p>
+        <p class="job-location">${job.location}</p>
+      </div>
+      <button class="apply-btn">Apply</button>
+    `;
+    jobListings.appendChild(jobCard);
+  });
+}
 
-  allJobs.push({
-    id: 1000 + postedJobs.length,
-    title: newJob.title,
-    company: newJob.postedBy,
-    location: newJob.location,
-    jobType: newJob.category,
-    workSetup: newJob.workSetup,
-    salary: newJob.salary,
-    qualifications: newJob.qualifications,
-    logo: "assets/default-company-logo.png",
-    description: newJob.desc
+// Filtering UI elements (if you have them in your page)
+if (searchInput) searchInput.addEventListener("input", filterJobs);
+if (locationInput) locationInput.addEventListener("input", filterJobs);
+if (jobTypeSelect) jobTypeSelect.addEventListener("change", filterJobs);
+if (workSetupSelect) workSetupSelect.addEventListener("change", filterJobs);
+if (salaryRangeSelect) salaryRangeSelect.addEventListener("change", filterJobs);
+if (qualificationInput) qualificationInput.addEventListener("input", filterJobs);
+
+// ======= Filter jobs function (client-side filtering) =======
+let currentJobs = []; // will hold jobs from Firestore + local jobs
+
+function filterJobs() {
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+  const locationTerm = locationInput ? locationInput.value.toLowerCase() : "";
+  const jobType = jobTypeSelect ? jobTypeSelect.value : "";
+  const workSetup = workSetupSelect ? workSetupSelect.value : "";
+  const salaryRange = salaryRangeSelect ? salaryRangeSelect.value : "";
+  const qualificationTerm = qualificationInput ? qualificationInput.value.toLowerCase() : "";
+
+  const filtered = currentJobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm) ||
+                          job.company.toLowerCase().includes(searchTerm);
+    const matchesLocation = locationTerm === "" || (job.location && job.location.toLowerCase().includes(locationTerm));
+    const matchesJobType = jobType === "" || job.jobType === jobType;
+    const matchesWorkSetup = workSetup === "" || job.workSetup === workSetup;
+
+    let matchesSalary = true;
+    if (salaryRange !== "") {
+      if (job.salary) {
+        if (salaryRange.includes("+")) {
+          matchesSalary = job.salary >= parseInt(salaryRange);
+        } else {
+          const [min, max] = salaryRange.split("-").map(s => parseInt(s));
+          matchesSalary = job.salary >= min && job.salary <= max;
+        }
+      } else {
+        matchesSalary = false;
+      }
+    }
+
+    const matchesQualification = qualificationTerm === "" ||
+      (job.qualifications && job.qualifications.some(q => q.toLowerCase().includes(qualificationTerm)));
+
+    return matchesSearch && matchesLocation && matchesJobType && matchesWorkSetup && matchesSalary && matchesQualification;
   });
 
-  renderJobs(allJobs);
-  jobPostForm.reset();
-  alert("Job posted successfully!");
+  renderJobs(filtered);
+}
+
+// ======= Real-time Firestore listener to load all jobs =======
+function loadJobsRealtime() {
+  const jobsQuery = query(collection(db, "jobs"), orderBy("postedAt", "desc"));
+  onSnapshot(jobsQuery, (snapshot) => {
+    const jobsFromFirestore = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      jobsFromFirestore.push({
+        id: doc.id,
+        title: data.title,
+        company: data.postedBy,
+        location: data.location,
+        jobType: data.category,
+        workSetup: data.workSetup,
+        salary: data.salary,
+        qualifications: data.qualifications,
+        logo: "assets/default-company-logo.png",
+        description: data.description || "",
+      });
+    });
+    currentJobs = [...jobs, ...jobsFromFirestore]; // combine initial jobs with Firestore jobs
+    filterJobs();
+  });
+}
+
+// ======= Initial render with local jobs only =======
+renderJobs(jobs);
+
+// ======= If user is already signed in when page loads =======
+onAuthStateChanged(auth, user => {
+  if (user) {
+    updateUIOnSignIn(user);
+  } else {
+    resetUIOnSignOut();
+  }
 });
