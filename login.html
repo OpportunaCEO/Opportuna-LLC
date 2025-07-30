@@ -4,21 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Opportuna</title>
-  <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <div class="auth-container">
-    <h2 id="authTitle">Login</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="text" id="displayName" placeholder="Display Name (for signup only)" style="display:none" />
-      <button type="submit" id="authActionBtn">Login</button>
-      <p class="toggle-link">Don't have an account? <a href="#" id="toggleAuth">Sign up</a></p>
-    </form>
-    <div class="divider">or</div>
-    <button id="googleLoginBtn" class="google-btn">Continue with Google</button>
-  </div>
+  <h2 id="authTitle">Login</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <input type="text" id="displayName" placeholder="Display Name (sign up only)" style="display: none" />
+    <button type="submit" id="authActionBtn">Login</button>
+    <p><a href="#" id="toggleAuth">Switch to Sign Up</a></p>
+  </form>
+  <button id="googleLoginBtn">Login with Google</button>
 
   <script type="module" src="assets/login.js"></script>
 </body>
