@@ -1,12 +1,11 @@
-// assets/login.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  onAuthStateChanged,
   signInWithPopup,
+  onAuthStateChanged,
   GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -25,64 +24,52 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Elements
-const loginForm = document.getElementById("loginForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const displayNameInput = document.getElementById("displayName");
-const authTitle = document.getElementById("authTitle");
-const authActionBtn = document.getElementById("authActionBtn");
-const googleLoginBtn = document.getElementById("googleLoginBtn");
-
 let isLogin = true;
 
 // Toggle login/signup
-document.addEventListener("click", e => {
-  if (e.target && e.target.id === "toggleAuth") {
-    e.preventDefault();
-    isLogin = !isLogin;
-    authTitle.textContent = isLogin ? "Login" : "Sign Up";
-    authActionBtn.textContent = isLogin ? "Login" : "Sign Up";
-    displayNameInput.style.display = isLogin ? "none" : "block";
-    e.target.parentElement.innerHTML = isLogin
-      ? `Don't have an account? <a href="#" id="toggleAuth">Sign up</a>`
-      : `Already have an account? <a href="#" id="toggleAuth">Login</a>`;
-  }
+document.getElementById("toggleAuth").addEventListener("click", (e) => {
+  e.preventDefault();
+  isLogin = !isLogin;
+  document.getElementById("authTitle").innerText = isLogin ? "Login" : "Sign Up";
+  document.getElementById("authActionBtn").innerText = isLogin ? "Login" : "Sign Up";
+  document.getElementById("displayName").style.display = isLogin ? "none" : "block";
 });
 
-// Form submit
-loginForm.addEventListener("submit", async e => {
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  const displayName = displayNameInput.value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const displayName = document.getElementById("displayName").value;
 
   try {
     if (isLogin) {
       await signInWithEmailAndPassword(auth, email, password);
     } else {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCred.user, { displayName });
+      if (displayName) {
+        await updateProfile(userCred.user, { displayName });
+      }
     }
+    alert("Success! Redirecting...");
     window.location.href = "index.html";
-  } catch (error) {
-    alert("Authentication Error: " + error.message);
+  } catch (err) {
+    alert("Error: " + err.message);
+    console.error(err);
   }
 });
 
-// Google Login
-googleLoginBtn.addEventListener("click", async () => {
+document.getElementById("googleLoginBtn").addEventListener("click", async () => {
   try {
     await signInWithPopup(auth, provider);
     window.location.href = "index.html";
-  } catch (error) {
-    alert("Google sign-in error: " + error.message);
+  } catch (err) {
+    alert("Google Sign-in Error: " + err.message);
   }
 });
 
-// If already logged in, redirect from login.html
-onAuthStateChanged(auth, user => {
-  if (user && window.location.pathname.includes("login")) {
+// Auto-redirect if already signed in
+onAuthStateChanged(auth, (user) => {
+  if (user && location.pathname.includes("login")) {
     window.location.href = "index.html";
   }
 });
