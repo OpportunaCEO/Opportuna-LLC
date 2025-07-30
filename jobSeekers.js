@@ -124,4 +124,4 @@ salaryRangeSelect.addEventListener("change", filterJobs);
 qualificationInput.addEventListener("input", filterJobs);
 
 // Initial render
-renderJobs(jobs);
+renderJobs(alljobs);
