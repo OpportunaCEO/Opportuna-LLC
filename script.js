@@ -1,4 +1,3 @@
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -20,7 +19,6 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
@@ -31,7 +29,6 @@ const firebaseConfig = {
   measurementId: "G-GJGCWL01W4"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -43,40 +40,49 @@ window.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const navProfilePic = document.getElementById("navProfilePic");
 
-  // 🔐 Handle auth state
+  const createPostBtn = document.getElementById("createPostBtn");
+  const postModal = document.getElementById("postModal");
+  const overlay = document.getElementById("overlay");
+  const postSection = document.getElementById("postSection");
+  const feedContainer = document.getElementById("feedContainer");
+  const postForm = document.getElementById("postForm");
+  const postContent = document.getElementById("postContent");
+
+  // Auth state changes
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      loginLink && (loginLink.style.display = "none");
-      userDropdown && (userDropdown.style.display = "inline-block");
-      navProfilePic && (navProfilePic.src = user.photoURL || "assets/default.png");
+      loginLink.style.display = "none";
+      userDropdown.style.display = "inline-block";
+      navProfilePic.src = user.photoURL || "assets/default.png";
 
-      // Load profile
-      const docRef = doc(db, "profiles", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById("fullName").value = data.fullName || "";
-        document.getElementById("bio").value = data.bio || "";
-        document.getElementById("skills").value = data.skills || "";
-        document.getElementById("experience").value = data.experience || "";
-        if (data.photoURL) {
-          const picPreview = document.getElementById("picPreview");
-          picPreview.src = data.photoURL;
-          picPreview.style.display = "block";
-        }
-      }
+      createPostBtn.style.display = "block";
 
-      // Initialize post and feed
-      setupPostForm(user);
+      // Show post modal on button click
+      createPostBtn.onclick = () => {
+        postModal.style.display = "block";
+        overlay.style.display = "block";
+      };
+
+      // Hide modal when clicking overlay
+      overlay.onclick = () => {
+        postModal.style.display = "none";
+        overlay.style.display = "none";
+      };
+
+      // Load posts
       loadFeed();
 
     } else {
-      loginLink && (loginLink.style.display = "inline-block");
-      userDropdown && (userDropdown.style.display = "none");
+      loginLink.style.display = "inline-block";
+      userDropdown.style.display = "none";
+      createPostBtn.style.display = "none";
+      postModal.style.display = "none";
+      overlay.style.display = "none";
+      feedContainer.innerHTML = "<p>Please log in to see posts.</p>";
     }
   });
 
-  // 🔓 Logout
+  // Logout
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -85,126 +91,36 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔐 Login form (optional)
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = e.target.querySelector('input[type="email"]').value;
-      const password = e.target.querySelector('input[type="password"]').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "index.html";
-      } catch (error) {
-        alert("Login failed: " + error.message);
-      }
-    });
-  }
-
-  // 📩 Contact form (optional)
-  const contactForm = document.getElementById("contactForm");
-  const contactStatus = document.getElementById("contactStatus");
-  if (contactForm && contactStatus) {
-    contactForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      contactStatus.textContent = "";
-
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const message = document.getElementById("message").value.trim();
-
-      if (!name || !email || !message) {
-        contactStatus.style.color = "#ff4500";
-        contactStatus.textContent = "Please fill in all fields.";
-        return;
-      }
-
-      contactStatus.style.color = "#32cd32";
-      contactStatus.textContent = "Thank you for contacting us!";
-      contactForm.reset();
-    });
-  }
-
-  // 💾 Save profile
-  const profileForm = document.getElementById("profileForm");
-  if (profileForm) {
-    profileForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const saveBtn = document.getElementById("saveProfileBtn");
-      const saveBtnText = document.getElementById("saveBtnText");
-      const saveBtnSpinner = document.getElementById("saveBtnSpinner");
-
-      saveBtn.disabled = true;
-      saveBtnText.style.display = "none";
-      saveBtnSpinner.style.display = "inline-block";
-
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You must be logged in to save your profile.");
-        return;
-      }
-
-      const fullName = document.getElementById("fullName").value.trim();
-      const bio = document.getElementById("bio").value.trim();
-      const skills = document.getElementById("skills").value.trim();
-      const experience = document.getElementById("experience").value.trim();
-      const profilePic = document.getElementById("profilePic").files[0];
-
-      let photoURL = "";
-      try {
-        if (profilePic) {
-          const picRef = ref(storage, `profilePictures/${user.uid}`);
-          await uploadBytes(picRef, profilePic);
-          photoURL = await getDownloadURL(picRef);
-        }
-
-        await setDoc(doc(db, "profiles", user.uid), {
-          fullName,
-          bio,
-          skills,
-          experience,
-          photoURL
-        });
-
-        alert("Profile saved successfully!");
-      } catch (error) {
-        alert("Error saving profile: " + error.message);
-      } finally {
-        saveBtn.disabled = false;
-        saveBtnText.style.display = "inline";
-        saveBtnSpinner.style.display = "none";
-      }
-    });
-  }
-
-  // 📝 Create post
-  function setupPostForm(user) {
-    const postForm = document.getElementById("postForm");
-    if (!postForm) return;
-
+  // Post submission
+  if (postForm) {
     postForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const postText = document.getElementById("postText").value.trim();
-      if (!postText) return;
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to post.");
+        return;
+      }
+      const text = postContent.value.trim();
+      if (!text) return;
 
       try {
         await addDoc(collection(db, "posts"), {
-          text: postText,
+          text,
           authorUid: user.uid,
           authorName: user.displayName || "Anonymous",
           timestamp: serverTimestamp()
         });
-        document.getElementById("postText").value = "";
+        postContent.value = "";
+        postModal.style.display = "none";
+        overlay.style.display = "none";
       } catch (err) {
-        alert("Error posting: " + err.message);
+        alert("Failed to post: " + err.message);
       }
     });
   }
 
-  // 📰 Load feed
+  // Load and display posts in feed
   function loadFeed() {
-    const feedContainer = document.getElementById("feedContainer");
     if (!feedContainer) return;
 
     const postsRef = collection(db, "posts");
@@ -212,6 +128,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     onSnapshot(q, (snapshot) => {
       feedContainer.innerHTML = "";
+      if (snapshot.empty) {
+        feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
+        return;
+      }
+
       snapshot.forEach((doc) => {
         const post = doc.data();
         const div = document.createElement("div");
@@ -227,4 +148,3 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
