@@ -28,74 +28,72 @@
     <a href="login.html" id="loginLink">Login</a>
   </nav>
 
-  <!-- Quick Stats Section -->
-  <section id="quickStats" class="quick-stats section-card">
-    <h2>Opportuna by the Numbers</h2>
-    <div class="stat-grid">
-      <div class="stat-item">
-        <i class="fas fa-briefcase fa-2x"></i>
-        <h3 id="jobsCount">0</h3>
-        <p>Active Jobs</p>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-building fa-2x"></i>
-        <h3 id="employersCount">0</h3>
-        <p>Registered Employers</p>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-users fa-2x"></i>
-        <h3 id="usersCount">0</h3>
-        <p>Active Users</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works Section -->
-  <section id="howItWorks" class="how-it-works section-card">
-    <h2>Why Choose Opportuna?</h2>
-    <p class="section-description">We believe in empowering individuals through access, information, and meaningful connections. Here’s how:</p>
-    <div class="how-steps">
-      <article>
-        <i class="fas fa-sync-alt fa-3x"></i>
-        <h3>Real-Time Updates</h3>
-        <p>Stay up to date with live job postings and networking opportunities.</p>
-      </article>
-      <article>
-        <i class="fas fa-user-check fa-3x"></i>
-        <h3>Verified Employers</h3>
-        <p>Connect with trustworthy companies looking for talent like you.</p>
-      </article>
-      <article>
-        <i class="fas fa-rocket fa-3x"></i>
-        <h3>Personalized Matches</h3>
-        <p>Find jobs and connections tailored to your skills and goals.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- Social Feed Section -->
-  <section class="feed-wrapper section-card">
-    <h2 class="feed-title">📰 Community Social Feed</h2>
-    <p class="section-description">See what other job seekers and professionals are saying. Share insights, updates, and opportunities.</p>
-    <div class="main-layout">
-      <div class="feed">
+  <!-- START: 3-Column Home Layout -->
+  <div class="home-layout">
+    
+    <!-- Left Sidebar -->
+    <aside class="home-left">
+      <section id="quickStats" class="quick-stats section-card">
+        <h2>Opportuna by the Numbers</h2>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <i class="fas fa-briefcase fa-2x"></i>
+            <h3 id="jobsCount">0</h3>
+            <p>Active Jobs</p>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-building fa-2x"></i>
+            <h3 id="employersCount">0</h3>
+            <p>Registered Employers</p>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-users fa-2x"></i>
+            <h3 id="usersCount">0</h3>
+            <p>Active Users</p>
+          </div>
+        </div>
+      </section>
+    </aside>
+    
+    <!-- Center Feed -->
+    <main class="home-feed">
+      <section class="feed-wrapper section-card">
+        <h2 class="feed-title">📰 Community Social Feed</h2>
+        <p class="section-description">See what other job seekers and professionals are saying. Share insights, updates, and opportunities.</p>
         <section id="postSection">
           <div id="feedContainer"></div>
         </section>
-      </div>
-    </div>
-    <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
-  </section>
+        <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
+      </section>
+    </main>
 
-  <!-- Post Modal -->
-  <div id="overlay" style="display:none;"></div>
-  <div id="postModal" style="display:none;">
-    <h3>Create a New Post</h3>
-    <form id="postForm">
-      <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
-      <button type="submit">Post</button>
-    </form>
+    <!-- Right Sidebar -->
+    <aside class="home-right">
+      <section id="howItWorks" class="how-it-works section-card">
+        <h2>Why Choose Opportuna?</h2>
+        <p class="section-description">We believe in empowering individuals through access, information, and meaningful connections. Here’s how:</p>
+        <div class="how-steps">
+          <article>
+            <i class="fas fa-sync-alt fa-3x"></i>
+            <h3>Real-Time Updates</h3>
+            <p>Stay up to date with live job postings and networking opportunities.</p>
+          </article>
+          <article>
+            <i class="fas fa-user-check fa-3x"></i>
+            <h3>Verified Employers</h3>
+            <p>Connect with trustworthy companies looking for talent like you.</p>
+          </article>
+          <article>
+            <i class="fas fa-rocket fa-3x"></i>
+            <h3>Personalized Matches</h3>
+            <p>Find jobs and connections tailored to your skills and goals.</p>
+          </article>
+        </div>
+      </section>
+    </aside>
+
   </div>
+  <!-- END: 3-Column Home Layout -->
 
   <!-- Call to Action Section -->
   <section id="callToAction" class="call-to-action section-card">
@@ -107,6 +105,16 @@
   <footer style="text-align:center; margin:2rem 0 1rem 0; color:#777;">
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
+
+  <!-- Modals and overlays stay the same -->
+  <div id="overlay" style="display:none;"></div>
+  <div id="postModal" style="display:none;">
+    <h3>Create a New Post</h3>
+    <form id="postForm">
+      <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
+      <button type="submit">Post</button>
+    </form>
+  </div>
 
   <script type="module" src="script.js"></script>
 </body>
