@@ -62,7 +62,9 @@
       isLogin = !isLogin;
       authTitle.textContent = isLogin ? "Login" : "Sign Up";
       authActionBtn.textContent = isLogin ? "Login" : "Sign Up";
-      toggleAuth.textContent = isLogin ? "Sign up" : "Login";
+      toggleAuth.innerHTML = isLogin
+  ? `Don't have an account? <a href="#" id="toggleAuth">Sign up</a>`
+  : `Already have an account? <a href="#" id="toggleAuth">Login</a>`;
       displayNameInput.style.display = isLogin ? "none" : "block";
     });
 
