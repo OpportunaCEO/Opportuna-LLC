@@ -11,12 +11,13 @@ import {
 
 // ✅ Firebase Config (Replace this with your real config)
 const firebaseConfig = {
-  apiKey: "AIzaSyDxxxxxxx",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdefgh"
+ apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
+  authDomain: "opportuna-a14bb.firebaseapp.com",
+  projectId: "opportuna-a14bb",
+  storageBucket: "opportuna-a14bb.appspot.com",
+  messagingSenderId: "906149069855",
+  appId: "1:906149069855:web:618ed823248443db30812a",
+  measurementId: "G-GJGCWL01W4"
 };
 
 // Init
