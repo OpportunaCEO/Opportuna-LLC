@@ -47,6 +47,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const feedContainer = document.getElementById("feedContainer");
   const postForm = document.getElementById("postForm");
   const postContent = document.getElementById("postContent");
+  const jobsCountEl = document.getElementById("jobsCount");
+  const employersCountEl = document.getElementById("employersCount");
+  const usersCountEl = document.getElementById("usersCount");
+
 
   // Auth state changes
   onAuthStateChanged(auth, async (user) => {
