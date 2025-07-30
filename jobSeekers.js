@@ -99,7 +99,7 @@ function filterJobs() {
   const salaryRange = salaryRangeSelect.value;
   const qualificationTerm = qualificationInput.value.toLowerCase();
 
-  const filtered = allJobs.filter(job => { ... });
+  const filtered = allJobs.filter(job => {
     // Search term match (job title or company)
     const matchesSearch = job.title.toLowerCase().includes(searchTerm) ||
                           job.company.toLowerCase().includes(searchTerm);
