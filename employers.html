@@ -170,40 +170,47 @@
 
       <div class="post-job-box">
         <h2>Post a Job</h2>
-        <form id="jobPostForm">
-          <label for="jobTitle">Job Title</label>
-          <input id="jobTitle" type="text" required />
+       <form id="jobPostForm">
+  <label for="jobTitle">Job Title</label>
+  <input id="jobTitle" type="text" required />
 
-          <label for="jobDesc">Description</label>
-          <textarea id="jobDesc" rows="4" required></textarea>
+  <label for="jobDesc">Description</label>
+  <textarea id="jobDesc" rows="4" required></textarea>
 
-          <label for="jobCategory">Category</label>
-          <select id="jobCategory" required>
-            <option value="" disabled selected>Select category</option>
-            <option value="short-term">Short-term</option>
-            <option value="long-term">Long-term</option>
-          </select>
+  <label for="jobCategory">Category</label>
+  <select id="jobCategory" required>
+    <option value="" disabled selected>Select category</option>
+    <option value="short-term">Short-term</option>
+    <option value="long-term">Long-term</option>
+  </select>
 
-          <label for="skillLevel">Skill Level</label>
-          <select id="skillLevel" required>
-            <option value="" disabled selected>Select skill level</option>
-            <option value="skilled">Skilled</option>
-            <option value="non-skilled">Non-skilled</option>
-          </select>
+  <label for="skillLevel">Skill Level</label>
+  <select id="skillLevel" required>
+    <option value="" disabled selected>Select skill level</option>
+    <option value="skilled">Skilled</option>
+    <option value="non-skilled">Non-skilled</option>
+  </select>
 
-          <label for="location">Location</label>
-          <input id="location" type="text" placeholder="e.g., New York, NY" required />
+  <label for="location">Location</label>
+  <input id="location" type="text" placeholder="e.g., New York, NY" required />
 
-          <label for="workSetup">Work Setup</label>
-          <select id="workSetup" required>
-            <option value="" disabled selected>Select work setup</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="in-person">In-person</option>
-          </select>
+  <label for="workSetup">Work Setup</label>
+  <select id="workSetup" required>
+    <option value="" disabled selected>Select work setup</option>
+    <option value="remote">Remote</option>
+    <option value="hybrid">Hybrid</option>
+    <option value="in-person">In-person</option>
+  </select>
 
-          <button type="submit">Post Job</button>
-        </form>
+  <label for="salary">Salary (Annual USD)</label>
+  <input id="salary" type="number" min="0" placeholder="e.g., 70000" required />
+
+  <label for="qualifications">Qualifications (comma separated)</label>
+  <textarea id="qualifications" rows="2" placeholder="E.g., Bachelor's Degree, 3+ years experience" required></textarea>
+
+  <button type="submit">Post Job</button>
+</form>
+
       </div>
     </div>
 
