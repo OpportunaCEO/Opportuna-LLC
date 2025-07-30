@@ -5,54 +5,222 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Employers | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    body {
+      background: #121212;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1, h2 {
+      color: #ff6600;
+    }
+    nav.top-nav {
+      background: #000;
+      padding: 1rem;
+    }
+    nav.top-nav .nav-center {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    nav.top-nav a.nav-link {
+      color: #ffa64d;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav.top-nav a.nav-link:hover {
+      color: #ff4500;
+    }
+
+    .sign-in-post {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .sign-in-box, .post-job-box {
+      background: #222;
+      padding: 1.5rem;
+      border-radius: 12px;
+      flex: 1 1 350px;
+      box-shadow: 0 0 15px rgba(255,102,0,0.3);
+    }
+    .sign-in-box h2, .post-job-box h2 {
+      margin-top: 0;
+      color: #ffa64d;
+    }
+    label {
+      display: block;
+      margin: 0.75rem 0 0.3rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      background: #333;
+      color: #eee;
+      resize: vertical;
+    }
+    button {
+      margin-top: 1rem;
+      background: #ff6600;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      color: white;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #e65500;
+    }
+
+    #activeListings {
+      margin-top: 2rem;
+      background: #222;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255,102,0,0.3);
+    }
+    #activeListings h2 {
+      margin-top: 0;
+      color: #ffa64d;
+    }
+    #activeListings ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    #activeListings li {
+      background: #333;
+      margin-bottom: 0.75rem;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #activeListings li span.job-title {
+      font-weight: bold;
+      color: #ffb84d;
+    }
+    #activeListings li span.job-category {
+      font-style: italic;
+      color: #ccc;
+      font-size: 0.85rem;
+    }
+
+    .premium-upgrade {
+      margin-top: 2rem;
+      background: #ff6600;
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255,102,0,0.5);
+    }
+    .premium-upgrade a {
+      color: #fff;
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
-  <div class="nav-center">
-    <a href="index.html" class="nav-link">Home</a>
-    <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
-    <a href="employers.html" class="nav-link">Employers</a>
-    <a href="premium.html" class="nav-link">Premium</a>
-    <a href="recommended.html" class="nav-link">Recommended Jobs</a>
-    <a href="contact.html" class="nav-link">Contact</a>
-  </div>
-  <div class="dropdown" id="userDropdown" style="display:none;">
-    <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
-    <div class="dropdown-content">
-      <a href="profile.html" id="profileLink">My Profile</a>
-      <a href="#" id="logoutBtn">Logout</a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
+      <a href="employers.html" class="nav-link">Employers</a>
+      <a href="premium.html" class="nav-link">Premium</a>
+      <a href="recommended.html" class="nav-link">Recommended Jobs</a>
+      <a href="contact.html" class="nav-link">Contact</a>
     </div>
-  </div>
-  <a href="login.html" id="loginLink">Login</a>
-</nav>
-
+  </nav>
 
   <main class="container">
     <h1>Employers Portal</h1>
     <p>Post job openings, review candidates, and manage your company profile.</p>
 
-    <section>
-      <h2>Post a Job</h2>
-      <form id="jobPostForm">
-        <label for="jobTitle">Job Title</label>
-        <input id="jobTitle" type="text" required />
+    <div class="sign-in-post">
+      <div class="sign-in-box">
+        <h2>Sign In</h2>
+        <form id="signInForm">
+          <label for="companyEmail">Company Email</label>
+          <input id="companyEmail" type="email" placeholder="you@company.com" required />
+          <button type="submit">Sign In</button>
+        </form>
+        <p id="signInStatus" style="margin-top:1rem; color:#ff4500;"></p>
+      </div>
 
-        <label for="jobDesc">Description</label>
-        <textarea id="jobDesc" rows="4" required></textarea>
+      <div class="post-job-box">
+        <h2>Post a Job</h2>
+        <form id="jobPostForm">
+          <label for="jobTitle">Job Title</label>
+          <input id="jobTitle" type="text" required />
 
-        <button type="submit">Post Job</button>
-      </form>
-    </section>
+          <label for="jobDesc">Description</label>
+          <textarea id="jobDesc" rows="4" required></textarea>
 
-    <section>
+          <label for="jobCategory">Category</label>
+          <select id="jobCategory" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="short-term">Short-term</option>
+            <option value="long-term">Long-term</option>
+          </select>
+
+          <label for="skillLevel">Skill Level</label>
+          <select id="skillLevel" required>
+            <option value="" disabled selected>Select skill level</option>
+            <option value="skilled">Skilled</option>
+            <option value="non-skilled">Non-skilled</option>
+          </select>
+
+          <label for="location">Location</label>
+          <input id="location" type="text" placeholder="e.g., New York, NY" required />
+
+          <label for="workSetup">Work Setup</label>
+          <select id="workSetup" required>
+            <option value="" disabled selected>Select work setup</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="in-person">In-person</option>
+          </select>
+
+          <button type="submit">Post Job</button>
+        </form>
+      </div>
+    </div>
+
+    <section id="activeListings">
       <h2>Active Listings</h2>
       <ul id="jobListings">
         <li>No active listings yet.</li>
       </ul>
     </section>
+
+    <section class="premium-upgrade">
+      <h2>Upgrade to Premium</h2>
+      <p>Get access to more job postings, better candidate leads, and exclusive tools.</p>
+      <a href="premium.html">Learn More & Upgrade</a>
+    </section>
   </main>
 
   <script type="module" src="assets/main.js"></script>
-  <script type="module" src="script.js"></script>
+  <script type="module" src="employers.js"></script>
 </body>
 </html>
