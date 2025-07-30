@@ -19,8 +19,6 @@ const firebaseConfig = {
   appId: "1:1234567890:web:abcdefgh"
 };
 
-};
-
 // Init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -50,18 +48,23 @@ loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  const displayName = document.getElementById("displayName").value.trim();
+  const displayName = displayNameInput.value.trim();
+
+  if (!email || !password) {
+    alert("Please enter both email and password.");
+    return;
+  }
 
   try {
     if (isLogin) {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "index.html"; // redirect to feed
+      window.location.href = "index.html"; // redirect after login
     } else {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       if (displayName) {
         await updateProfile(userCred.user, { displayName });
       }
-      window.location.href = "index.html";
+      window.location.href = "index.html"; // redirect after signup
     }
   } catch (error) {
     alert("Error: " + error.message);
