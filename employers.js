@@ -152,3 +152,129 @@ qualificationInput.addEventListener("input", filterJobs);
 
 // Initial render uses merged allJobs
 renderJobs(allJobs);
+
+// Load posted jobs from localStorage into postedJobs array (you already do this)
+// Make sure postedJobs is declared globally or accessible here:
+const postedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
+
+// Reference to the form
+const jobPostForm = document.getElementById("jobPostForm");
+
+// Simple mock for signed in email (replace with your auth logic)
+let signedInEmail = localStorage.getItem("signedInEmail") || null;
+
+// Listen to form submission
+jobPostForm.addEventListener("submit", e => {
+  e.preventDefault();
+
+  if (!signedInEmail) {
+    alert("Please sign in with your company email before posting jobs.");
+    return;
+  }
+
+  // Get form values
+  const title = document.getElementById("jobTitle").value.trim();
+  const desc = document.getElementById("jobDesc").value.trim();
+  const category = document.getElementById("jobCategory").value;
+  const skillLevel = document.getElementById("skillLevel").value;
+  const location = document.getElementById("location").value.trim();
+  const workSetup = document.getElementById("workSetup").value;
+  const salaryStr = document.getElementById("salary").value.trim();
+  const qualificationsRaw = document.getElementById("qualifications").value.trim();
+
+  // Validate salary number
+  const salary = parseInt(salaryStr);
+  if (isNaN(salary) || salary < 0) {
+    alert("Please enter a valid salary number.");
+    return;
+  }
+
+  if (!title || !desc || !category || !skillLevel || !location || !workSetup || !qualificationsRaw) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  // Parse qualifications string to array
+  const qualifications = qualificationsRaw.split(",").map(q => q.trim()).filter(q => q.length > 0);
+
+  // Create new job object
+  const newJob = {
+    title,
+    desc,
+    category,
+    skillLevel,
+    location,
+    workSetup,
+    salary,
+    qualifications,
+    postedBy: signedInEmail,
+    postedAt: new Date().toISOString(),
+  };
+
+  // Add to postedJobs and save
+  postedJobs.push(newJob);
+  localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+
+  // Update allJobs array and re-render
+  allJobs.push({
+    id: 1000 + postedJobs.length, // ensure unique ID
+    title: newJob.title,
+    company: newJob.postedBy || "Unknown Company",
+    location: newJob.location,
+    jobType: newJob.category,
+    workSetup: newJob.workSetup,
+    salary: newJob.salary,
+    qualifications: newJob.qualifications,
+    logo: "assets/default-company-logo.png",
+    description: newJob.desc,
+  });
+
+  renderJobs(allJobs);
+
+  // Reset form
+  jobPostForm.reset();
+
+  alert("Job posted successfully!");
+});
+
+const signInForm = document.getElementById("signInForm");
+const signOutBtn = document.getElementById("signOutBtn");
+const signInStatus = document.getElementById("signInStatus");
+
+function updateUIOnSignIn(email) {
+  signedInEmail = email;
+  localStorage.setItem("signedInEmail", email);
+  signInStatus.textContent = `Signed in as: ${email}`;
+  signOutBtn.style.display = "inline-block";
+  signInForm.style.display = "none";
+}
+
+function signOut() {
+  signedInEmail = null;
+  localStorage.removeItem("signedInEmail");
+  signInStatus.textContent = "";
+  signOutBtn.style.display = "none";
+  signInForm.style.display = "block";
+}
+
+// On sign-in form submit
+signInForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const emailInput = document.getElementById("companyEmail").value.trim();
+  if (emailInput) {
+    updateUIOnSignIn(emailInput);
+  }
+});
+
+// On sign-out button click
+signOutBtn.addEventListener("click", () => {
+  signOut();
+});
+
+// On page load, check if signed in
+if (signedInEmail) {
+  updateUIOnSignIn(signedInEmail);
+} else {
+  signOut();
+}
+
