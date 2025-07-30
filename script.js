@@ -31,7 +31,7 @@ import {
 
 // Firebase config and init
 const firebaseConfig = {
-  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYW1yPTkx4RpRwWM",
+  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
   projectId: "opportuna-a14bb",
   storageBucket: "opportuna-a14bb.appspot.com",
