@@ -2,12 +2,14 @@
 const signInForm = document.getElementById("signInForm");
 const companyEmailInput = document.getElementById("companyEmail");
 const signInStatus = document.getElementById("signInStatus");
+const signOutBtn = document.getElementById("signOutBtn");
 
 const jobPostForm = document.getElementById("jobPostForm");
 const jobListings = document.getElementById("jobListings");
 
-let signedInEmail = sessionStorage.getItem("signedInEmail") || null;
-let postedJobs = JSON.parse(sessionStorage.getItem("postedJobs") || "[]");
+// Use localStorage instead of sessionStorage for shared persistence
+let signedInEmail = localStorage.getItem("signedInEmail") || null;
+let postedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
 
 // Utility to update UI based on sign-in state
 function updateSignInUI() {
@@ -17,11 +19,13 @@ function updateSignInUI() {
     companyEmailInput.disabled = true;
     signInForm.querySelector("button").disabled = true;
     jobPostForm.querySelector("button").disabled = false;
+    signOutBtn.style.display = "inline-block";
   } else {
     signInStatus.textContent = "";
     companyEmailInput.disabled = false;
     signInForm.querySelector("button").disabled = false;
     jobPostForm.querySelector("button").disabled = true;
+    signOutBtn.style.display = "none";
   }
 }
 
@@ -52,12 +56,19 @@ signInForm.addEventListener("submit", e => {
   // Basic email validation (can be enhanced later)
   if (email && email.includes("@")) {
     signedInEmail = email;
-    sessionStorage.setItem("signedInEmail", email);
+    localStorage.setItem("signedInEmail", email);
     updateSignInUI();
   } else {
     signInStatus.textContent = "Please enter a valid company email.";
     signInStatus.style.color = "#ff4500";
   }
+});
+
+// Handle sign out
+signOutBtn.addEventListener("click", () => {
+  signedInEmail = null;
+  localStorage.removeItem("signedInEmail");
+  updateSignInUI();
 });
 
 // Handle job post
@@ -93,7 +104,7 @@ jobPostForm.addEventListener("submit", e => {
     postedAt: new Date().toISOString(),
   });
 
-  sessionStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+  localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
 
   // Clear form
   jobPostForm.reset();
