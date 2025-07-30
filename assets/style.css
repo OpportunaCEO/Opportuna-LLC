@@ -608,5 +608,22 @@ footer {
 .call-to-action .btn-primary:hover {
   background-color: #ffe0b2;
 }
+.main-feed {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  max-width: 960px;
+}
+
+.section-bubble {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255,103,0,0.2);
+}
+
+.how-it-works i {
+  display: block;
+}
   }
 }
