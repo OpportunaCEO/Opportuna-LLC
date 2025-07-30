@@ -625,5 +625,73 @@ footer {
 .how-it-works i {
   display: block;
 }
+/* HOMEPAGE ONLY — Hero Grid Layout */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-left, .home-right {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(255,103,0,0.1);
+}
+
+.home-feed {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 16px rgba(255,103,0,0.2);
+}
+
+/* HOMEPAGE ONLY — Sidebar Sections */
+.home-left h3,
+.home-right h3 {
+  color: #ffb380;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+.sidebar-widget {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-widget p {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* HOMEPAGE ONLY — Feed Card Enhancements */
+.post-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+  transform: scale(1.015);
+  box-shadow: 0 6px 18px rgba(255,103,0,0.25);
+}
+
+/* HOMEPAGE ONLY — Responsive */
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-left,
+  .home-right {
+    display: none;
+  }
+
+  .home-feed {
+    padding: 1rem;
+  }
+}
   }
 }
