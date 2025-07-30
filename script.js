@@ -1,13 +1,5 @@
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -19,8 +11,7 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  getDocs,
-  deleteDoc
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
@@ -29,7 +20,6 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Firebase config and init
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
@@ -45,165 +35,140 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ✅ Set persistence BEFORE listening for auth state
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Auth persistence set to local.");
-    // Now listen for auth state changes safely
-    initApp(); // Call your main app logic
-  })
-  .catch((error) => {
-    console.error("Auth persistence error:", error);
-    initApp(); // Fallback in case persistence fails
-  });
+window.addEventListener("DOMContentLoaded", () => {
+  const loginLink = document.getElementById("loginLink");
+  const userDropdown = document.getElementById("userDropdown");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const navProfilePic = document.getElementById("navProfilePic");
 
-function initApp() {
-  window.addEventListener("DOMContentLoaded", () => {
-    const loginLink = document.getElementById("loginLink");
-    const userDropdown = document.getElementById("userDropdown");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const navProfilePic = document.getElementById("navProfilePic");
-    const createPostBtn = document.getElementById("createPostBtn");
-    const postModal = document.getElementById("postModal");
-    const overlay = document.getElementById("overlay");
-    const postSection = document.getElementById("postSection");
-    const feedContainer = document.getElementById("feedContainer");
-    const postForm = document.getElementById("postForm");
-    const postContent = document.getElementById("postContent");
-    const jobsCountEl = document.getElementById("jobsCount");
-    const employersCountEl = document.getElementById("employersCount");
-    const usersCountEl = document.getElementById("usersCount");
+  const createPostBtn = document.getElementById("createPostBtn");
+  const postModal = document.getElementById("postModal");
+  const overlay = document.getElementById("overlay");
+  const postSection = document.getElementById("postSection");
+  const feedContainer = document.getElementById("feedContainer");
+  const postForm = document.getElementById("postForm");
+  const postContent = document.getElementById("postContent");
+  const jobsCountEl = document.getElementById("jobsCount");
+  const employersCountEl = document.getElementById("employersCount");
+  const usersCountEl = document.getElementById("usersCount");
 
-    async function loadQuickStats() {
-      try {
-        const jobsSnapshot = await getDocs(collection(db, "jobs"));
-        jobsCountEl.textContent = jobsSnapshot.size;
 
-        const employersSnapshot = await getDocs(collection(db, "employers"));
-        employersCountEl.textContent = employersSnapshot.size;
+  // Auth state changes
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      loginLink.style.display = "none";
+      userDropdown.style.display = "inline-block";
+      navProfilePic.src = user.photoURL || "assets/default.png";
 
-        const usersSnapshot = await getDocs(collection(db, "users"));
-        usersCountEl.textContent = usersSnapshot.size;
-      } catch (err) {
-        console.error("Failed to load quick stats:", err);
-      }
-    }
+      createPostBtn.style.display = "block";
 
-    onAuthStateChanged(auth, async (user) => {
-      console.log("Auth state changed. User is:", user);
-      if (user) {
-        loginLink.style.display = "none";
-        userDropdown.style.display = "inline-block";
-        navProfilePic.src = user.photoURL || "assets/default.png";
+      // Show post modal on button click
+      createPostBtn.onclick = () => {
+        postModal.style.display = "block";
+        overlay.style.display = "block";
+      };
 
-        createPostBtn.style.display = "block";
-
-        createPostBtn.onclick = () => {
-          postModal.style.display = "block";
-          overlay.style.display = "block";
-        };
-
-        overlay.onclick = () => {
-          postModal.style.display = "none";
-          overlay.style.display = "none";
-        };
-
-        loadFeed();
-      } else {
-        loginLink.style.display = "inline-block";
-        userDropdown.style.display = "none";
-        createPostBtn.style.display = "none";
+      // Hide modal when clicking overlay
+      overlay.onclick = () => {
         postModal.style.display = "none";
         overlay.style.display = "none";
-        if (feedContainer) feedContainer.innerHTML = "<p>Please log in to see posts.</p>";
+      };
+
+      async function loadQuickStats() {
+  try {
+    // Count jobs
+    const jobsSnapshot = await getDocs(collection(db, "jobs"));
+    jobsCountEl.textContent = jobsSnapshot.size;
+
+    // Count employers
+    const employersSnapshot = await getDocs(collection(db, "employers"));
+    employersCountEl.textContent = employersSnapshot.size;
+
+    // Count users
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    usersCountEl.textContent = usersSnapshot.size;
+  } catch (err) {
+    console.error("Failed to load quick stats:", err);
+  }
+}
+
+
+      // Load posts
+      loadFeed();
+
+    } else {
+      loginLink.style.display = "inline-block";
+      userDropdown.style.display = "none";
+      createPostBtn.style.display = "none";
+      postModal.style.display = "none";
+      overlay.style.display = "none";
+      feedContainer.innerHTML = "<p>Please log in to see posts.</p>";
+    }
+  });
+
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+  }
+
+  // Post submission
+  if (postForm) {
+    postForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to post.");
+        return;
+      }
+      const text = postContent.value.trim();
+      if (!text) return;
+
+      try {
+        await addDoc(collection(db, "posts"), {
+          text,
+          authorUid: user.uid,
+          authorName: user.displayName || "Anonymous",
+          timestamp: serverTimestamp()
+        });
+        postContent.value = "";
+        postModal.style.display = "none";
+        overlay.style.display = "none";
+      } catch (err) {
+        alert("Failed to post: " + err.message);
       }
     });
+  }
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        await signOut(auth);
-        window.location.href = "index.html";
+  // Load and display posts in feed
+  function loadFeed() {
+    if (!feedContainer) return;
+
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, orderBy("timestamp", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      feedContainer.innerHTML = "";
+      if (snapshot.empty) {
+        feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const post = doc.data();
+        const div = document.createElement("div");
+        div.className = "post-card";
+        div.innerHTML = `
+          <p><strong>${post.authorName}</strong></p>
+          <p>${post.text}</p>
+          <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
+          <hr />
+        `;
+        feedContainer.appendChild(div);
       });
-    }
-
-    if (postForm) {
-      postForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) {
-          alert("You must be logged in to post.");
-          return;
-        }
-        const text = postContent.value.trim();
-        if (!text) return;
-
-        try {
-          await addDoc(collection(db, "posts"), {
-            text,
-            authorUid: user.uid,
-            authorName: user.displayName || "Anonymous",
-            timestamp: serverTimestamp()
-          });
-          postContent.value = "";
-          postModal.style.display = "none";
-          overlay.style.display = "none";
-        } catch (err) {
-          alert("Failed to post: " + err.message);
-        }
-      });
-    }
-
-    function loadFeed() {
-      if (!feedContainer) return;
-
-      const postsRef = collection(db, "posts");
-      const q = query(postsRef, orderBy("timestamp", "desc"));
-
-      onSnapshot(q, (snapshot) => {
-        feedContainer.innerHTML = "";
-
-        if (snapshot.empty) {
-          feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
-          return;
-        }
-
-        const currentUser = auth.currentUser;
-
-        snapshot.forEach((docSnap) => {
-          const post = docSnap.data();
-          const div = document.createElement("div");
-          div.className = "post-card";
-
-          div.innerHTML = `
-            <p><strong>${post.authorName}</strong></p>
-            <p>${post.text}</p>
-            <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
-            <hr />
-          `;
-
-          if (currentUser && post.authorUid === currentUser.uid) {
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-            deleteBtn.className = "delete-btn";
-            deleteBtn.onclick = async () => {
-              const confirmDelete = confirm("Are you sure you want to delete this post?");
-              if (confirmDelete) {
-                try {
-                  await deleteDoc(doc(db, "posts", docSnap.id));
-                } catch (err) {
-                  alert("Failed to delete post: " + err.message);
-                }
-              }
-            };
-            div.appendChild(deleteBtn);
-          }
-
-          feedContainer.appendChild(div);
-        });
-      });
-    }
-
-    loadQuickStats(); // Optional: Load stats if relevant
-  });
-}
+    });
+  }
+});
