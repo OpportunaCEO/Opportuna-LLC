@@ -123,8 +123,8 @@ authBack.addEventListener("click", () => {
 // Auth submit
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const email = document.getElementById("emailInput").value;
-  const password = document.getElementById("passwordInput").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
   try {
     if (authSubmitBtn.textContent === "Sign In") {
       await signInWithEmailAndPassword(auth, email, password);
