@@ -73,6 +73,25 @@ window.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "none";
       };
 
+      async function loadQuickStats() {
+  try {
+    // Count jobs
+    const jobsSnapshot = await getDocs(collection(db, "jobs"));
+    jobsCountEl.textContent = jobsSnapshot.size;
+
+    // Count employers
+    const employersSnapshot = await getDocs(collection(db, "employers"));
+    employersCountEl.textContent = employersSnapshot.size;
+
+    // Count users
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    usersCountEl.textContent = usersSnapshot.size;
+  } catch (err) {
+    console.error("Failed to load quick stats:", err);
+  }
+}
+
+
       // Load posts
       loadFeed();
 
