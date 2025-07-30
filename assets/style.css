@@ -528,5 +528,85 @@ footer {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+/* Quick Stats */
+.quick-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 2rem 1rem;
+  background-color: #f8f9fa;
+  text-align: center;
+  flex-wrap: wrap;
+}
+.quick-stats .stat-item {
+  flex: 1 1 150px;
+  max-width: 200px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+.quick-stats .stat-item h3 {
+  margin: 0.5rem 0 0.25rem 0;
+  color: #ff6f00; /* your orange accent */
+}
+.quick-stats .stat-item p {
+  margin: 0;
+  color: #555;
+}
+
+/* How It Works */
+.how-it-works {
+  padding: 3rem 1rem;
+  max-width: 960px;
+  margin: 0 auto 2rem auto;
+  text-align: center;
+}
+.how-it-works h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+.how-steps {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.how-steps article {
+  flex: 1 1 250px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  padding: 2rem 1rem;
+}
+.how-steps i {
+  color: #ff6f00;
+  margin-bottom: 1rem;
+}
+
+/* Call to Action */
+.call-to-action {
+  background-color: #ff6f00;
+  color: white;
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+  border-radius: 12px;
+}
+.call-to-action h2 {
+  margin-bottom: 1rem;
+}
+.call-to-action .btn-primary {
+  background: white;
+  color: #ff6f00;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+.call-to-action .btn-primary:hover {
+  background-color: #ffe0b2;
+}
   }
 }
