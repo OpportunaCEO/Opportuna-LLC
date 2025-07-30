@@ -153,93 +153,111 @@
   </nav>
 
   <main class="container">
-    <h1>Employers Portal</h1>
-    <p>Post job openings, review candidates, and manage your company profile.</p>
+  <h1>Employers Portal</h1>
+  <p>Post job openings, review candidates, and manage your company profile.</p>
 
+  <!-- Auth Forms -->
+  <div id="authSection">
     <div class="sign-in-post">
+      <!-- Sign Up -->
+      <div class="sign-in-box">
+        <h2>Create Account</h2>
+        <form id="signUpForm">
+          <label for="signUpEmail">Email</label>
+          <input id="signUpEmail" type="email" required />
+
+          <label for="signUpPassword">Password</label>
+          <input id="signUpPassword" type="password" required />
+
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+
+      <!-- Sign In -->
       <div class="sign-in-box">
         <h2>Sign In</h2>
         <form id="signInForm">
-          <label for="companyEmail">Company Email</label>
-          <input id="companyEmail" type="email" placeholder="you@company.com" required />
+          <label for="signInEmail">Email</label>
+          <input id="signInEmail" type="email" required />
+
+          <label for="signInPassword">Password</label>
+          <input id="signInPassword" type="password" required />
+
           <button type="submit">Sign In</button>
         </form>
         <p id="signInStatus" style="margin-top:1rem; color:#ff4500;"></p>
-        <!-- Registration Form -->
-<h3 style="margin-top:1.5rem; color:#ffa64d;">Register New Company Account</h3>
-<form id="registerForm">
-  <label for="registerEmail">Company Email</label>
-  <input id="registerEmail" type="email" placeholder="you@company.com" required />
-
-  <label for="registerPassword">Password</label>
-  <input id="registerPassword" type="password" placeholder="Create a password" required />
-
-  <button type="submit">Register</button>
-</form>
-<p id="registerStatus" style="margin-top:1rem; color:#00cc66;"></p>
-
-        <button id="signOutBtn" style="margin-top:0.5rem; display:none; background:#ff4500; border:none; color:#fff; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Sign Out</button>
-      </div>
-
-      <div class="post-job-box">
-        <h2>Post a Job</h2>
-       <form id="jobPostForm">
-  <label for="jobTitle">Job Title</label>
-  <input id="jobTitle" type="text" required />
-
-  <label for="jobDesc">Description</label>
-  <textarea id="jobDesc" rows="4" required></textarea>
-
-  <label for="jobCategory">Category</label>
-  <select id="jobCategory" required>
-    <option value="" disabled selected>Select category</option>
-    <option value="short-term">Short-term</option>
-    <option value="long-term">Long-term</option>
-  </select>
-
-  <label for="skillLevel">Skill Level</label>
-  <select id="skillLevel" required>
-    <option value="" disabled selected>Select skill level</option>
-    <option value="skilled">Skilled</option>
-    <option value="non-skilled">Non-skilled</option>
-  </select>
-
-  <label for="location">Location</label>
-  <input id="location" type="text" placeholder="e.g., New York, NY" required />
-
-  <label for="workSetup">Work Setup</label>
-  <select id="workSetup" required>
-    <option value="" disabled selected>Select work setup</option>
-    <option value="remote">Remote</option>
-    <option value="hybrid">Hybrid</option>
-    <option value="in-person">In-person</option>
-  </select>
-
-  <label for="salary">Salary (Annual USD)</label>
-  <input id="salary" type="number" min="0" placeholder="e.g., 70000" required />
-
-  <label for="qualifications">Qualifications (comma separated)</label>
-  <textarea id="qualifications" rows="2" placeholder="E.g., Bachelor's Degree, 3+ years experience" required></textarea>
-
-  <button type="submit">Post Job</button>
-</form>
-
       </div>
     </div>
+  </div>
 
+  <!-- Main UI (only visible when signed in) -->
+  <div id="dashboardSection" style="display:none;">
+    <button id="signOutBtn" style="margin: 1rem 0; background:#ff4500;">Sign Out</button>
+
+    <!-- Post Job -->
+    <div class="post-job-box">
+      <h2>Post a Job</h2>
+      <form id="jobPostForm">
+        <label for="jobTitle">Job Title</label>
+        <input id="jobTitle" type="text" required />
+
+        <label for="jobDesc">Description</label>
+        <textarea id="jobDesc" rows="4" required></textarea>
+
+        <label for="jobCategory">Category</label>
+        <select id="jobCategory" required>
+          <option value="" disabled selected>Select category</option>
+          <option value="short-term">Short-term</option>
+          <option value="long-term">Long-term</option>
+        </select>
+
+        <label for="skillLevel">Skill Level</label>
+        <select id="skillLevel" required>
+          <option value="" disabled selected>Select skill level</option>
+          <option value="skilled">Skilled</option>
+          <option value="non-skilled">Non-skilled</option>
+        </select>
+
+        <label for="location">Location</label>
+        <input id="location" type="text" placeholder="e.g., New York, NY" required />
+
+        <label for="workSetup">Work Setup</label>
+        <select id="workSetup" required>
+          <option value="" disabled selected>Select work setup</option>
+          <option value="remote">Remote</option>
+          <option value="hybrid">Hybrid</option>
+          <option value="in-person">In-person</option>
+        </select>
+
+        <label for="salary">Salary (Annual USD)</label>
+        <input id="salary" type="number" min="0" placeholder="e.g., 70000" required />
+
+        <label for="qualifications">Qualifications (comma separated)</label>
+        <textarea id="qualifications" rows="2" required></textarea>
+
+        <button type="submit">Post Job</button>
+      </form>
+    </div>
+
+    <!-- Job Listings -->
     <section id="activeListings">
-      <h2>Active Listings</h2>
-      <div id="jobListings"></div>
-        <li>No active listings yet.</li>
-      </ul>
+      <h2>Your Active Listings</h2>
+      <div id="jobListings">
+        <ul id="jobsList">
+          <li>Loading jobs...</li>
+        </ul>
+      </div>
     </section>
+  </div>
 
-    <section class="premium-upgrade">
-      <h2>Upgrade to Premium</h2>
-      <p>Get access to more job postings, better candidate leads, and exclusive tools.</p>
-      <a href="premium.html">Learn More & Upgrade</a>
-    </section>
-  </main>
+  <!-- Premium -->
+  <section class="premium-upgrade">
+    <h2>Upgrade to Premium</h2>
+    <p>Get access to more job postings, better candidate leads, and exclusive tools.</p>
+    <a href="premium.html">Learn More & Upgrade</a>
+  </section>
+</main>
+
 
   <script type="module" src="assets/main.js"></script>
   <script type="module" src="employers.js"></script>
