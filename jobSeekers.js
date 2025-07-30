@@ -35,6 +35,25 @@ const jobs = [
   // Add more jobs as needed
 ];
 
+function loadPostedJobs() {
+  const storedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
+  return storedJobs.map((job, index) => ({
+    id: 1000 + index, // ensure unique IDs to avoid collision with default jobs
+    title: job.title,
+    company: job.postedBy || "Unknown Company",
+    location: job.location || "Various",
+    jobType: job.category || "",      // you stored this as "category" in employers.js
+    workSetup: job.workSetup || "",
+    salary: job.salary || 0,
+    qualifications: job.qualifications || [],
+    logo: "assets/default-company-logo.png",
+    description: job.desc || "",
+  }));
+}
+
+const postedJobs = loadPostedJobs();
+const allJobs = [...jobs, ...postedJobs];
+
 // DOM elements
 const jobListings = document.getElementById("jobListings");
 const searchInput = document.getElementById("searchInput");
