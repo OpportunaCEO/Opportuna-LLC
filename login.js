@@ -36,17 +36,18 @@ let isLogin = true;
 
 // Handle toggle login/signup
 function attachToggleListener() {
-  const toggleAuth = document.getElementById("toggleAuth");
-  toggleAuth.addEventListener("click", e => {
-    e.preventDefault();
-    isLogin = !isLogin;
-    authTitle.textContent = isLogin ? "Login" : "Sign Up";
-    authActionBtn.textContent = isLogin ? "Login" : "Sign Up";
-    displayNameInput.style.display = isLogin ? "none" : "block";
-    toggleAuth.innerHTML = isLogin
-      ? `Don't have an account? <a href="#" id="toggleAuth">Sign up</a>`
-      : `Already have an account? <a href="#" id="toggleAuth">Login</a>`;
-    attachToggleListener(); // reattach because innerHTML wipes event listeners
+  document.body.addEventListener("click", e => {
+    if (e.target && e.target.id === "toggleAuth") {
+      e.preventDefault();
+      isLogin = !isLogin;
+      authTitle.textContent = isLogin ? "Login" : "Sign Up";
+      authActionBtn.textContent = isLogin ? "Login" : "Sign Up";
+      displayNameInput.style.display = isLogin ? "none" : "block";
+      const newHTML = isLogin
+        ? `Don't have an account? <a href="#" id="toggleAuth">Sign up</a>`
+        : `Already have an account? <a href="#" id="toggleAuth">Login</a>`;
+      e.target.parentElement.innerHTML = newHTML;
+    }
   });
 }
 attachToggleListener();
