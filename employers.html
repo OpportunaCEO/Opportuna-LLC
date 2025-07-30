@@ -267,5 +267,22 @@
 
   <script type="module" src="assets/main.js"></script>
   <script type="module" src="employers.js"></script>
+<script>
+  // Toggle auth form views
+  const showSignUp = document.getElementById("showSignUp");
+  const showSignIn = document.getElementById("showSignIn");
+  const signUpForm = document.getElementById("signUpForm");
+  const signInForm = document.getElementById("signInForm");
+
+  showSignUp.onclick = () => {
+    signUpForm.style.display = "block";
+    signInForm.style.display = "none";
+  };
+
+  showSignIn.onclick = () => {
+    signInForm.style.display = "block";
+    signUpForm.style.display = "none";
+  };
+</script>
 </body>
 </html>
