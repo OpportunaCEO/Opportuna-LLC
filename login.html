@@ -1,93 +1,28 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  updateProfile,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="authTitle">Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="text" id="displayName" placeholder="Display Name (for signup only)" style="display:none" />
+      <button type="submit" id="authActionBtn">Login</button>
+      <p class="toggle-link">Don't have an account? <a href="#" id="toggleAuth">Sign up</a></p>
+    </form>
+    <div class="divider">or</div>
+    <button id="googleLoginBtn" class="google-btn">Continue with Google</button>
+  </div>
+<script type="module" src="assets/login.js"></script>
+<script type="module" src="assets/main.js"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-  authDomain: "opportuna-a14bb.firebaseapp.com",
-  projectId: "opportuna-a14bb",
-  storageBucket: "opportuna-a14bb.appspot.com",
-  messagingSenderId: "906149069855",
-  appId: "1:906149069855:web:618ed823248443db30812a",
-  measurementId: "G-GJGCWL01W4",
-};
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const loginForm = document.getElementById("loginForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const displayNameInput = document.getElementById("displayName");
-const authActionBtn = document.getElementById("authActionBtn");
-const toggleAuthLink = document.getElementById("toggleAuth");
-const authTitle = document.getElementById("authTitle");
-const googleLoginBtn = document.getElementById("googleLoginBtn");
-
-let isLoginMode = true;
-
-toggleAuthLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  isLoginMode = !isLoginMode;
-  if (isLoginMode) {
-    authTitle.textContent = "Login";
-    authActionBtn.textContent = "Login";
-    displayNameInput.style.display = "none";
-    toggleAuthLink.textContent = "Sign up";
-    toggleAuthLink.parentElement.firstChild.textContent = "Don't have an account? ";
-  } else {
-    authTitle.textContent = "Sign Up";
-    authActionBtn.textContent = "Sign Up";
-    displayNameInput.style.display = "block";
-    toggleAuthLink.textContent = "Login";
-    toggleAuthLink.parentElement.firstChild.textContent = "Already have an account? ";
-  }
-});
-
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  const displayName = displayNameInput.value.trim();
-
-  if (!email || !password || (!isLoginMode && !displayName)) {
-    alert("Please fill all required fields.");
-    return;
-  }
-
-  try {
-    if (isLoginMode) {
-      await signInWithEmailAndPassword(auth, email, password);
-    } else {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName });
-    }
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Error: " + error.message);
-  }
-});
-
-googleLoginBtn.addEventListener("click", async () => {
-  const provider = new GoogleAuthProvider();
-  try {
-    await signInWithPopup(auth, provider);
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Google sign-in failed: " + error.message);
-  }
-});
-
-// Redirect logged-in users immediately away from login page
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    window.location.href = "index.html";
-  }
-});
