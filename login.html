@@ -1,8 +1,26 @@
-<!DOCTYPE html><html><body>
-<form id="loginForm">
-  <input type="email" id="email" required />
-  <input type="password" id="password" required />
-  <button type="submit">Login</button>
-</form>
-<script type="module" src="assets/login.js"></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Opportuna</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="authTitle">Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="text" id="displayName" placeholder="Display Name (for signup only)" style="display:none" />
+      <button type="submit" id="authActionBtn">Login</button>
+      <p class="toggle-link">Don't have an account? <a href="#" id="toggleAuth">Sign up</a></p>
+    </form>
+    <div class="divider">or</div>
+    <button id="googleLoginBtn" class="google-btn">Continue with Google</button>
+  </div>
+
+  <!-- ✅ Only use one working script -->
+  <script type="module" src="assets/login.js"></script>
+</body>
+</html>
