@@ -54,6 +54,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Auth state changes
   onAuthStateChanged(auth, async (user) => {
+    loadQuickStats();
     if (user) {
       loginLink.style.display = "none";
       userDropdown.style.display = "inline-block";
