@@ -161,31 +161,37 @@
     <div class="sign-in-post">
       <!-- Sign Up -->
       <div class="sign-in-box">
-        <h2>Create Account</h2>
-        <form id="signUpForm">
-          <label for="signUpEmail">Email</label>
-          <input id="signUpEmail" type="email" required />
+  <h2>Company Access</h2>
 
-          <label for="signUpPassword">Password</label>
-          <input id="signUpPassword" type="password" required />
+  <div id="authToggle">
+    <button id="showSignUp" type="button">Sign Up</button>
+    <button id="showSignIn" type="button">Sign In</button>
+  </div>
 
-          <button type="submit">Sign Up</button>
-        </form>
-      </div>
+  <!-- Sign Up Form -->
+  <form id="signUpForm" style="margin-top:1rem; display:none;">
+    <label for="signUpEmail">Company Email</label>
+    <input id="signUpEmail" type="email" required />
 
-      <!-- Sign In -->
-      <div class="sign-in-box">
-        <h2>Sign In</h2>
-        <form id="signInForm">
-          <label for="signInEmail">Email</label>
-          <input id="signInEmail" type="email" required />
+    <label for="signUpPassword">Password</label>
+    <input id="signUpPassword" type="password" required />
 
-          <label for="signInPassword">Password</label>
-          <input id="signInPassword" type="password" required />
+    <button type="submit">Create Account</button>
+  </form>
 
-          <button type="submit">Sign In</button>
-        </form>
-        <p id="signInStatus" style="margin-top:1rem; color:#ff4500;"></p>
+  <!-- Sign In Form -->
+  <form id="signInForm" style="margin-top:1rem; display:none;">
+    <label for="signInEmail">Company Email</label>
+    <input id="signInEmail" type="email" required />
+
+    <label for="signInPassword">Password</label>
+    <input id="signInPassword" type="password" required />
+
+    <button type="submit">Sign In</button>
+  </form>
+
+  <p id="signInStatus" style="margin-top:1rem; color:#ff4500;"></p>
+  <button id="signOutBtn" style="margin-top:0.5rem; display:none; background:#ff4500; border:none; color:#fff; padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Sign Out</button>
       </div>
     </div>
   </div>
