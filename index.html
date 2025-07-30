@@ -29,27 +29,31 @@
   </nav>
 
   <!-- Quick Stats Section -->
-  <section id="quickStats" class="quick-stats">
-    <div class="stat-item">
-      <i class="fas fa-briefcase fa-2x"></i>
-      <h3 id="jobsCount">0</h3>
-      <p>Active Jobs</p>
-    </div>
-    <div class="stat-item">
-      <i class="fas fa-building fa-2x"></i>
-      <h3 id="employersCount">0</h3>
-      <p>Registered Employers</p>
-    </div>
-    <div class="stat-item">
-      <i class="fas fa-users fa-2x"></i>
-      <h3 id="usersCount">0</h3>
-      <p>Active Users</p>
+  <section id="quickStats" class="quick-stats section-card">
+    <h2>Opportuna by the Numbers</h2>
+    <div class="stat-grid">
+      <div class="stat-item">
+        <i class="fas fa-briefcase fa-2x"></i>
+        <h3 id="jobsCount">0</h3>
+        <p>Active Jobs</p>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-building fa-2x"></i>
+        <h3 id="employersCount">0</h3>
+        <p>Registered Employers</p>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-users fa-2x"></i>
+        <h3 id="usersCount">0</h3>
+        <p>Active Users</p>
+      </div>
     </div>
   </section>
 
   <!-- How It Works Section -->
-  <section id="howItWorks" class="how-it-works">
+  <section id="howItWorks" class="how-it-works section-card">
     <h2>Why Choose Opportuna?</h2>
+    <p class="section-description">We believe in empowering individuals through access, information, and meaningful connections. Here’s how:</p>
     <div class="how-steps">
       <article>
         <i class="fas fa-sync-alt fa-3x"></i>
@@ -69,20 +73,21 @@
     </div>
   </section>
 
-  <!-- Social Feed with Enhanced Layout -->
-  <section class="feed-wrapper">
+  <!-- Social Feed Section -->
+  <section class="feed-wrapper section-card">
+    <h2 class="feed-title">📰 Community Social Feed</h2>
+    <p class="section-description">See what other job seekers and professionals are saying. Share insights, updates, and opportunities.</p>
     <div class="main-layout">
       <div class="feed">
-        <h2>📰 Social Feed</h2>
         <section id="postSection">
-          <div id="feedContainer"></div> <!-- Container for posts -->
+          <div id="feedContainer"></div>
         </section>
       </div>
     </div>
+    <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
   </section>
 
-  <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
-
+  <!-- Post Modal -->
   <div id="overlay" style="display:none;"></div>
   <div id="postModal" style="display:none;">
     <h3>Create a New Post</h3>
@@ -93,8 +98,9 @@
   </div>
 
   <!-- Call to Action Section -->
-  <section id="callToAction" class="call-to-action">
+  <section id="callToAction" class="call-to-action section-card">
     <h2>Ready to find your next opportunity?</h2>
+    <p>Sign up to connect with top employers, showcase your skills, and discover a career path tailored to you.</p>
     <a href="login.html" class="btn-primary">Get Started — Sign Up Now</a>
   </section>
 
@@ -105,4 +111,3 @@
   <script type="module" src="script.js"></script>
 </body>
 </html>
-
