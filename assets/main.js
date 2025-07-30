@@ -16,7 +16,6 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp
   serverTimestamp,
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -27,13 +26,11 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// ✅ Corrected Firebase configuration
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
   projectId: "opportuna-a14bb",
-  storageBucket: "opportuna-a14bb.appspot.com", // FIXED HERE
   storageBucket: "opportuna-a14bb.appspot.com",
   messagingSenderId: "906149069855",
   appId: "1:906149069855:web:618ed823248443db30812a",
@@ -47,7 +44,6 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // DOM
-// DOM elements
 const createPostBtn = document.getElementById("createPostBtn");
 const overlay = document.getElementById("overlay");
 const postModal = document.getElementById("postModal");
@@ -109,7 +105,6 @@ postForm.addEventListener("submit", async (e) => {
 });
 
 // Auth modal
-// Auth modal logic
 signInBtn.addEventListener("click", () => {
   authForm.style.display = "flex";
   authSubmitBtn.textContent = "Sign In";
@@ -143,13 +138,15 @@ authForm.addEventListener("submit", async (e) => {
   }
 });
 
-// Logout
-logoutBtn.addEventListener("click", () => {
-  signOut(auth);
+// Logout (added await and try/catch)
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Sign out failed:", error);
+  }
 });
 
-onAuthStateChanged(auth, (user) => {
-// Load and display posts
 function loadPosts() {
   const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
   onSnapshot(q, async (snapshot) => {
@@ -174,61 +171,41 @@ function loadPosts() {
   });
 }
 
-// Auth state change
+async function loadUserProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snapshot = await getDoc(doc(db, "profiles", user.uid));
+  if (snapshot.exists()) {
+    const data = snapshot.data();
+    bioInput.value = data.bio || "";
+    workInput.value = data.work || "";
+    skillsInput.value = data.skills || "";
+    if (data.photoURL) {
+      navProfilePic.src = data.photoURL;
+    }
+  }
+}
+
+// Auth state change handler — only one, no nesting!
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // User is signed in
     loginLink.style.display = "none"; // Hide login link if logged in
     createPostBtn.style.display = "block";
     userDropdown.style.display = "block";
-    loginLink.style.display = "none";  // ADD THIS
-    navProfilePic.src = "assets/default.png"; // or user.photoURL if you have it
+    navProfilePic.src = "assets/default.png"; // or user.photoURL if available
 
     authModal.classList.remove("open");
     authOverlay.classList.remove("show");
 
-    // Load posts (your existing code)
-    // ...
-
-    loadUserProfile();
+    // Load user profile and posts
+    await loadUserProfile();
     loadPosts();
   } else {
-    // User is signed out
     loginLink.style.display = "inline-block"; // Show login link if logged out
     createPostBtn.style.display = "none";
     userDropdown.style.display = "none";
-    loginLink.style.display = "inline-block"; // ADD THIS
 
-    authForm.style.display = "none";
-    authModal.classList.add("open");
-    authOverlay.classList.add("show");
-  }
-});
-
-    // Load posts
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-    onSnapshot(q, (snapshot) => {
-      postSection.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const post = doc.data();
-        const postEl = document.createElement("div");
-        postEl.className = "post-card";
-        postEl.innerHTML = `
-          <div class="post-header">
-            <img class="post-avatar" src="assets/default.png" />
-            <strong>${post.email}</strong>
-          </div>
-          <div class="post-content">${post.content}</div>
-        `;
-        postSection.appendChild(postEl);
-      });
-    });
-    loadUserProfile();
-    loadPosts();
-  } else {
-    // User is signed out
-    createPostBtn.style.display = "none";
-    userDropdown.style.display = "none";
     authForm.style.display = "none";
     authModal.classList.add("open");
     authOverlay.classList.add("show");
@@ -246,22 +223,6 @@ profileOverlay.addEventListener("click", () => {
   profileOverlay.classList.remove("show");
   profileModal.classList.remove("open");
 });
-
-async function loadUserProfile() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const snapshot = await getDoc(doc(db, "profiles", user.uid));
-  if (snapshot.exists()) {
-    const data = snapshot.data();
-    bioInput.value = data.bio || "";
-    workInput.value = data.work || "";
-    skillsInput.value = data.skills || "";
-    if (data.photoURL) {
-      navProfilePic.src = data.photoURL;
-    }
-  }
-}
 
 // Save profile
 profileForm.addEventListener("submit", async (e) => {
@@ -290,7 +251,7 @@ profileForm.addEventListener("submit", async (e) => {
   loadPosts();
 });
 
-// === Dropdown Toggle Behavior ===
+// Dropdown toggle behavior
 if (userDropdown && navProfilePic) {
   navProfilePic.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -302,7 +263,7 @@ if (userDropdown && navProfilePic) {
   });
 }
 
-// === User Search ===
+// User search
 userSearchInput.addEventListener("input", async () => {
   const search = userSearchInput.value.trim().toLowerCase();
   userSearchResults.innerHTML = "";
