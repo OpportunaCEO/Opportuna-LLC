@@ -52,6 +52,23 @@ window.addEventListener("DOMContentLoaded", () => {
   const employersCountEl = document.getElementById("employersCount");
   const usersCountEl = document.getElementById("usersCount");
 
+  async function loadQuickStats() {
+  try {
+    // Count jobs
+    const jobsSnapshot = await getDocs(collection(db, "jobs"));
+    jobsCountEl.textContent = jobsSnapshot.size;
+
+    // Count employers
+    const employersSnapshot = await getDocs(collection(db, "employers"));
+    employersCountEl.textContent = employersSnapshot.size;
+
+    // Count users
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    usersCountEl.textContent = usersSnapshot.size;
+  } catch (err) {
+    console.error("Failed to load quick stats:", err);
+  }
+}
   
   // Auth state changes
   onAuthStateChanged(auth, async (user) => {
@@ -73,24 +90,6 @@ window.addEventListener("DOMContentLoaded", () => {
         postModal.style.display = "none";
         overlay.style.display = "none";
       };
-
-      async function loadQuickStats() {
-  try {
-    // Count jobs
-    const jobsSnapshot = await getDocs(collection(db, "jobs"));
-    jobsCountEl.textContent = jobsSnapshot.size;
-
-    // Count employers
-    const employersSnapshot = await getDocs(collection(db, "employers"));
-    employersCountEl.textContent = employersSnapshot.size;
-
-    // Count users
-    const usersSnapshot = await getDocs(collection(db, "users"));
-    usersCountEl.textContent = usersSnapshot.size;
-  } catch (err) {
-    console.error("Failed to load quick stats:", err);
-  }
-}
 
 
       // Load posts
