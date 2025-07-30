@@ -10,7 +10,8 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
@@ -51,10 +52,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const employersCountEl = document.getElementById("employersCount");
   const usersCountEl = document.getElementById("usersCount");
 
-
+  
   // Auth state changes
   onAuthStateChanged(auth, async (user) => {
-    loadQuickStats();
     if (user) {
       loginLink.style.display = "none";
       userDropdown.style.display = "inline-block";
