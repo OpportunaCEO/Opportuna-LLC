@@ -2,13 +2,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
+  setPersistence,
+  browserLocalPersistence,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithPopup,
-  GoogleAuthProvider,
-  setPersistence,
-  browserLocalPersistence
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ✅ Firebase Config (Replace this with your real config)
@@ -36,6 +36,18 @@ const displayNameInput = document.getElementById("displayName");
 const googleBtn = document.getElementById("googleLoginBtn");
 
 let isLogin = true;
+let persistenceSet = false;
+
+// Set persistence BEFORE any sign-in/sign-up
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    persistenceSet = true;
+    console.log("Auth persistence set to local.");
+  })
+  .catch((error) => {
+    console.error("Auth persistence error:", error);
+    persistenceSet = false;
+  });
 
 // Toggle between login/signup
 toggleAuth.addEventListener("click", (e) => {
@@ -49,6 +61,12 @@ toggleAuth.addEventListener("click", (e) => {
 // Handle login/signup
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  if (!persistenceSet) {
+    alert("Auth persistence not yet set. Please wait and try again.");
+    return;
+  }
+
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const displayName = displayNameInput.value.trim();
@@ -59,9 +77,6 @@ loginForm.addEventListener("submit", async (e) => {
   }
 
   try {
-    // Set persistence BEFORE sign-in or sign-up
-    await setPersistence(auth, browserLocalPersistence);
-
     if (isLogin) {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "index.html"; // redirect after login
@@ -79,8 +94,12 @@ loginForm.addEventListener("submit", async (e) => {
 
 // Google Sign-In
 googleBtn.addEventListener("click", async () => {
+  if (!persistenceSet) {
+    alert("Auth persistence not yet set. Please wait and try again.");
+    return;
+  }
+
   try {
-    await setPersistence(auth, browserLocalPersistence); // also set persistence here
     await signInWithPopup(auth, provider);
     window.location.href = "index.html";
   } catch (error) {
