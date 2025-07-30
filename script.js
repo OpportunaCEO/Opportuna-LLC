@@ -144,30 +144,54 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Load and display posts in feed
   function loadFeed() {
-    if (!feedContainer) return;
+  if (!feedContainer) return;
 
-    const postsRef = collection(db, "posts");
-    const q = query(postsRef, orderBy("timestamp", "desc"));
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, orderBy("timestamp", "desc"));
 
-    onSnapshot(q, (snapshot) => {
-      feedContainer.innerHTML = "";
-      if (snapshot.empty) {
-        feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
-        return;
+  onSnapshot(q, (snapshot) => {
+    feedContainer.innerHTML = "";
+
+    if (snapshot.empty) {
+      feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
+      return;
+    }
+
+    const currentUser = auth.currentUser;
+
+    snapshot.forEach((docSnap) => {
+      const post = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "post-card";
+
+      // Add base post content
+      div.innerHTML = `
+        <p><strong>${post.authorName}</strong></p>
+        <p>${post.text}</p>
+        <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
+        <hr />
+      `;
+
+      // Only show delete button if current user is the author
+      if (currentUser && post.authorUid === currentUser.uid) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = async () => {
+          const confirmDelete = confirm("Are you sure you want to delete this post?");
+          if (confirmDelete) {
+            try {
+              await deleteDoc(doc(db, "posts", docSnap.id));
+              // post will auto disappear from feed because onSnapshot is live
+            } catch (err) {
+              alert("Failed to delete post: " + err.message);
+            }
+          }
+        };
+        div.appendChild(deleteBtn);
       }
 
-      snapshot.forEach((doc) => {
-        const post = doc.data();
-        const div = document.createElement("div");
-        div.className = "post-card";
-        div.innerHTML = `
-          <p><strong>${post.authorName}</strong></p>
-          <p>${post.text}</p>
-          <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
-          <hr />
-        `;
-        feedContainer.appendChild(div);
-      });
+      feedContainer.appendChild(div);
     });
-  }
-});
+  });
+}
