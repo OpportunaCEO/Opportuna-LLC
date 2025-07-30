@@ -7,10 +7,6 @@
   <meta name="description" content="Opportuna is your personalized job and networking platform. Connect, share, and grow your career." />
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    /* Your embedded styles from before for nav, feed, modals, buttons etc. */
-    /* ... (keep your previous styles here) ... */
-  </style>
 </head>
 <body>
   <nav class="top-nav">
@@ -35,14 +31,16 @@
   <div class="main-layout">
     <div class="feed">
       <h2>📰 Social Feed</h2>
-      <section id="postSection"></section>
+      <section id="postSection">
+        <div id="feedContainer"></div>  <!-- Container for posts -->
+      </section>
     </div>
   </div>
 
   <button id="createPostBtn" title="Create New Post" style="display:none;">+</button>
 
-  <div id="overlay"></div>
-  <div id="postModal">
+  <div id="overlay" style="display:none;"></div>
+  <div id="postModal" style="display:none;">
     <h3>Create a New Post</h3>
     <form id="postForm">
       <textarea id="postContent" placeholder="What's on your mind?" required style="width:100%; height:100px;"></textarea>
@@ -50,14 +48,10 @@
     </form>
   </div>
 
-  <!-- Auth Modal from previous (optional) removed since you have login.html -->
-
   <footer style="text-align:center; margin:2rem 0 1rem 0; color:#777;">
     <p>&copy; 2025 Opportuna. All rights reserved.</p>
   </footer>
 
-
-  <script type="module" src="assets/main.js"></script>
   <script type="module" src="script.js"></script>
 </body>
 </html>
