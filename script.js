@@ -161,12 +161,17 @@ window.addEventListener("DOMContentLoaded", () => {
         const post = doc.data();
         const div = document.createElement("div");
         div.className = "post-card";
-        div.innerHTML = `
-          <p><strong>${post.authorName}</strong></p>
-          <p>${post.text}</p>
-          <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
-          <hr />
-        `;
+       div.innerHTML = `
+  <div class="post-header">
+    <img src="assets/default.png" alt="avatar" class="post-avatar" />
+    <div class="post-meta">
+      <strong>${post.authorName}</strong><br />
+      <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
+    </div>
+  </div>
+  <div class="post-content">${post.text}</div>
+`;
+
         feedContainer.appendChild(div);
       });
     });
