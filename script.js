@@ -145,35 +145,54 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Load and display posts in feed
   function loadFeed() {
-    if (!feedContainer) return;
+  if (!feedContainer) return;
 
-    const postsRef = collection(db, "posts");
-    const q = query(postsRef, orderBy("timestamp", "desc"));
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, orderBy("timestamp", "desc"));
 
-    onSnapshot(q, (snapshot) => {
-      feedContainer.innerHTML = "";
-      if (snapshot.empty) {
-        feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
-        return;
+  onSnapshot(q, (snapshot) => {
+    feedContainer.innerHTML = "";
+    if (snapshot.empty) {
+      feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const post = docSnap.data();
+      const postId = docSnap.id;
+
+      const div = document.createElement("div");
+      div.className = "post-card";
+
+      const isOwner = auth.currentUser && post.authorUid === auth.currentUser.uid;
+
+      div.innerHTML = `
+        <div class="post-header">
+          <img src="${post.authorPhoto || 'assets/default.png'}" alt="avatar" class="post-avatar" />
+          <div class="post-meta">
+            <strong>${post.authorName}</strong><br />
+            <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
+          </div>
+        </div>
+        <div class="post-content">${post.text}</div>
+        ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
+      `;
+
+      // Attach delete event
+      if (isOwner) {
+        const deleteBtn = div.querySelector(".delete-btn");
+        deleteBtn.addEventListener("click", async () => {
+          if (confirm("Are you sure you want to delete this post?")) {
+            try {
+              await deleteDoc(doc(db, "posts", postId));
+            } catch (err) {
+              alert("Failed to delete post: " + err.message);
+            }
+          }
+        });
       }
 
-      snapshot.forEach((doc) => {
-        const post = doc.data();
-        const div = document.createElement("div");
-        div.className = "post-card";
-       div.innerHTML = `
-  <div class="post-header">
-    <img src="assets/default.png" alt="avatar" class="post-avatar" />
-    <div class="post-meta">
-      <strong>${post.authorName}</strong><br />
-      <small>${post.timestamp?.toDate().toLocaleString() || ""}</small>
-    </div>
-  </div>
-  <div class="post-content">${post.text}</div>
-`;
-
-        feedContainer.appendChild(div);
-      });
+      feedContainer.appendChild(div);
     });
-  }
-});
+  });
+}
