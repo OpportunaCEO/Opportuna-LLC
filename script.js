@@ -129,10 +129,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
       try {
         await addDoc(collection(db, "posts"), {
-          text,
-          authorUid: user.uid,
-          authorName: user.displayName || "Anonymous",
-          timestamp: serverTimestamp()
+  text,
+  authorUid: user.uid,
+  authorName: user.displayName || "Anonymous",
+  authorPhoto: user.photoURL || null,
+  timestamp: serverTimestamp()
+});
+
         });
         postContent.value = "";
         postModal.style.display = "none";
