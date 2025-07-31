@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Profile – Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -16,18 +17,57 @@
   <main class="container">
     <h2>Your Profile</h2>
     <form id="profileForm" class="form-card">
-      <label>Full Name: <input type="text" id="fullName" /></label>
-      <label>Bio: <textarea id="bio" rows="3"></textarea></label>
-      <label>Skills (comma separated): <input type="text" id="skills" /></label>
-      <label>Work Experience: <textarea id="experience" rows="4"></textarea></label>
+      <label>Full Name:
+        <input type="text" id="fullName" required />
+      </label>
+
+      <label>Bio:
+        <textarea id="bio" rows="3"></textarea>
+      </label>
+
+      <label>Skills:
+        <input type="text" id="skills" placeholder="e.g. JavaScript, Design" />
+        <small>Comma-separated. Suggestions will appear as you type.</small>
+      </label>
+
+      <label>Languages Spoken:
+        <select id="languages" multiple>
+          <option value="English">English</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="Mandarin">Mandarin</option>
+          <option value="Arabic">Arabic</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label>Work Experience:
+        <textarea id="experience" rows="4" placeholder="Brief summary of your experience..."></textarea>
+      </label>
+
+      <label>Disability Status:
+        <select id="disability">
+          <option value="Prefer not to say">Prefer not to say</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </label>
+
+      <label>Upload Resume:
+        <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" />
+        <small>We'll use this to help autofill your skills and experience.</small>
+      </label>
+
       <label>Upload Profile Picture:
         <input type="file" id="profilePic" accept="image/*" />
       </label>
+
       <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:block; margin-top:8px;" />
-<button type="submit" id="saveProfileBtn">
-  <span id="saveBtnText">Save Profile</span>
-  <span id="saveBtnSpinner" style="display: none;">⏳ Saving...</span>
-</button>
+
+      <button type="submit" id="saveProfileBtn">
+        <span id="saveBtnText">Save Profile</span>
+        <span id="saveBtnSpinner" style="display: none;">⏳ Saving...</span>
+      </button>
     </form>
 
     <hr />
@@ -44,5 +84,6 @@
 
   <script type="module" src="assets/main.js"></script>
   <script type="module" src="script.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>
