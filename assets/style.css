@@ -1,18 +1,31 @@
-/* ===== Base Reset and Global Styles ===== */
+/* ===== Global Reset & Variables ===== */
+:root {
+  --bg-dark: #121212;
+  --bg-light: #f5f5f5;
+  --text-dark: #1a1a1a;
+  --text-light: #f0f0f0;
+  --accent: #ff6700;
+  --accent-hover: #e65c00;
+  --soft-card: #1e1e1e;
+  --border-radius: 12px;
+  --transition: 0.3s ease;
+}
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #121212;
-  color: #f0f0f0;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
   line-height: 1.6;
 }
 
 a {
-  color: #ff6700;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -20,155 +33,111 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ===== Container ===== */
-.container {
-  max-width: 960px;
-  margin: 1.5rem auto;
-  padding: 0 1rem;
-}
-
-/* ===== Buttons ===== */
 button, .button {
-  background-color: #ff6700;
-  border: none;
+  background-color: var(--accent);
   color: white;
   padding: 0.6rem 1rem;
   font-size: 1rem;
-  border-radius: 8px;
+  border: none;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--transition);
 }
 
 button:hover, .button:hover {
-  background-color: #e65c00;
-}
-
-/* ===== Form Elements ===== */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea,
-select {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  margin-top: 0.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid #333;
-  border-radius: 8px;
-  background-color: #1e1e1e;
-  color: #eee;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-textarea:focus,
-select:focus {
-  border-color: #ff6700;
-  outline: none;
-  background-color: #2a2a2a;
-  color: #fff;
-}
-
-/* ===== Labels ===== */
-label {
-  display: block;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  color: #ffb380;
-}
-
-/* ===== Headings ===== */
-h1, h2, h3 {
-  color: #ff6700;
-  margin-top: 0;
+  background-color: var(--accent-hover);
 }
 
 /* ===== Navigation ===== */
 nav.top-nav {
   background-color: #000;
-  color: #ff6700;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(255,103,0,0.25);
+  box-shadow: 0 2px 6px rgba(255, 103, 0, 0.25);
 }
 
 nav.top-nav a {
-  color: #ff6700;
+  color: var(--accent);
   margin-right: 1rem;
+  font-weight: bold;
 }
 
 nav.top-nav a:hover {
   color: #ffa64d;
 }
 
-/* ===== Dropdown ===== */
 .dropdown {
   position: relative;
-  display: inline-block;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
   right: 0;
-  background-color: #1e1e1e;
+  background-color: var(--soft-card);
   min-width: 160px;
-  box-shadow: 0 8px 16px rgba(255,103,0,0.3);
+  box-shadow: 0 8px 16px rgba(255, 103, 0, 0.3);
   z-index: 1000;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
 }
 
 .dropdown-content a {
   color: #ffb380;
   padding: 12px 16px;
-  text-decoration: none;
   display: block;
 }
 
 .dropdown-content a:hover {
   background-color: #333;
-  color: #ff6700;
+  color: var(--accent);
 }
 
-.dropdown.open .dropdown-content,
 .dropdown:hover .dropdown-content {
   display: block;
 }
 
-/* ===== Profile Icon ===== */
 .profile-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  border: 2px solid var(--accent);
   cursor: pointer;
-  border: 2px solid #ff6700;
 }
 
-/* ===== Cards ===== */
-.card, .post-card, .job-card, .form-card {
-  background-color: #1e1e1e;
-  border-radius: 12px;
+/* ===== Layout ===== */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-card {
+  background-color: var(--soft-card);
+  border-radius: var(--border-radius);
   padding: 1.5rem;
-  color: #eee;
   box-shadow: 0 4px 12px rgba(255, 103, 0, 0.15);
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 2rem;
 }
 
-.post-card:hover, .card:hover, .job-card:hover, .form-card:hover {
-  transform: scale(1.02);
+/* ===== Feed Posts ===== */
+.post-card {
+  background-color: var(--soft-card);
+  border-radius: var(--border-radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(255, 103, 0, 0.1);
+  transition: var(--transition);
+}
+
+.post-card:hover {
   box-shadow: 0 8px 20px rgba(255, 103, 0, 0.25);
 }
 
-/* ===== Post Content ===== */
 .post-header {
   display: flex;
   align-items: center;
@@ -176,168 +145,125 @@ nav.top-nav a:hover {
 }
 
 .post-avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  border: 2px solid #ff6700;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
+.post-meta {
+  line-height: 1.2;
+}
+
+.post-meta strong {
+  font-size: 1rem;
+  color: #ffb380;
+}
+
+.post-meta small {
+  color: #aaa;
 }
 
 .post-content {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 1.05rem;
   white-space: pre-wrap;
-  font-size: 1rem;
-}
-
-/* ===== Modals & Overlays ===== */
-#overlay, #authOverlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  z-index: 1200;
-}
-
-#overlay.show, #authOverlay.show {
-  display: block;
-}
-
-#postModal, #authModal {
-  position: fixed;
-  top: 50%; left: 50%;
-  width: 400px;
-  background: #121212;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(255,103,0,0.6);
-  transform: translate(-50%, -50%);
-  z-index: 1300;
-  display: none;
-  color: #ffb380;
-}
-
-#postModal.open, #authModal.open {
-  display: block;
-}
-
-/* ===== Floating Create Post Button ===== */
-#createPostBtn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background-color: #ff6700;
-  color: #121212;
-  border: none;
-  padding: 15px 20px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: 0 5px 10px rgba(255,103,0,0.4);
-  z-index: 1100;
-}
-
-/* ===== Footer ===== */
-footer {
-  text-align: center;
-  margin: 2rem 0 1rem 0;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* ===== HOMEPAGE LAYOUT ===== */
-.home-layout {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: 2rem;
-  padding: 2rem 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.home-left, .home-right {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(255,103,0,0.1);
-}
-
-.home-left h3,
-.home-right h3 {
-  color: #ffb380;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #333;
-  padding-bottom: 0.5rem;
-}
-
-.home-feed {
-  background-color: #1a1a1a;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 6px 16px rgba(255,103,0,0.2);
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 900px) {
-  .home-layout {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-  }
-  .home-left,
-  .home-right {
-    display: none;
-  }
-  .home-feed {
-    padding: 1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 0 0.5rem;
-  }
-  #postModal, #authModal {
-    width: 90%;
-  }
-}
-
-/* ===== Misc ===== */
-.hidden {
-  display: none;
-}
-
-.back-button {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: #ff6700;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.back-button:hover {
-  color: #ffa64d;
-}
-
-.preview-img {
-  max-width: 120px;
-  max-height: 120px;
-  border-radius: 50%;
-  border: 2px solid #ff6700;
-  margin-top: 0.5rem;
+  line-height: 1.6;
 }
 
 .delete-btn {
+  margin-top: 0.75rem;
   background-color: #ff4d4d;
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   padding: 6px 10px;
-  margin-top: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .delete-btn:hover {
   background-color: #cc0000;
 }
 
+/* ===== Sidebar / Extras ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.stat-item i {
+  color: var(--accent);
+}
+
+.how-steps article {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.how-steps h3 {
+  margin: 0.5rem 0;
+  color: #ffb380;
+}
+
+/* ===== Modal & Overlay ===== */
+#overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+#postModal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--soft-card);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 24px rgba(255, 103, 0, 0.5);
+  z-index: 11;
+  width: 90%;
+  max-width: 500px;
+}
+
+/* ===== Floating Button ===== */
+#createPostBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--accent);
+  color: #121212;
+  border: none;
+  padding: 15px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 5px 10px rgba(255, 103, 0, 0.4);
+  z-index: 10;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  .home-left, .home-right {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  nav.top-nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #postModal {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
