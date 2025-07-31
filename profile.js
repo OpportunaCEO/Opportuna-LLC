@@ -1,4 +1,3 @@
-// profile.js
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
@@ -30,26 +29,26 @@ const saveBtnSpinner = document.getElementById("saveBtnSpinner");
 
 const recommendedSkills = ["JavaScript", "React", "Firebase", "Python", "Project Management", "Communication", "SQL", "Design", "Leadership"];
 
-// Suggest recommended skills
+// Suggest recommended skills on focus
 skillInput.addEventListener("focus", () => {
   if (!skillInput.value) skillInput.value = recommendedSkills.join(", ");
 });
 
-// Resume parsing (pdf.js for PDF)
+// PDF.js setup
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.mjs";
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.mjs";
 
 async function extractTextFromPDF(file) {
   const reader = new FileReader();
   return new Promise((resolve, reject) => {
-    reader.onload = async function () {
+    reader.onload = async () => {
       const typedArray = new Uint8Array(reader.result);
       const pdf = await pdfjsLib.getDocument(typedArray).promise;
       let fullText = "";
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-        fullText += textContent.items.map(i => i.str).join(" ") + " ";
+        fullText += textContent.items.map(item => item.str).join(" ") + " ";
       }
       resolve(fullText);
     };
@@ -58,22 +57,45 @@ async function extractTextFromPDF(file) {
   });
 }
 
+// More robust autofill logic
+function autofillFields(text) {
+  console.log("Extracted resume text:", text);
+
+  // Attempt to find a full name (simple heuristic: 2 capitalized words near the start)
+  const nameMatch = text.match(/([A-Z][a-z]+ [A-Z][a-z]+)/);
+  if (nameMatch) {
+    document.getElementById("fullName").value = nameMatch[1];
+  }
+
+  // Look for skills: find recommended skills present in the text
+  const foundSkills = recommendedSkills.filter(skill =>
+    new RegExp(`\\b${skill}\\b`, "i").test(text)
+  );
+  if (foundSkills.length > 0) {
+    skillInput.value = foundSkills.join(", ");
+  }
+
+  // Try to extract a chunk of work experience text after keywords
+  const expMatch = text.match(/(Experience|Work Experience|Professional Experience)[\s:\-]*([\s\S]{50,500})/i);
+  if (expMatch) {
+    document.getElementById("experience").value = expMatch[2].trim();
+  }
+
+  // No autofill for languages or disability — user fills manually
+  console.log("Autofill complete.");
+}
+
 resumeInput.addEventListener("change", async () => {
   const file = resumeInput.files[0];
   if (!file) return;
-  const text = await extractTextFromPDF(file);
-  autofillFields(text);
+  try {
+    const text = await extractTextFromPDF(file);
+    autofillFields(text);
+  } catch (err) {
+    console.error("Error parsing PDF resume:", err);
+    alert("Sorry, failed to parse the resume. Please fill in details manually.");
+  }
 });
-
-function autofillFields(text) {
-  const nameMatch = text.match(/Name[:\s]+([A-Z][a-z]+\s[A-Z][a-z]+)/);
-  const experienceMatch = text.match(/Experience[:\s]+([\s\S]{20,500})/i);
-  const skillsMatch = text.match(/Skills[:\s]+([\w,\s]+)/i);
-
-  if (nameMatch) document.getElementById("fullName").value = nameMatch[1];
-  if (experienceMatch) document.getElementById("experience").value = experienceMatch[1].trim();
-  if (skillsMatch) document.getElementById("skills").value = skillsMatch[1].trim();
-}
 
 profilePic.addEventListener("change", () => {
   const file = profilePic.files[0];
@@ -86,20 +108,24 @@ profilePic.addEventListener("change", () => {
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
 
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-  if (snap.exists()) {
-    const data = snap.data();
-    document.getElementById("fullName").value = data.fullName || "";
-    document.getElementById("bio").value = data.bio || "";
-    document.getElementById("skills").value = data.skills || "";
-    document.getElementById("experience").value = data.experience || "";
-    languageSelect.value = data.languages || "";
-    disabilityStatus.value = data.disability || "";
-    if (data.profilePicUrl) {
-      picPreview.src = data.profilePicUrl;
-      picPreview.style.display = "block";
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      document.getElementById("fullName").value = data.fullName || "";
+      document.getElementById("bio").value = data.bio || "";
+      document.getElementById("skills").value = data.skills || "";
+      document.getElementById("experience").value = data.experience || "";
+      languageSelect.value = data.languages || "";
+      disabilityStatus.value = data.disability || "";
+      if (data.profilePicUrl) {
+        picPreview.src = data.profilePicUrl;
+        picPreview.style.display = "block";
+      }
     }
+  } catch (err) {
+    console.error("Error loading profile:", err);
   }
 
   profileForm.addEventListener("submit", async (e) => {
@@ -117,19 +143,23 @@ onAuthStateChanged(auth, async (user) => {
       disability: disabilityStatus.value
     };
 
-    const file = profilePic.files[0];
-    if (file) {
-      const fileRef = ref(storage, `profilePics/${user.uid}`);
-      await uploadBytes(fileRef, file);
-      const downloadURL = await getDownloadURL(fileRef);
-      profileData.profilePicUrl = downloadURL;
+    try {
+      const file = profilePic.files[0];
+      if (file) {
+        const fileRef = ref(storage, `profilePics/${user.uid}`);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
+        profileData.profilePicUrl = downloadURL;
+      }
+      await setDoc(doc(db, "users", user.uid), profileData, { merge: true });
+      alert("Profile saved successfully!");
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("Failed to save profile. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      saveBtnText.style.display = "inline";
+      saveBtnSpinner.style.display = "none";
     }
-
-    await setDoc(userRef, profileData, { merge: true });
-
-    saveBtn.disabled = false;
-    saveBtnText.style.display = "inline";
-    saveBtnSpinner.style.display = "none";
-    alert("Profile saved successfully!");
   });
 });
