@@ -3,18 +3,19 @@ import {
   getFirestore,
   doc,
   setDoc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
   ref,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // PDF.js setup
-import * as pdfjsLib from 'https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.mjs';
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/es5/build/pdf.worker.js";
+import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const auth = getAuth();
@@ -32,7 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtnText = document.getElementById("saveBtnText");
   const saveBtnSpinner = document.getElementById("saveBtnSpinner");
 
-  const recommendedSkills = ["JavaScript", "React", "Firebase", "Python", "Project Management", "Communication", "SQL", "Design", "Leadership"];
+  const recommendedSkills = [
+    "JavaScript",
+    "React",
+    "Firebase",
+    "Python",
+    "Project Management",
+    "Communication",
+    "SQL",
+    "Design",
+    "Leadership",
+  ];
 
   skillInput.addEventListener("focus", () => {
     if (!skillInput.value) skillInput.value = recommendedSkills.join(", ");
@@ -49,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            fullText += textContent.items.map(item => item.str).join(" ") + " ";
+            fullText += textContent.items.map((item) => item.str).join(" ") + " ";
           }
           resolve(fullText);
         } catch (err) {
@@ -69,14 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("fullName").value = nameMatch[1];
     }
 
-    const foundSkills = recommendedSkills.filter(skill =>
+    const foundSkills = recommendedSkills.filter((skill) =>
       new RegExp(`\\b${skill}\\b`, "i").test(text)
     );
     if (foundSkills.length > 0) {
       skillInput.value = foundSkills.join(", ");
     }
 
-    const expMatch = text.match(/(Experience|Work Experience|Professional Experience)[\s:\-]*([\s\S]{50,500})/i);
+    const expMatch = text.match(
+      /(Experience|Work Experience|Professional Experience)[\s:\-]*([\s\S]{50,500})/i
+    );
     if (expMatch) {
       document.getElementById("experience").value = expMatch[2].trim();
     }
@@ -105,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return window.location.href = "login.html";
+    if (!user) return (window.location.href = "login.html");
 
     try {
       const userRef = doc(db, "users", user.uid);
@@ -139,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
         skills: document.getElementById("skills").value,
         experience: document.getElementById("experience").value,
         languages: languageSelect.value,
-        disability: disabilityStatus.value
+        disability: disabilityStatus.value,
       };
 
       try {
