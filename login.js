@@ -10,8 +10,14 @@ import {
   signInWithPopup,
   GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ✅ Firebase Config (Replace this with your real config)
+// ✅ Firebase Config (Replace with your real config)
 const firebaseConfig = {
   apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
   authDomain: "opportuna-a14bb.firebaseapp.com",
@@ -25,6 +31,7 @@ const firebaseConfig = {
 // Init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 // DOM elements
@@ -85,6 +92,12 @@ loginForm.addEventListener("submit", async (e) => {
       if (displayName) {
         await updateProfile(userCred.user, { displayName });
       }
+      // Save profile info to Firestore
+      await setDoc(doc(db, "profiles", userCred.user.uid), {
+        email,
+        displayName: displayName || null,
+        createdAt: serverTimestamp()
+      });
       window.location.href = "index.html"; // redirect after signup
     }
   } catch (error) {
@@ -100,7 +113,8 @@ googleBtn.addEventListener("click", async () => {
   }
 
   try {
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    // Optionally, you can check if new user and save profile to Firestore here if you want
     window.location.href = "index.html";
   } catch (error) {
     alert("Google Sign-in failed: " + error.message);
