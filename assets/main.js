@@ -1,161 +1,134 @@
+// ----------------- Firebase Imports -----------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
-  signOut,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   collection,
   addDoc,
-  doc,
-  setDoc,
-  getDoc,
+  serverTimestamp,
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp,
-  getDocs
+  doc,
+  getDoc,
+  deleteDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Firebase config
+// ----------------- Firebase Config -----------------
 const firebaseConfig = {
-  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-  authDomain: "opportuna-a14bb.firebaseapp.com",
-  projectId: "opportuna-a14bb",
-  storageBucket: "opportuna-a14bb.appspot.com",
-  messagingSenderId: "906149069855",
-  appId: "1:906149069855:web:618ed823248443db30812a",
-  measurementId: "G-GJGCWL01W4"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-// DOM
-const createPostBtn = document.getElementById("createPostBtn");
-const overlay = document.getElementById("overlay");
-const postModal = document.getElementById("postModal");
+// ----------------- DOM Elements -----------------
 const postForm = document.getElementById("postForm");
+const postInput = document.getElementById("postInput");
 const postSection = document.getElementById("postSection");
-const authModal = document.getElementById("authModal");
-const authOverlay = document.getElementById("authOverlay");
-const signInBtn = document.getElementById("signInBtn");
-const signUpBtn = document.getElementById("signUpBtn");
-const authForm = document.getElementById("authForm");
-const authSubmitBtn = document.getElementById("authSubmitBtn");
-const authBack = document.getElementById("authBack");
-const authError = document.getElementById("authError");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
 const logoutBtn = document.getElementById("logoutBtn");
-const loginLink = document.getElementById("loginLink");
-const navProfilePic = document.getElementById("navProfilePic");
-const userDropdown = document.getElementById("userDropdown");
-const myProfileBtn = document.getElementById("myProfileBtn");
 
-// Profile modal
-const profileModal = document.getElementById("profileModal");
-const profileOverlay = document.getElementById("profileOverlay");
-const profileForm = document.getElementById("profileForm");
-const profilePicInput = document.getElementById("profilePicInput");
-const bioInput = document.getElementById("bioInput");
-const workInput = document.getElementById("workInput");
-const skillsInput = document.getElementById("skillsInput");
-
-// Search
-const userSearchInput = document.getElementById("userSearchInput");
-const userSearchResults = document.getElementById("userSearchResults");
-
-// Show post modal
-createPostBtn.addEventListener("click", () => {
-  overlay.classList.add("show");
-  postModal.classList.add("open");
-});
-
-overlay.addEventListener("click", () => {
-  overlay.classList.remove("show");
-  postModal.classList.remove("open");
-});
-
-postForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const content = document.getElementById("postContent").value.trim();
-  const user = auth.currentUser;
-  if (user && content) {
-    await addDoc(collection(db, "posts"), {
-      uid: user.uid,
-      email: user.email,
-      content,
-      timestamp: serverTimestamp()
-    });
-    postForm.reset();
-    overlay.classList.remove("show");
-    postModal.classList.remove("open");
+// ----------------- Auth State -----------------
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loadPosts();
+    document.body.classList.add("logged-in");
+  } else {
+    document.body.classList.remove("logged-in");
   }
 });
 
-// Auth modal
-signInBtn.addEventListener("click", () => {
-  authForm.style.display = "flex";
-  authSubmitBtn.textContent = "Sign In";
-});
-
-signUpBtn.addEventListener("click", () => {
-  authForm.style.display = "flex";
-  authSubmitBtn.textContent = "Sign Up";
-});
-
-authBack.addEventListener("click", () => {
-  authForm.style.display = "none";
-  authError.textContent = "";
-});
-
-// Auth submit
-authForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try {
-    if (authSubmitBtn.textContent === "Sign In") {
+// ----------------- Login -----------------
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = loginForm["loginEmail"].value;
+    const password = loginForm["loginPassword"].value;
+    try {
       await signInWithEmailAndPassword(auth, email, password);
-    } else {
-      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      alert("Login failed: " + err.message);
     }
-    authModal.classList.remove("open");
-    authOverlay.classList.remove("show");
-  } catch (error) {
-    authError.textContent = error.message;
-  }
-});
+  });
+}
 
-// Logout (added await and try/catch)
-logoutBtn.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Sign out failed:", error);
-  }
-});
+// ----------------- Signup -----------------
+if (signupForm) {
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = signupForm["signupEmail"].value;
+    const password = signupForm["signupPassword"].value;
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "profiles", userCred.user.uid), {
+        email,
+        createdAt: serverTimestamp(),
+      });
+    } catch (err) {
+      alert("Signup failed: " + err.message);
+    }
+  });
+}
 
+// ----------------- Logout -----------------
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth);
+  });
+}
+
+// ----------------- Post Submit -----------------
+if (postForm) {
+  postForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return;
+    const content = postInput.value;
+    if (!content) return;
+
+    try {
+      await addDoc(collection(db, "posts"), {
+        uid: user.uid,
+        email: user.email,
+        content,
+        timestamp: serverTimestamp(),
+      });
+      postInput.value = "";
+    } catch (err) {
+      console.error("Error posting:", err);
+    }
+  });
+}
+
+// ----------------- Load Posts -----------------
 function loadPosts() {
   const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
   onSnapshot(q, async (snapshot) => {
     postSection.innerHTML = "";
     for (const docSnap of snapshot.docs) {
       const post = docSnap.data();
+      const postId = docSnap.id;
       const userProfileRef = doc(db, "profiles", post.uid);
       const userProfileSnap = await getDoc(userProfileRef);
       const userData = userProfileSnap.exists() ? userProfileSnap.data() : {};
+
+      const isOwner = auth.currentUser && post.uid === auth.currentUser.uid;
+
       const postEl = document.createElement("div");
       postEl.className = "post-card";
       postEl.innerHTML = `
@@ -163,128 +136,25 @@ function loadPosts() {
           <img class="post-avatar" src="${userData.photoURL || 'assets/default.png'}" />
           <strong>${post.email}</strong>
           <p class="post-bio">${userData.bio || ""}</p>
+          ${isOwner ? `<button class="delete-post" data-id="${postId}">Delete</button>` : ""}
         </div>
         <div class="post-content">${post.content}</div>
       `;
       postSection.appendChild(postEl);
     }
+
+    document.querySelectorAll(".delete-post").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const postId = e.target.getAttribute("data-id");
+        if (postId && confirm("Are you sure you want to delete this post?")) {
+          try {
+            await deleteDoc(doc(db, "posts", postId));
+          } catch (error) {
+            console.error("Failed to delete post:", error);
+            alert("You can only delete your own posts.");
+          }
+        }
+      });
+    });
   });
 }
-
-async function loadUserProfile() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const snapshot = await getDoc(doc(db, "profiles", user.uid));
-  if (snapshot.exists()) {
-    const data = snapshot.data();
-    bioInput.value = data.bio || "";
-    workInput.value = data.work || "";
-    skillsInput.value = data.skills || "";
-    if (data.photoURL) {
-      navProfilePic.src = data.photoURL;
-    }
-  }
-}
-
-// Auth state change handler — only one, no nesting!
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginLink.style.display = "none"; // Hide login link if logged in
-    createPostBtn.style.display = "block";
-    userDropdown.style.display = "block";
-    navProfilePic.src = "assets/default.png"; // or user.photoURL if available
-
-    authModal.classList.remove("open");
-    authOverlay.classList.remove("show");
-
-    // Load user profile and posts
-    await loadUserProfile();
-    loadPosts();
-  } else {
-    loginLink.style.display = "inline-block"; // Show login link if logged out
-    createPostBtn.style.display = "none";
-    userDropdown.style.display = "none";
-
-    authForm.style.display = "none";
-    authModal.classList.add("open");
-    authOverlay.classList.add("show");
-  }
-});
-
-// Profile modal logic
-myProfileBtn.addEventListener("click", () => {
-  profileOverlay.classList.add("show");
-  profileModal.classList.add("open");
-  loadUserProfile();
-});
-
-profileOverlay.addEventListener("click", () => {
-  profileOverlay.classList.remove("show");
-  profileModal.classList.remove("open");
-});
-
-// Save profile
-profileForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const user = auth.currentUser;
-  if (!user) return;
-
-  let photoURL = null;
-  const file = profilePicInput.files[0];
-  if (file) {
-    const storageRef = ref(storage, `profilePics/${user.uid}`);
-    await uploadBytes(storageRef, file);
-    photoURL = await getDownloadURL(storageRef);
-    navProfilePic.src = photoURL;
-  }
-
-  await setDoc(doc(db, "profiles", user.uid), {
-    bio: bioInput.value.trim(),
-    work: workInput.value.trim(),
-    skills: skillsInput.value.trim(),
-    photoURL
-  });
-
-  profileOverlay.classList.remove("show");
-  profileModal.classList.remove("open");
-  loadPosts();
-});
-
-// Dropdown toggle behavior
-if (userDropdown && navProfilePic) {
-  navProfilePic.addEventListener("click", (e) => {
-    e.stopPropagation();
-    userDropdown.classList.toggle("open");
-  });
-
-  document.addEventListener("click", () => {
-    userDropdown.classList.remove("open");
-  });
-}
-
-// User search
-userSearchInput.addEventListener("input", async () => {
-  const search = userSearchInput.value.trim().toLowerCase();
-  userSearchResults.innerHTML = "";
-  if (!search) return;
-
-  const profilesSnapshot = await getDocs(collection(db, "profiles"));
-  profilesSnapshot.forEach((doc) => {
-    const data = doc.data();
-    const emailMatch = data?.email?.toLowerCase().includes(search);
-    const skillMatch = data?.skills?.toLowerCase().includes(search);
-    if (emailMatch || skillMatch) {
-      const result = document.createElement("div");
-      result.className = "user-result";
-      result.innerHTML = `
-        <img src="${data.photoURL || 'assets/default.png'}" class="result-avatar"/>
-        <div>
-          <strong>${data.email || 'Unknown'}</strong><br/>
-          <em>${data.skills || ''}</em>
-        </div>
-      `;
-      userSearchResults.appendChild(result);
-    }
-  });
-});
