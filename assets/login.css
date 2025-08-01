@@ -1,0 +1,125 @@
+/* Login page container */
+.auth-container {
+  max-width: 400px;
+  margin: 80px auto;
+  background: #fff;
+  padding: 30px 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.auth-container h2 {
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.8rem;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Inputs */
+.auth-container input[type="email"],
+.auth-container input[type="password"],
+.auth-container input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.auth-container input[type="email"]:focus,
+.auth-container input[type="password"]:focus,
+.auth-container input[type="text"]:focus {
+  border-color: #2980b9;
+  outline: none;
+}
+
+/* Button */
+.auth-container button {
+  width: 100%;
+  padding: 12px;
+  background: #2980b9;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.auth-container button:hover {
+  background: #1c5980;
+}
+
+/* Toggle link */
+.auth-container .toggle-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.auth-container .toggle-link a {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-container .toggle-link a:hover {
+  text-decoration: underline;
+}
+
+/* Divider */
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  font-weight: 600;
+  color: #aaa;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  width: 40%;
+  background: #ddd;
+  position: absolute;
+  top: 50%;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* Google button */
+.google-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #4285F4;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(66,133,244,0.4);
+}
+
+.google-btn:hover {
+  background: #357ae8;
+}
