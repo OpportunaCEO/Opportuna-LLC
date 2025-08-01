@@ -1,22 +1,39 @@
-/* Login page container */
+/* Reset and base */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #0a1d37; /* dark navy */
+  font-family: 'Roboto', sans-serif;
+  color: #f4f1ea; /* very light cream */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Container */
 .auth-container {
+  background: #12294b; /* navy */
   max-width: 400px;
-  margin: 80px auto;
-  background: #fff;
-  padding: 30px 25px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  border-radius: 10px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  width: 100%;
+  padding: 30px 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 /* Heading */
 .auth-container h2 {
-  margin-bottom: 20px;
-  font-weight: 700;
-  font-size: 1.8rem;
-  text-align: center;
-  color: #2c3e50;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #f9a94d; /* light orange */
 }
 
 /* Inputs */
@@ -24,51 +41,63 @@
 .auth-container input[type="password"],
 .auth-container input[type="text"] {
   width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 15px;
-  border: 1.8px solid #ccc;
-  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border: none;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  background: #1e3c72; /* slightly lighter navy */
+  color: #f4f1ea;
+  transition: background 0.3s ease;
+}
+
+.auth-container input[type="email"]::placeholder,
+.auth-container input[type="password"]::placeholder,
+.auth-container input[type="text"]::placeholder {
+  color: #f9a94d; /* light orange placeholder */
+  opacity: 0.8;
 }
 
 .auth-container input[type="email"]:focus,
 .auth-container input[type="password"]:focus,
 .auth-container input[type="text"]:focus {
-  border-color: #2980b9;
+  background: #f9a94d;
+  color: #0a1d37;
   outline: none;
+  font-weight: 600;
 }
 
 /* Button */
 .auth-container button {
   width: 100%;
-  padding: 12px;
-  background: #2980b9;
+  padding: 14px;
+  background: #f9a94d;
   border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.1rem;
+  border-radius: 10px;
+  color: #0a1d37;
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 .auth-container button:hover {
-  background: #1c5980;
+  background: #e88e2e;
 }
 
 /* Toggle link */
 .auth-container .toggle-link {
-  text-align: center;
-  margin-top: 18px;
-  font-size: 0.9rem;
-  color: #555;
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #d3c3a3; /* light cream */
 }
 
 .auth-container .toggle-link a {
-  color: #2980b9;
-  text-decoration: none;
+  color: #f9a94d;
   font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -78,21 +107,22 @@
 
 /* Divider */
 .divider {
-  text-align: center;
-  margin: 25px 0;
+  color: #d3c3a3;
   font-weight: 600;
-  color: #aaa;
+  margin: 30px 0 25px;
   position: relative;
+  font-size: 1rem;
 }
 
 .divider::before,
 .divider::after {
   content: "";
-  height: 1px;
-  width: 40%;
-  background: #ddd;
+  height: 2px;
+  background: #f9a94d;
   position: absolute;
   top: 50%;
+  width: 35%;
+  opacity: 0.4;
 }
 
 .divider::before {
@@ -105,21 +135,20 @@
 
 /* Google button */
 .google-btn {
-  display: block;
+  background: #f9a94d;
+  border-radius: 10px;
+  padding: 14px 0;
   width: 100%;
-  padding: 12px;
-  background: #4285F4;
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #0a1d37;
+  box-shadow: 0 5px 15px rgba(249, 169, 77, 0.5);
   cursor: pointer;
+  border: none;
   transition: background 0.3s ease;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(66,133,244,0.4);
 }
 
 .google-btn:hover {
-  background: #357ae8;
+  background: #e88e2e;
 }
