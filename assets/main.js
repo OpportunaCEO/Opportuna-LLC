@@ -75,7 +75,7 @@ if (signupForm) {
     const password = signupForm["signupPassword"].value;
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "profiles", userCred.user.uid), {
+      await setDoc(doc(db, "users", userCred.user.uid), {
         email,
         createdAt: serverTimestamp(),
       });
@@ -123,7 +123,7 @@ function loadPosts() {
     for (const docSnap of snapshot.docs) {
       const post = docSnap.data();
       const postId = docSnap.id;
-      const userProfileRef = doc(db, "profiles", post.uid);
+      const userProfileRef = doc(db, "users", post.uid);
       const userProfileSnap = await getDoc(userProfileRef);
       const userData = userProfileSnap.exists() ? userProfileSnap.data() : {};
 
