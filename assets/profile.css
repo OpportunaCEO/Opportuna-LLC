@@ -1,0 +1,231 @@
+/* Reset and base */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #0a1d37; /* dark navy */
+  font-family: 'Roboto', sans-serif;
+  color: #f4f1ea; /* very light cream */
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Navigation */
+.top-nav {
+  background: #12294b; /* navy */
+  padding: 12px 20px;
+  display: flex;
+  gap: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+.top-nav a {
+  color: #f9a94d; /* light orange */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+.top-nav a:hover {
+  color: #e88e2e;
+}
+
+/* Main container */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #12294b; /* navy */
+  border-radius: 15px;
+  padding: 30px 40px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+}
+
+/* Headings */
+.container h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 2.25rem;
+  margin-bottom: 25px;
+  color: #f9a94d;
+  text-align: center;
+}
+
+/* Form Card */
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Labels and Inputs */
+label {
+  font-weight: 600;
+  color: #f4f1ea;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  margin-top: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #1e3c72; /* slightly lighter navy */
+  color: #f4f1ea;
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
+  transition: background 0.3s ease;
+  resize: vertical;
+}
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #f9a94d;
+  opacity: 0.7;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  background: #f9a94d;
+  color: #0a1d37;
+  outline: none;
+  font-weight: 700;
+}
+
+/* Multi-select height */
+select[multiple] {
+  height: 120px;
+  padding-top: 10px;
+}
+
+/* Buttons */
+button {
+  background: #f9a94d;
+  color: #0a1d37;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+button:hover {
+  background: #e88e2e;
+}
+
+/* Preview image */
+.preview-img {
+  display: block;
+  max-width: 150px;
+  margin-top: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* Section titles */
+section h2 {
+  font-family: 'Poppins', sans-serif;
+  color: #f9a94d;
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Post form textarea */
+#postInput {
+  width: 100%;
+  min-height: 80px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #1e3c72;
+  color: #f4f1ea;
+  resize: vertical;
+  transition: background 0.3s ease;
+}
+#postInput::placeholder {
+  color: #f9a94d;
+  opacity: 0.7;
+}
+#postInput:focus {
+  background: #f9a94d;
+  color: #0a1d37;
+  outline: none;
+  font-weight: 700;
+}
+
+/* Post section container */
+#postSection {
+  margin-top: 40px;
+}
+
+/* Posts container styling */
+#postSectionContent {
+  margin-top: 20px;
+}
+
+/* Post card */
+.post-card {
+  background: #1e3c72;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  color: #f4f1ea;
+  font-family: 'Roboto', sans-serif;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.post-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f9a94d;
+}
+.post-bio {
+  font-size: 0.9rem;
+  color: #d3c3a3;
+  font-style: italic;
+}
+.post-content {
+  font-size: 1rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* Delete button */
+.delete-post {
+  background: #e74c3c;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.3s ease;
+}
+.delete-post:hover {
+  background: #c0392b;
+}
