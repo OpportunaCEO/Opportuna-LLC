@@ -18,7 +18,7 @@ import {
   doc,
   getDoc,
   deleteDoc,
-  setDoc
+  setDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ----------------- Firebase Config -----------------
@@ -28,7 +28,7 @@ const firebaseConfig = {
   projectId: "YOUR_PROJECT_ID",
   storageBucket: "YOUR_STORAGE_BUCKET",
   messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  appId: "YOUR_APP_ID",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -38,7 +38,7 @@ const db = getFirestore(app);
 // ----------------- DOM Elements -----------------
 const postForm = document.getElementById("postForm");
 const postInput = document.getElementById("postInput");
-const postSection = document.getElementById("postSection");
+const postSection = document.getElementById("postSectionContent"); // updated to match HTML div
 const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -98,7 +98,7 @@ if (postForm) {
     e.preventDefault();
     const user = auth.currentUser;
     if (!user) return;
-    const content = postInput.value;
+    const content = postInput.value.trim();
     if (!content) return;
 
     try {
@@ -143,7 +143,7 @@ function loadPosts() {
       postSection.appendChild(postEl);
     }
 
-    document.querySelectorAll(".delete-post").forEach(btn => {
+    document.querySelectorAll(".delete-post").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const postId = e.target.getAttribute("data-id");
         if (postId && confirm("Are you sure you want to delete this post?")) {
