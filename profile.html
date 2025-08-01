@@ -53,7 +53,7 @@
       <label>Upload Profile Picture:
         <input type="file" id="profilePic" accept="image/*" />
       </label>
-      <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:block; margin-top:8px;" />
+      <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:none; margin-top:8px;" />
 
       <label>Upload Resume (PDF):
         <input type="file" id="resumeUpload" accept="application/pdf" />
@@ -70,10 +70,10 @@
     <section id="postSection">
       <h2>Post to Your Feed</h2>
       <form id="postForm" class="form-card">
-        <textarea id="postText" placeholder="Share an update, opportunity, or experience..." rows="3" required></textarea>
+        <textarea id="postInput" placeholder="Share an update, opportunity, or experience..." rows="3" required></textarea>
         <button type="submit">Post</button>
       </form>
-      <div id="feedContainer"></div>
+      <div id="postSectionContent"></div>
     </section>
   </main>
 
