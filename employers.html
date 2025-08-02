@@ -5,165 +5,170 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Employers | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <style>
-    body {
-      background: #121212;
-      color: #f5f5f5;
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 0;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    h1, h2 {
-      color: #ff6600;
-    }
-    nav.top-nav {
-      background: #000;
-      padding: 1rem;
-    }
-    nav.top-nav .nav-center {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-    }
-    nav.top-nav a.nav-link {
-      color: #ffa64d;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav.top-nav a.nav-link:hover {
-      color: #ff4500;
-    }
+ <style>
+  body {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-family: "Segoe UI", sans-serif;
+    margin: 0; padding: 0;
+  }
 
-    .sign-in-post {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-    .sign-in-box, .post-job-box {
-      background: #222;
-      padding: 1.5rem;
-      border-radius: 12px;
-      flex: 1 1 350px;
-      box-shadow: 0 0 15px rgba(255,102,0,0.3);
-    }
-    .sign-in-box h2, .post-job-box h2 {
-      margin-top: 0;
-      color: #ffa64d;
-    }
-    label {
-      display: block;
-      margin: 0.75rem 0 0.3rem;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
-      background: #333;
-      color: #eee;
-      resize: vertical;
-    }
-    button {
-      margin-top: 1rem;
-      background: #ff6600;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      color: white;
-      font-weight: bold;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #e65500;
-    }
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
 
-    #activeListings {
-      margin-top: 2rem;
-      background: #222;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255,102,0,0.3);
-    }
-    #activeListings h2 {
-      margin-top: 0;
-      color: #ffa64d;
-    }
-    #jobListings {
-      /* changed from ul to div container, so no ul styles here */
-    }
-    .job-card {
-      background: #333;
-      margin-bottom: 0.75rem;
-      padding: 0.8rem 1rem;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .job-logo {
-      width: 50px;
-      height: 50px;
-      background-color: #444;
-      border-radius: 8px;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    .job-info {
-      flex-grow: 1;
-    }
-    .job-title {
-      font-weight: bold;
-      color: #ffb84d;
-      margin: 0;
-    }
-    .job-company, .job-location {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-    .apply-btn {
-      background: #ff6600;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 20px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-    }
-    .apply-btn:hover {
-      background: #e65500;
-    }
+  h1, h2 {
+    color: var(--accent);
+  }
 
-    .premium-upgrade {
-      margin-top: 2rem;
-      background: #ff6600;
-      color: #fff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(255,102,0,0.5);
-    }
-    .premium-upgrade a {
-      color: #fff;
-      font-weight: bold;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  </style>
+  nav.top-nav {
+    background: #000;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(255, 103, 0, 0.25);
+  }
+
+  nav.top-nav .nav-center {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  nav.top-nav a.nav-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  nav.top-nav a.nav-link:hover {
+    color: #ffa64d;
+  }
+
+  .sign-in-post {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .sign-in-box, .post-job-box {
+    background: var(--soft-card);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    flex: 1 1 350px;
+    box-shadow: 0 0 15px rgba(255,103,0,0.3);
+  }
+
+  label {
+    display: block;
+    margin: 0.75rem 0 0.3rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    background: #2a2a2a;
+    color: var(--text-light);
+    resize: vertical;
+  }
+
+  button {
+    margin-top: 1rem;
+    background: var(--accent);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+
+  button:hover {
+    background: var(--accent-hover);
+  }
+
+  #activeListings {
+    margin-top: 2rem;
+    background: var(--soft-card);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 10px rgba(255,103,0,0.3);
+  }
+
+  .job-card {
+    background: #2a2a2a;
+    margin-bottom: 0.75rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .job-logo {
+    width: 50px;
+    height: 50px;
+    background-color: #3a3a3a;
+    border-radius: 8px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .job-title {
+    font-weight: bold;
+    color: #ffb380;
+    margin: 0;
+  }
+
+  .job-company, .job-location {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+
+  .apply-btn {
+    background: var(--accent);
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+  }
+
+  .apply-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  .premium-upgrade {
+    margin-top: 2rem;
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255,103,0,0.5);
+  }
+
+  .premium-upgrade a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
   <nav class="top-nav">
