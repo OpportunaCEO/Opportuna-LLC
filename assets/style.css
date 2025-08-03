@@ -337,8 +337,10 @@ form select {
 
 .nav-links {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .nav-user {
