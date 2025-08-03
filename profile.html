@@ -16,31 +16,44 @@
     <a href="login.html" id="logoutBtn">🚪 Logout</a>
   </nav>
 
-  <main class="container">
-    <h2>Your Profile</h2>
-    <form id="profileForm" class="form-card">
+  <main class="container profile-main">
+  <h2>Your Profile</h2>
+
+  <!-- Progress bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <div class="profile-grid">
+    <!-- Left: Profile Form -->
+    <form id="profileForm" class="form-card profile-form">
+      <!-- Full Name -->
       <label>Full Name:
         <input type="text" id="fullName" required />
       </label>
 
+      <!-- Bio -->
       <label>Bio:
         <textarea id="bio" rows="3" placeholder="Tell us about yourself..."></textarea>
       </label>
 
-      <label>Skills (comma separated):
-        <input type="text" id="skills" placeholder="E.g., JavaScript, Figma, Communication" />
-      </label>
+      <!-- Skills with recommended chips -->
+      <label>Skills:</label>
+      <div id="skillChips" class="skill-chips"></div>
+      <input type="text" id="skillInput" placeholder="Add a skill and press Enter" autocomplete="off" />
+      <small>Recommended skills: <span id="recommendedSkills"></span></small>
 
-      <label>Languages Spoken:
-        <select id="languages" multiple>
-          <option value="English">English</option>
-          <option value="Spanish">Spanish</option>
-          <option value="French">French</option>
-          <option value="Mandarin">Mandarin</option>
-          <option value="Arabic">Arabic</option>
-        </select>
-      </label>
+      <!-- Languages -->
+      <label>Languages Spoken:</label>
+      <select id="languages" multiple>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+        <option value="Mandarin">Mandarin</option>
+        <option value="Arabic">Arabic</option>
+      </select>
 
+      <!-- Disability Status -->
       <label>Disability Status:
         <select id="disabilityStatus">
           <option value="">Prefer not to say</option>
@@ -49,18 +62,22 @@
         </select>
       </label>
 
+      <!-- Work Experience -->
       <label>Work Experience:
         <textarea id="experience" rows="4" placeholder="Describe your experience..."></textarea>
       </label>
 
+      <!-- Profile Picture -->
       <label>Upload Profile Picture:
         <input type="file" id="profilePic" accept="image/*" />
       </label>
       <img id="picPreview" src="" alt="Preview" class="preview-img" style="max-width:150px; display:none; margin-top:8px;" />
 
+      <!-- Resume Upload -->
       <label>Upload Resume (PDF):
         <input type="file" id="resumeUpload" accept="application/pdf" />
       </label>
+      <div id="resumeStatus" style="font-size: 0.9rem; color: green; margin-top: 6px;"></div>
 
       <button type="submit" id="saveProfileBtn">
         <span id="saveBtnText">Save Profile</span>
@@ -68,17 +85,22 @@
       </button>
     </form>
 
-    <hr />
-
-    <section id="postSection">
-      <h2>Post to Your Feed</h2>
-      <form id="postForm" class="form-card">
-        <textarea id="postInput" placeholder="Share an update, opportunity, or experience..." rows="3" required></textarea>
-        <button type="submit">Post</button>
-      </form>
-      <div id="postSection"></div>
+    <!-- Right: Live Profile Preview -->
+    <section class="profile-preview form-card">
+      <h3>Live Profile Preview</h3>
+      <div class="preview-pic-wrapper">
+        <img id="previewProfilePic" src="assets/default.png" alt="Profile Picture" />
+      </div>
+      <h2 id="previewName">Your Name</h2>
+      <p id="previewBio" class="preview-text">Your bio will appear here.</p>
+      <p><strong>Skills:</strong> <span id="previewSkills">None</span></p>
+      <p><strong>Languages:</strong> <span id="previewLanguages">None</span></p>
+      <p><strong>Disability Status:</strong> <span id="previewDisability">Not specified</span></p>
+      <p><strong>Experience:</strong></p>
+      <p id="previewExperience" class="preview-text">Your experience summary will appear here.</p>
     </section>
-  </main>
+  </div>
+</main>
 
   <script type="module" src="assets/main.js"></script>
   <script type="module" src="profile.js"></script>
