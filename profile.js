@@ -4,13 +4,15 @@ import {
   doc,
   setDoc,
   getDoc,
+  collection,     // <-- Added this for skills autocomplete
+  getDocs         // <-- Added this for skills autocomplete
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
   ref,
   uploadBytes,
   getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.j
 
 // PDF.js setup
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
