@@ -441,5 +441,58 @@ button,
   transition: 0.3s ease;
   }
 }
+/* === Extra Mobile Tweaks (Added in Step 6) === */
+@media (max-width: 480px) {
+  /* Reduce hero padding on very small screens */
+  .hero {
+    padding: 3rem 1rem;
+  }
+
+  .hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+  }
+
+  /* Smaller profile icon in nav */
+  .profile-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Adjust feed post card spacing */
+  .post-card {
+    padding: 0.75rem;
+  }
+
+  .post-header img.post-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .post-content {
+    font-size: 0.95rem;
+  }
+
+  /* Improve modal spacing */
+  #postModal {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+
+  /* Call to action buttons stack */
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  /* Adjust dropdown spacing */
+  .dropdown-content a {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+}
+
 
 
