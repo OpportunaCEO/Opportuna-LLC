@@ -373,9 +373,13 @@ form select {
     border-radius: 8px;
   }
 
-  .nav-links.active {
-    display: flex;
-  }
+  .nav-links {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  padding-top: 1rem;
+}
 
   .nav-user {
     margin-top: 1rem;
