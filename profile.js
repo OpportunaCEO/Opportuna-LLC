@@ -4,15 +4,15 @@ import {
   doc,
   setDoc,
   getDoc,
-  collection,     // <-- Added this for skills autocomplete
-  getDocs         // <-- Added this for skills autocomplete
+  collection,
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
   ref,
   uploadBytes,
   getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.j
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // PDF.js setup
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtnSpinner = document.getElementById("saveBtnSpinner");
   const resumeStatus = document.getElementById("resumeStatus");
 
-  // Recommended skills list
-  const recommendedSkills = [
+  // Recommended skills list (fallback)
+  const fallbackSkills = [
     "JavaScript",
     "React",
     "Firebase",
@@ -48,11 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
     "SQL",
     "Design",
     "Leadership",
+    "TypeScript",
+    "Node.js",
+    "HTML",
+    "CSS"
   ];
 
-  // Show recommended skills under skill input
+  // Show recommended skills under skill input (using fallbackSkills)
   const recommendedSkillsSpan = document.getElementById("recommendedSkills");
-  recommendedSkillsSpan.textContent = recommendedSkills.join(", ");
+  recommendedSkillsSpan.textContent = fallbackSkills.join(", ");
 
   // PDF resume text extraction function
   async function extractTextFromPDF(file) {
@@ -87,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("fullName").value = nameMatch[1];
     }
 
-    const foundSkills = recommendedSkills.filter((skill) =>
+    // Use fallbackSkills for autofill of skills
+    const foundSkills = fallbackSkills.filter((skill) =>
       new RegExp(`\\b${skill}\\b`, "i").test(text)
     );
     if (foundSkills.length > 0) {
@@ -111,20 +116,21 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const text = await extractTextFromPDF(file);
       autofillFields(text);
-      // After successful parsing:
-const typedArray = new Uint8Array(await file.arrayBuffer());
-const pdf = await pdfjsLib.getDocument(typedArray).promise;
-const page = await pdf.getPage(1);
-const viewport = page.getViewport({ scale: 1.5 });
 
-const canvas = document.getElementById("pdfPreviewCanvas");
-const ctx = canvas.getContext("2d");
+      // Render first page preview
+      const typedArray = new Uint8Array(await file.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument(typedArray).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.5 });
 
-canvas.height = viewport.height;
-canvas.width = viewport.width;
-canvas.style.display = "block";
+      const canvas = document.getElementById("pdfPreviewCanvas");
+      const ctx = canvas.getContext("2d");
 
-await page.render({ canvasContext: ctx, viewport }).promise;
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      canvas.style.display = "block";
+
+      await page.render({ canvasContext: ctx, viewport }).promise;
     } catch (err) {
       console.error("Error parsing PDF resume:", err);
       alert("Sorry, failed to parse the resume. Please fill in details manually.");
@@ -238,14 +244,119 @@ await page.render({ canvasContext: ctx, viewport }).promise;
       .forEach(addSkillChip);
   }
 
-  // Handle Enter key on skill input
+  // --- Skill Autocomplete from Firestore with fallback ---
+  let suggestions = []; // cached suggestions from Firestore
+  let activeIndex = -1;
+  let debounceTimer = null;
+
+  // Fetch skills once from Firestore
+  async function loadSkillSuggestions() {
+    try {
+      const skillsCol = collection(db, "skills");
+      const snap = await getDocs(skillsCol);
+      suggestions = snap.docs.map(d => (d.data().name || d.id).trim()).filter(Boolean);
+      // merge fallback without duplicates
+      suggestions = Array.from(new Set([...suggestions, ...fallbackSkills]));
+    } catch (err) {
+      console.warn("Failed to load skills from Firestore, using fallback.", err);
+      suggestions = [...fallbackSkills];
+    }
+  }
+
+  // Filter suggestions based on input
+  function filterSkills(query) {
+    if (!query) return [];
+    const lower = query.toLowerCase();
+    return suggestions
+      .filter(s => s.toLowerCase().includes(lower))
+      .slice(0, 8);
+  }
+
+  // Render dropdown
+  function renderSkillDropdown(items) {
+    if (!skillDropdown) return;
+    skillDropdown.innerHTML = "";
+    if (items.length === 0) {
+      skillDropdown.style.display = "none";
+      return;
+    }
+    items.forEach((item, idx) => {
+      const div = document.createElement("div");
+      div.className = "autocomplete-item";
+      div.textContent = item;
+      div.dataset.value = item;
+      if (idx === activeIndex) div.classList.add("hovered");
+      div.addEventListener("mousedown", (e) => {
+        // prevent blur before click
+        e.preventDefault();
+        addSkillChip(item);
+        skillInputField.value = "";
+        hideDropdown();
+      });
+      skillDropdown.appendChild(div);
+    });
+    skillDropdown.style.display = "block";
+  }
+
+  // Hide dropdown
+  function hideDropdown() {
+    activeIndex = -1;
+    if (skillDropdown) skillDropdown.style.display = "none";
+  }
+
+  // Keyboard navigation and input handling
+  skillInputField.addEventListener("input", (e) => {
+    const val = e.target.value.trim();
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const matches = filterSkills(val);
+      activeIndex = -1;
+      positionDropdown();
+      renderSkillDropdown(matches);
+    }, 150);
+  });
+
   skillInputField.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
+    const items = skillDropdown.querySelectorAll(".autocomplete-item");
+    if (e.key === "ArrowDown") {
       e.preventDefault();
-      addSkillChip(skillInputField.value);
-      skillInputField.value = "";
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      renderSkillDropdown([...Array.from(items)].map(i => i.textContent)); // re-render to highlight
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      renderSkillDropdown([...Array.from(items)].map(i => i.textContent));
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        e.preventDefault();
+        addSkillChip(items[activeIndex].textContent);
+        skillInputField.value = "";
+        hideDropdown();
+      }
+    } else if (e.key === "Escape") {
+      hideDropdown();
     }
   });
+
+  // Position dropdown under input
+  function positionDropdown() {
+    const rect = skillInputField.getBoundingClientRect();
+    skillDropdown.style.width = rect.width + "px";
+    skillDropdown.style.top = skillInputField.offsetTop + skillInputField.offsetHeight + 4 + "px";
+    skillDropdown.style.left = skillInputField.offsetLeft + "px";
+  }
+
+  // Click outside to close
+  document.addEventListener("click", (e) => {
+    if (!skillInputField.contains(e.target) && !skillDropdown.contains(e.target)) {
+      hideDropdown();
+    }
+  });
+
+  // Initialize suggestions
+  loadSkillSuggestions();
+
+  // --- Handle Enter key on skill input removed, replaced by autocomplete ---
 
   // Update preview when form fields change
   ["fullName", "bio", "experience", "languages", "disabilityStatus"].forEach((id) => {
@@ -257,31 +368,31 @@ await page.render({ canvasContext: ctx, viewport }).promise;
   skillChipsContainer.addEventListener("click", updatePreview);
 
   // --- Edit Profile Toggle Button Logic ---
-const formFields = [
-  document.getElementById('fullName'),
-  document.getElementById('bio'),
-  document.getElementById('skillInput'),
-  document.getElementById('languages'),
-  document.getElementById('disabilityStatus'),
-  document.getElementById('experience'),
-  document.getElementById('profilePic'),
-  document.getElementById('resumeUpload'),
-  document.getElementById('saveProfileBtn')
-];
+  const formFields = [
+    document.getElementById('fullName'),
+    document.getElementById('bio'),
+    document.getElementById('skillInput'),
+    document.getElementById('languages'),
+    document.getElementById('disabilityStatus'),
+    document.getElementById('experience'),
+    document.getElementById('profilePic'),
+    document.getElementById('resumeUpload'),
+    document.getElementById('saveProfileBtn')
+  ];
 
-let isEditing = true; // Starts in editing mode
+  let isEditing = true; // Starts in editing mode
 
-document.getElementById('editToggleBtn')?.addEventListener('click', () => {
-  isEditing = !isEditing;
+  document.getElementById('editToggleBtn')?.addEventListener('click', () => {
+    isEditing = !isEditing;
 
-  formFields.forEach(field => {
-    if (field) field.disabled = !isEditing;
+    formFields.forEach(field => {
+      if (field) field.disabled = !isEditing;
+    });
+
+    document.getElementById('editToggleBtn').textContent = isEditing
+      ? 'Save Changes'
+      : 'Edit Profile';
   });
-
-  document.getElementById('editToggleBtn').textContent = isEditing
-    ? 'Save Changes'
-    : 'Edit Profile';
-});
 
 
   // Auth state and load profile data
