@@ -108,33 +108,35 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   if (postForm) {
-    postForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You must be logged in to post.");
-        return;
-      }
-      const text = postContent.value.trim();
-      if (!text) return;
+  postForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to post.");
+      return;
+    }
 
-      try {
-        await addDoc(collection(db, "posts"), {
-          text,
-          authorUid: user.uid,
-          authorName: user.displayName || "Anonymous",
-          authorPhoto: user.photoURL || null,
-          timestamp: serverTimestamp()
-        });
+    const text = postContent.value.trim();
+    if (!text) return;
 
-        postContent.value = "";
-        postModal.style.display = "none";
-        overlay.style.display = "none";
-      } catch (err) {
-        alert("Failed to post: " + err.message);
-      }
-    });
-  }
+    try {
+      await addDoc(collection(db, "posts"), {
+        text,
+        authorUid: user.uid,
+        authorName: user.displayName || "Anonymous",
+        authorPhoto: user.photoURL || null,
+        timestamp: serverTimestamp()
+      });
+
+      postContent.value = "";
+      postModal.style.display = "none";
+      overlay.style.display = "none";
+    } catch (err) {
+      console.error("Failed to post:", err);
+      alert("Failed to post: " + err.message);
+    }
+  });
+}
 
   function loadFeed() {
     if (!feedContainer) return;
