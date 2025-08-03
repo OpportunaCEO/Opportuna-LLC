@@ -33,6 +33,13 @@ body {
   color: #e88e2e;
 }
 
+/* Accessibility focus outline */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #f9a94d;
+  outline-offset: 2px;
+}
+
 /* Main container */
 .container {
   max-width: 700px;
@@ -89,7 +96,7 @@ input[type="email"]::placeholder,
 input[type="password"]::placeholder,
 textarea::placeholder {
   color: #f9a94d;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 input[type="text"]:focus,
 input[type="email"]:focus,
@@ -102,9 +109,11 @@ select:focus {
   font-weight: 700;
 }
 
-/* Multi-select height */
+/* Multi-select height & scrollbar */
 select[multiple] {
   height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
   padding-top: 10px;
 }
 
@@ -122,7 +131,15 @@ button {
   transition: background 0.3s ease;
   margin-top: 10px;
 }
-button:hover {
+
+/* Disabled button state */
+button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:hover:not(:disabled) {
   background: #e88e2e;
 }
 
@@ -161,7 +178,7 @@ section h2 {
 }
 #postInput::placeholder {
   color: #f9a94d;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 #postInput:focus {
   background: #f9a94d;
