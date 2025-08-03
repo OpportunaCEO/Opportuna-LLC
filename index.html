@@ -10,7 +10,12 @@
 </head>
 <body>
   <nav class="top-nav">
-    <div class="nav-center">
+  <div class="nav-container">
+    <div class="logo"><a href="index.html">Opportuna</a></div>
+
+    <div class="hamburger" id="hamburger">&#9776;</div>
+
+    <div class="nav-links" id="navLinks">
       <a href="index.html" class="nav-link">Home</a>
       <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
       <a href="employers.html" class="nav-link">Employers</a>
@@ -18,15 +23,20 @@
       <a href="recommended.html" class="nav-link">Recommended Jobs</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </div>
-    <div class="dropdown" id="userDropdown" style="display:none;">
-      <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
-      <div class="dropdown-content">
-        <a href="profile.html" id="profileLink">My Profile</a>
-        <a href="#" id="logoutBtn">Logout</a>
+
+    <div class="nav-user">
+      <div class="dropdown" id="userDropdown" style="display:none;">
+        <img id="navProfilePic" class="profile-icon" src="assets/default.png" alt="User" />
+        <div class="dropdown-content">
+          <a href="profile.html" id="profileLink">My Profile</a>
+          <a href="#" id="logoutBtn">Logout</a>
+        </div>
       </div>
+      <a href="login.html" id="loginLink" class="nav-link">Login</a>
     </div>
-    <a href="login.html" id="loginLink">Login</a>
-  </nav>
+  </div>
+</nav>
+
 
   <!-- START: 3-Column Home Layout -->
   <div class="home-layout">
