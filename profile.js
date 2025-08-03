@@ -108,6 +108,20 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const text = await extractTextFromPDF(file);
       autofillFields(text);
+      // After successful parsing:
+const typedArray = new Uint8Array(await file.arrayBuffer());
+const pdf = await pdfjsLib.getDocument(typedArray).promise;
+const page = await pdf.getPage(1);
+const viewport = page.getViewport({ scale: 1.5 });
+
+const canvas = document.getElementById("pdfPreviewCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.height = viewport.height;
+canvas.width = viewport.width;
+canvas.style.display = "block";
+
+await page.render({ canvasContext: ctx, viewport }).promise;
     } catch (err) {
       console.error("Error parsing PDF resume:", err);
       alert("Sorry, failed to parse the resume. Please fill in details manually.");
