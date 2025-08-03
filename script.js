@@ -58,6 +58,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const employersCountEl = document.getElementById("employersCount");
   const usersCountEl = document.getElementById("usersCount");
 
+  function formatTimestamp(timestamp) {
+  if (!timestamp) return "Just now";
+  try {
+    const date = timestamp.toDate();
+    return date.toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "Just now";
+  }
+}
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       loginLink.style.display = "none";
