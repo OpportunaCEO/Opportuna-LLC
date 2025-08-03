@@ -137,6 +137,14 @@
       <button type="submit">Post</button>
     </form>
   </div>
+  <script>
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+</script>
 
   <script type="module" src="script.js"></script>
 </body>
