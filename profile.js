@@ -239,6 +239,34 @@ document.addEventListener("DOMContentLoaded", () => {
   profilePic.addEventListener("change", updatePreview);
   skillChipsContainer.addEventListener("click", updatePreview);
 
+  // --- Edit Profile Toggle Button Logic ---
+const formFields = [
+  document.getElementById('fullName'),
+  document.getElementById('bio'),
+  document.getElementById('skillInput'),
+  document.getElementById('languages'),
+  document.getElementById('disabilityStatus'),
+  document.getElementById('experience'),
+  document.getElementById('profilePic'),
+  document.getElementById('resumeUpload'),
+  document.getElementById('saveProfileBtn')
+];
+
+let isEditing = true; // Starts in editing mode
+
+document.getElementById('editToggleBtn')?.addEventListener('click', () => {
+  isEditing = !isEditing;
+
+  formFields.forEach(field => {
+    if (field) field.disabled = !isEditing;
+  });
+
+  document.getElementById('editToggleBtn').textContent = isEditing
+    ? 'Save Changes'
+    : 'Edit Profile';
+});
+
+
   // Auth state and load profile data
   onAuthStateChanged(auth, async (user) => {
     if (!user) return (window.location.href = "login.html");
