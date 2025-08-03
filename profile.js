@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const profilePic = document.getElementById("profilePic");
   const resumeInput = document.getElementById("resumeUpload");
   const skillInputField = document.getElementById("skillInput");
+  const skillDropdown = document.getElementById("skillDropdown");
   const languageSelect = document.getElementById("languages");
   const disabilityStatus = document.getElementById("disabilityStatus");
   const saveBtn = document.getElementById("saveProfileBtn");
