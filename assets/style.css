@@ -434,6 +434,11 @@ button,
 
   .nav-user {
     margin-top: 1rem;
+}
+.post-card:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
   }
 }
 
