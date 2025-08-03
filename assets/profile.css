@@ -355,4 +355,32 @@ section h2 {
   cursor: pointer;
   margin-bottom: 1rem;
   }
+.autocomplete-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: calc(100% - 2px);
+  z-index: 50;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  color: #333;
+  font-size: 0.9rem;
 }
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.autocomplete-item.hovered,
+.autocomplete-item:hover {
+  background: #f0f0f0;
+}
+
+.skill-chips {
+  position: relative; /* to anchor dropdown if needed */
+  }
+}
+
