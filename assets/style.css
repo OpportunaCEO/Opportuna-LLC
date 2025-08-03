@@ -245,3 +245,69 @@ form select {
     justify-content: center;
   }
 }
+/* Hero Section */
+.hero {
+  background: linear-gradient(rgba(10, 23, 68, 0.8), rgba(10, 23, 68, 0.8)),
+              url('../assets/hero-bg.jpg') center/cover no-repeat;
+  color: var(--white);
+  padding: 5rem 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  position: relative;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #f0f0f0;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid var(--light-orange);
+  color: var(--light-orange);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background-color: var(--light-orange);
+  color: var(--white);
+}
+
+/* Responsive hero */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+}
+
