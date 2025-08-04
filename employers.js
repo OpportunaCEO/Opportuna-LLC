@@ -95,7 +95,6 @@ signUpForm.addEventListener("submit", async e => {
 // ======= Sign In Handler =======
 signInForm.addEventListener("submit", async e => {
   e.preventDefault();
-  // Fix: Use correct input IDs matching your HTML (signInEmail & signInPassword)
   const email = document.getElementById("signInEmail").value.trim();
   const password = document.getElementById("signInPassword").value.trim();
 
@@ -165,7 +164,7 @@ function loadEmployerJobs(userEmail) {
   // Clear listings
   jobListings.innerHTML = `<p>Loading your jobs...</p>`;
 
-  // Create query filtering jobs by postedBy == current user email
+  // Query for jobs posted by this user
   const jobsQuery = query(
     collection(db, "jobs"),
     where("postedBy", "==", userEmail),
