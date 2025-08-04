@@ -4,7 +4,7 @@ import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { 
-  getFirestore, collection, addDoc, query, orderBy, onSnapshot 
+  getFirestore, collection, addDoc, query, orderBy, onSnapshot, where, deleteDoc, doc 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ======= Your Firebase config =======
@@ -23,97 +23,65 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ======= Existing jobs array - keep your original jobs here =======
-const jobs = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    company: "TechCorp",
-    location: "New York, NY",
-    jobType: "fulltime",
-    workSetup: "hybrid",
-    salary: 120000,
-    qualifications: ["Bachelor's Degree", "3+ years experience"],
-    logo: "assets/techcorp-logo.png",
-  },
-  {
-    id: 2,
-    title: "Marketing Specialist",
-    company: "BrightMedia",
-    location: "Remote",
-    jobType: "parttime",
-    workSetup: "remote",
-    salary: 60000,
-    qualifications: ["Bachelor's Degree", "Marketing experience"],
-    logo: "assets/brightmedia-logo.png",
-  },
-  {
-    id: 3,
-    title: "Data Analyst",
-    company: "FinSolve",
-    location: "San Francisco, CA",
-    jobType: "fulltime",
-    workSetup: "inperson",
-    salary: 90000,
-    qualifications: ["Bachelor's Degree", "SQL, Excel"],
-    logo: "assets/finsolve-logo.png",
-  },
-  // Add more jobs as needed
-];
-
-// ======= DOM references for filter inputs and listings =======
-const jobListings = document.getElementById("jobListings");
-const searchInput = document.getElementById("searchInput");
-const locationInput = document.getElementById("locationInput");
-const jobTypeSelect = document.getElementById("jobTypeSelect");
-const workSetupSelect = document.getElementById("workSetupSelect");
-const salaryRangeSelect = document.getElementById("salaryRangeSelect");
-const qualificationInput = document.getElementById("qualificationInput");
-
-// ======= Forms and buttons =======
+// ======= DOM references =======
 const signUpForm = document.getElementById("signUpForm");
 const signInForm = document.getElementById("signInForm");
 const signOutBtn = document.getElementById("signOutBtn");
 const signInStatus = document.getElementById("signInStatus");
 const jobPostForm = document.getElementById("jobPostForm");
+const jobListings = document.getElementById("jobListings");
 
-// ======= UI helper functions =======
+const showSignUpBtn = document.getElementById("showSignUp");
+const showSignInBtn = document.getElementById("showSignIn");
+
+const dashboardSection = document.getElementById("dashboardSection");
+const authSection = document.getElementById("authSection");
+
+// ======= Toggle sign-up / sign-in form views =======
+showSignUpBtn.addEventListener("click", e => {
+  e.preventDefault();
+  signInForm.style.display = "none";
+  signUpForm.style.display = "block";
+  signInStatus.textContent = "";
+});
+
+showSignInBtn.addEventListener("click", e => {
+  e.preventDefault();
+  signUpForm.style.display = "none";
+  signInForm.style.display = "block";
+  signInStatus.textContent = "";
+});
+
+// ======= Update UI on sign-in =======
 function updateUIOnSignIn(user) {
   signInStatus.textContent = `Signed in as: ${user.email}`;
   signOutBtn.style.display = "inline-block";
   signInForm.style.display = "none";
   signUpForm.style.display = "none";
   jobPostForm.style.display = "block";
-  // Load jobs real-time when signed in
-  loadJobsRealtime();
+  dashboardSection.style.display = "block";
+  authSection.style.display = "none";
+  loadEmployerJobs(user.email);
 }
 
+// ======= Reset UI on sign-out =======
 function resetUIOnSignOut() {
   signInStatus.textContent = "";
   signOutBtn.style.display = "none";
   signInForm.style.display = "block";
   signUpForm.style.display = "none";
   jobPostForm.style.display = "none";
-  renderJobs(jobs); // Show original jobs only when signed out
+  dashboardSection.style.display = "none";
+  authSection.style.display = "block";
+  jobListings.innerHTML = `<p>Please sign in to view your job listings.</p>`;
 }
 
-// ======= Toggle between sign-up and sign-in forms =======
-document.getElementById("showSignUp").addEventListener("click", e => {
-  e.preventDefault();
-  signInForm.style.display = "none";
-  signUpForm.style.display = "block";
-});
-document.getElementById("showSignIn").addEventListener("click", e => {
-  e.preventDefault();
-  signUpForm.style.display = "none";
-  signInForm.style.display = "block";
-});
-
-// ======= Sign Up handler =======
+// ======= Sign Up Handler =======
 signUpForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("signUpEmail").value.trim();
   const password = document.getElementById("signUpPassword").value.trim();
+
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     alert("Account created! You are now signed in.");
@@ -124,11 +92,13 @@ signUpForm.addEventListener("submit", async e => {
   }
 });
 
-// ======= Sign In handler =======
+// ======= Sign In Handler =======
 signInForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const email = document.getElementById("companyEmail").value.trim();
-  const password = document.getElementById("companyPassword").value.trim();
+  // Fix: Use correct input IDs matching your HTML (signInEmail & signInPassword)
+  const email = document.getElementById("signInEmail").value.trim();
+  const password = document.getElementById("signInPassword").value.trim();
+
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     updateUIOnSignIn(userCredential.user);
@@ -138,22 +108,13 @@ signInForm.addEventListener("submit", async e => {
   }
 });
 
-// ======= Sign Out handler =======
+// ======= Sign Out Handler =======
 signOutBtn.addEventListener("click", async () => {
   await signOut(auth);
   resetUIOnSignOut();
 });
 
-// ======= Auth state listener (persists login on refresh) =======
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    updateUIOnSignIn(user);
-  } else {
-    resetUIOnSignOut();
-  }
-});
-
-// ======= Job posting handler =======
+// ======= Post Job Handler =======
 jobPostForm.addEventListener("submit", async e => {
   e.preventDefault();
   const user = auth.currentUser;
@@ -162,8 +123,9 @@ jobPostForm.addEventListener("submit", async e => {
     return;
   }
 
+  // Collect form values
   const title = document.getElementById("jobTitle").value.trim();
-  const desc = document.getElementById("jobDesc").value.trim();
+  const description = document.getElementById("jobDesc").value.trim();
   const category = document.getElementById("jobCategory").value;
   const skillLevel = document.getElementById("skillLevel").value;
   const location = document.getElementById("location").value.trim();
@@ -171,7 +133,7 @@ jobPostForm.addEventListener("submit", async e => {
   const salary = parseInt(document.getElementById("salary").value.trim());
   const qualificationsRaw = document.getElementById("qualifications").value.trim();
 
-  if (!title || !desc || !category || !skillLevel || !location || !workSetup || isNaN(salary) || !qualificationsRaw) {
+  if (!title || !description || !category || !skillLevel || !location || !workSetup || isNaN(salary) || !qualificationsRaw) {
     alert("Please fill out all fields.");
     return;
   }
@@ -181,7 +143,7 @@ jobPostForm.addEventListener("submit", async e => {
   try {
     await addDoc(collection(db, "jobs"), {
       title,
-      description: desc,
+      description,
       category,
       skillLevel,
       location,
@@ -198,111 +160,55 @@ jobPostForm.addEventListener("submit", async e => {
   }
 });
 
-// ======= Real-time job loading and rendering =======
-function renderJobs(jobsToRender) {
-  jobListings.innerHTML = "";
-  if (!jobsToRender || jobsToRender.length === 0) {
-    jobListings.innerHTML = "<p>No jobs found matching your criteria.</p>";
-    return;
+// ======= Load Jobs Posted by Current Employer =======
+function loadEmployerJobs(userEmail) {
+  // Clear listings
+  jobListings.innerHTML = `<p>Loading your jobs...</p>`;
+
+  // Create query filtering jobs by postedBy == current user email
+  const jobsQuery = query(
+    collection(db, "jobs"),
+    where("postedBy", "==", userEmail),
+    orderBy("postedAt", "desc")
+  );
+
+  // Unsubscribe previous listener if any
+  if (window.jobsUnsubscribe) {
+    window.jobsUnsubscribe();
   }
-  jobsToRender.forEach(job => {
-    const jobCard = document.createElement("div");
-    jobCard.classList.add("job-card");
-    jobCard.innerHTML = `
-      <div class="job-logo" style="background-image: url('${job.logo || "assets/default-company-logo.png"}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
-      <div class="job-info">
-        <p class="job-title">${job.title}</p>
-        <p class="job-company">${job.company}</p>
-        <p class="job-location">${job.location}</p>
-      </div>
-      <button class="apply-btn">Apply</button>
-    `;
-    jobListings.appendChild(jobCard);
-  });
-}
 
-// Filtering UI elements (if you have them in your page)
-if (searchInput) searchInput.addEventListener("input", filterJobs);
-if (locationInput) locationInput.addEventListener("input", filterJobs);
-if (jobTypeSelect) jobTypeSelect.addEventListener("change", filterJobs);
-if (workSetupSelect) workSetupSelect.addEventListener("change", filterJobs);
-if (salaryRangeSelect) salaryRangeSelect.addEventListener("change", filterJobs);
-if (qualificationInput) qualificationInput.addEventListener("input", filterJobs);
-
-// ======= Filter jobs function (client-side filtering) =======
-let currentJobs = []; // will hold jobs from Firestore + local jobs
-
-function filterJobs() {
-  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
-  const locationTerm = locationInput ? locationInput.value.toLowerCase() : "";
-  const jobType = jobTypeSelect ? jobTypeSelect.value : "";
-  const workSetup = workSetupSelect ? workSetupSelect.value : "";
-  const salaryRange = salaryRangeSelect ? salaryRangeSelect.value : "";
-  const qualificationTerm = qualificationInput ? qualificationInput.value.toLowerCase() : "";
-
-  const filtered = currentJobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm) ||
-                          job.company.toLowerCase().includes(searchTerm);
-    const matchesLocation = locationTerm === "" || (job.location && job.location.toLowerCase().includes(locationTerm));
-    const matchesJobType = jobType === "" || job.jobType === jobType;
-    const matchesWorkSetup = workSetup === "" || job.workSetup === workSetup;
-
-    let matchesSalary = true;
-    if (salaryRange !== "") {
-      if (job.salary) {
-        if (salaryRange.includes("+")) {
-          matchesSalary = job.salary >= parseInt(salaryRange);
-        } else {
-          const [min, max] = salaryRange.split("-").map(s => parseInt(s));
-          matchesSalary = job.salary >= min && job.salary <= max;
-        }
-      } else {
-        matchesSalary = false;
-      }
+  // Listen realtime to the jobs posted by this employer
+  window.jobsUnsubscribe = onSnapshot(jobsQuery, snapshot => {
+    if (snapshot.empty) {
+      jobListings.innerHTML = `<p>You have no active job listings.</p>`;
+      return;
     }
 
-    const matchesQualification = qualificationTerm === "" ||
-      (job.qualifications && job.qualifications.some(q => q.toLowerCase().includes(qualificationTerm)));
+    jobListings.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const job = docSnap.data();
+      const jobId = docSnap.id;
 
-    return matchesSearch && matchesLocation && matchesJobType && matchesWorkSetup && matchesSalary && matchesQualification;
-  });
+      // Job card container
+      const jobCard = document.createElement("div");
+      jobCard.classList.add("job-card");
 
-  renderJobs(filtered);
-}
+      // Job logo fallback
+      const logo = job.logo || "assets/default-company-logo.png";
 
-// ======= Real-time Firestore listener to load all jobs =======
-function loadJobsRealtime() {
-  const jobsQuery = query(collection(db, "jobs"), orderBy("postedAt", "desc"));
-  onSnapshot(jobsQuery, (snapshot) => {
-    const jobsFromFirestore = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      jobsFromFirestore.push({
-        id: doc.id,
-        title: data.title,
-        company: data.postedBy,
-        location: data.location,
-        jobType: data.category,
-        workSetup: data.workSetup,
-        salary: data.salary,
-        qualifications: data.qualifications,
-        logo: "assets/default-company-logo.png",
-        description: data.description || "",
-      });
+      // Build inner HTML with Delete button
+      jobCard.innerHTML = `
+        <div class="job-logo" style="background-image: url('${logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+        <div class="job-info">
+          <p class="job-title">${job.title}</p>
+          <p class="job-company">${job.postedBy}</p>
+          <p class="job-location">${job.location}</p>
+        </div>
+        <button class="delete-btn" data-job-id="${jobId}">Delete</button>
+      `;
+
+      jobListings.appendChild(jobCard);
     });
-    currentJobs = [...jobs, ...jobsFromFirestore]; // combine initial jobs with Firestore jobs
-    filterJobs();
-  });
-}
 
-// ======= Initial render with local jobs only =======
-renderJobs(jobs);
-
-// ======= If user is already signed in when page loads =======
-onAuthStateChanged(auth, user => {
-  if (user) {
-    updateUIOnSignIn(user);
-  } else {
-    resetUIOnSignOut();
-  }
-});
+    // Attach delete handlers
+    document.querySelectorAll(".del
