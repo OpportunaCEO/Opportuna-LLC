@@ -198,46 +198,70 @@ function showSuggestedJobs() {
 }
 showSuggestedJobs();
 
-// Create a simple modal for Apply button
-const modal = document.createElement("div");
-modal.id = "applyModal";
-modal.style.cssText = `
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-`;
-modal.innerHTML = `
-  <div style="background:#222; padding: 2rem; border-radius: 10px; max-width: 400px; width: 90%; color:#fff; text-align:center;">
-    <h2>Apply for Job</h2>
-    <p id="modalJobTitle"></p>
-    <button id="closeModalBtn" style="margin-top:1rem; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; background:#ff6600; color:#fff;">Close</button>
-  </div>
-`;
-document.body.appendChild(modal);
+// ---- MODAL INTEGRATION ---- //
 
+// Get modal elements
+const jobModal = document.getElementById("jobModal");
+const modalClose = document.getElementById("modalClose");
+const modalJobLogo = jobModal.querySelector(".modal-job-logo");
 const modalJobTitle = document.getElementById("modalJobTitle");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const applyModal = document.getElementById("applyModal");
+const modalJobCompany = document.getElementById("modalJobCompany");
+const modalJobLocation = document.getElementById("modalJobLocation");
+const modalJobType = document.getElementById("modalJobType");
+const modalWorkSetup = document.getElementById("modalWorkSetup");
+const modalSalary = document.getElementById("modalSalary");
+const modalQualifications = document.getElementById("modalQualifications");
+const modalDescription = document.getElementById("modalDescription");
+const modalApplyBtn = document.getElementById("modalApplyBtn");
 
-// Close modal function
-closeModalBtn.addEventListener("click", () => {
-  applyModal.style.display = "none";
+// Function to open modal with job data
+function openJobModal(job) {
+  modalJobLogo.style.backgroundImage = `url('${job.logo}')`;
+  modalJobTitle.textContent = job.title;
+  modalJobCompany.textContent = job.company;
+  modalJobLocation.textContent = job.location;
+  modalJobType.textContent = job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1);
+  modalWorkSetup.textContent = job.workSetup.charAt(0).toUpperCase() + job.workSetup.slice(1);
+  modalSalary.textContent = job.salary ? `$${job.salary.toLocaleString()}` : "N/A";
+  
+  // Clear and add qualifications list items
+  modalQualifications.innerHTML = "";
+  job.qualifications.forEach(q => {
+    const li = document.createElement("li");
+    li.textContent = q;
+    modalQualifications.appendChild(li);
+  });
+
+  modalDescription.textContent = job.description || "No description provided.";
+
+  jobModal.style.display = "flex";
+}
+
+// Close modal handler
+modalClose.addEventListener("click", () => {
+  jobModal.style.display = "none";
 });
 
-// Attach event delegation for apply buttons
-jobListings.addEventListener("click", (e) => {
-  if (e.target.classList.contains("apply-btn")) {
-    const jobCard = e.target.closest(".job-card");
-    const titleEl = jobCard.querySelector(".job-title");
-    modalJobTitle.textContent = `You are applying for: ${titleEl.textContent}`;
-    applyModal.style.display = "flex";
+// Close modal if clicking outside modal content
+jobModal.addEventListener("click", (e) => {
+  if (e.target === jobModal) {
+    jobModal.style.display = "none";
   }
 });
 
+// Delegate click on apply buttons in job listings to open modal
+jobListings.addEventListener("click", (e) => {
+  if (e.target.classList.contains("apply-btn")) {
+    const jobCard = e.target.closest(".job-card");
+    const title = jobCard.querySelector(".job-title").textContent;
+
+    // Find the job object by title (assuming titles are unique)
+    const job = allJobs.find(j => j.title === title);
+    if (job) {
+      openJobModal(job);
+    }
+  }
+});
 
 // Firestore profile save/load
 
