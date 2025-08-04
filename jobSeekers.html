@@ -146,6 +146,32 @@
   </nav>
 
   <main class="container">
+    <!-- Add this inside <main class="container">, before the <h1> -->
+<section class="dashboard">
+  <div class="profile-summary card">
+    <h2>Welcome back, <span id="userName">Seeker</span> 👋</h2>
+    <p>Profile Completion: <span id="profileProgress">60%</span></p>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width: 60%;"></div>
+    </div>
+  </div>
+
+  <div class="resume-section card">
+    <h2>Upload Resume & Links</h2>
+    <input type="file" id="resumeUpload" />
+    <input type="text" id="linkedinInput" placeholder="LinkedIn URL" />
+    <input type="text" id="portfolioInput" placeholder="Portfolio URL" />
+    <button class="apply-btn" onclick="saveResumeLinks()">Save</button>
+  </div>
+
+  <div class="suggested-jobs card">
+    <h2>Suggested Jobs</h2>
+    <div id="suggestedJobs">
+      <!-- We'll dynamically inject job suggestions from jobSeekers.js -->
+    </div>
+  </div>
+</section>
+
     <h1>Find Your Next Opportunity</h1>
 
     <div class="search-filter-bar">
