@@ -1,208 +1,180 @@
+// ----------------- Firebase Imports -----------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signOut
+  createUserWithEmailAndPassword,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
-  doc,
-  setDoc,
-  getDoc,
   collection,
   addDoc,
-  query,
-  orderBy,
   onSnapshot,
   serverTimestamp,
-  getDocs,
-  deleteDoc
+  query,
+  orderBy,
+  deleteDoc,
+  doc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getStorage,
   ref,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
+// ----------------- Firebase Config -----------------
 const firebaseConfig = {
-  apiKey: "AIzaSyBAFx0Ad-8RKji4cDNYWm1yPTkx4RpRwWM",
-  authDomain: "opportuna-a14bb.firebaseapp.com",
-  projectId: "opportuna-a14bb",
-  storageBucket: "opportuna-a14bb.appspot.com",
-  messagingSenderId: "906149069855",
-  appId: "1:906149069855:web:618ed823248443db30812a",
-  measurementId: "G-GJGCWL01W4"
+  apiKey: "AIzaSyCWaZjkNf4vl7nIjzvh7ozqZ4hzXgKzXlw",
+  authDomain: "opportuna-1f413.firebaseapp.com",
+  projectId: "opportuna-1f413",
+  storageBucket: "opportuna-1f413.appspot.com",
+  messagingSenderId: "878040672922",
+  appId: "1:878040672922:web:fe7cc558705fdb0f8e3dc5"
 };
 
+// ----------------- Firebase Initialization -----------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-window.addEventListener("DOMContentLoaded", () => {
-  const loginLink = document.getElementById("loginLink");
-  const userDropdown = document.getElementById("userDropdown");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const navProfilePic = document.getElementById("navProfilePic");
+// ----------------- DOM Elements -----------------
+const postForm = document.getElementById("post-form");
+const postText = document.getElementById("post-text");
+const postsContainer = document.getElementById("posts-container");
+const logoutBtn = document.getElementById("logout-btn");
+const loginForm = document.getElementById("login-form");
+const signupForm = document.getElementById("signup-form");
+const loginPopup = document.getElementById("login-popup");
+const signupPopup = document.getElementById("signup-popup");
+const loginBtn = document.getElementById("login-btn");
+const signupBtn = document.getElementById("signup-btn");
+const closeBtns = document.querySelectorAll(".close-popup");
+const quickStats = document.getElementById("quick-stats");
+const jobSearchForm = document.getElementById("job-search-form");
+const jobSearchInput = document.getElementById("job-search-input");
+const recommendedJobsContainer = document.getElementById("recommended-jobs");
 
-  const createPostBtn = document.getElementById("createPostBtn");
-  const postModal = document.getElementById("postModal");
-  const overlay = document.getElementById("overlay");
-  const postSection = document.getElementById("postSection");
-  const feedContainer = document.getElementById("feedContainer");
-  const postForm = document.getElementById("postForm");
-  const postContent = document.getElementById("postContent");
-  const jobsCountEl = document.getElementById("jobsCount");
-  const employersCountEl = document.getElementById("employersCount");
-  const usersCountEl = document.getElementById("usersCount");
-
-  function formatTimestamp(timestamp) {
-  if (!timestamp) return "Just now";
-  try {
-    const date = timestamp.toDate();
-    return date.toLocaleString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return "Just now";
-  }
-}
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      loginLink.style.display = "none";
-      userDropdown.style.display = "inline-block";
-      navProfilePic.src = user.photoURL || "assets/default.png";
-      createPostBtn.style.display = "block";
-
-      createPostBtn.onclick = () => {
-        postModal.style.display = "block";
-        overlay.style.display = "block";
-      };
-
-      overlay.onclick = () => {
-        postModal.style.display = "none";
-        overlay.style.display = "none";
-      };
-
-      try {
-        const jobsSnapshot = await getDocs(collection(db, "jobs"));
-        jobsCountEl.textContent = jobsSnapshot.size;
-
-        const employersSnapshot = await getDocs(collection(db, "employers"));
-        employersCountEl.textContent = employersSnapshot.size;
-
-        const usersSnapshot = await getDocs(collection(db, "users"));
-        usersCountEl.textContent = usersSnapshot.size;
-      } catch (err) {
-        console.error("Failed to load quick stats:", err);
-      }
-
-      loadFeed();
-    } else {
-      loginLink.style.display = "inline-block";
-      userDropdown.style.display = "none";
-      createPostBtn.style.display = "none";
-      postModal.style.display = "none";
-      overlay.style.display = "none";
-      feedContainer.innerHTML = "<p>Please log in to see posts.</p>";
-    }
-  });
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await signOut(auth);
-      window.location.href = "index.html";
-    });
-  }
-
-  if (postForm) {
-  postForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const user = auth.currentUser;
-    if (!user) {
-      alert("You must be logged in to post.");
-      return;
-    }
-
-    const text = postContent.value.trim();
-    if (!text) return;
-
-    try {
-      await addDoc(collection(db, "posts"), {
-        text,
-        authorUid: user.uid,
-        authorName: user.displayName || "Anonymous",
-        authorPhoto: user.photoURL || null,
-        timestamp: serverTimestamp()
-      });
-
-      postContent.value = "";
-      postModal.style.display = "none";
-      overlay.style.display = "none";
-    } catch (err) {
-      console.error("Failed to post:", err);
-      alert("Failed to post: " + err.message);
-    }
-  });
-}
-
-  function loadFeed() {
-  if (!feedContainer) return;
-
-  const postsRef = collection(db, "posts");
-  const q = query(postsRef, orderBy("timestamp", "desc"));
-
-  onSnapshot(q, (snapshot) => {
-    feedContainer.innerHTML = "";
-
-    if (snapshot.empty) {
-      feedContainer.innerHTML = "<p>No posts yet. Be the first to post!</p>";
-      return;
-    }
-
-    snapshot.forEach((docSnap) => {
-      const post = docSnap.data();
-      const postId = docSnap.id;
-      const isOwner = auth.currentUser && post.authorUid === auth.currentUser.uid;
-
-      const postCard = document.createElement("div");
-      postCard.className = "post-card";
-
-      postCard.innerHTML = `
-        <div class="post-header">
-          <img src="${post.authorPhoto || "assets/default.png"}" alt="avatar" class="post-avatar" />
-          <div class="post-meta">
-            <strong>${post.authorName}</strong><br />
-            <small>${formatTimestamp(post.timestamp)}</small>
-          </div>
-        </div>
-        <div class="post-content">${post.text}</div>
-        ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
-      `;
-
-      if (isOwner) {
-        const deleteBtn = postCard.querySelector(".delete-btn");
-        deleteBtn.addEventListener("click", async () => {
-          if (confirm("Are you sure you want to delete this post?")) {
-            try {
-              await deleteDoc(doc(db, "posts", postId));
-            } catch (err) {
-              alert("Failed to delete post: " + err.message);
-            }
-          }
-        });
-      }
-
-      feedContainer.appendChild(postCard);
-      });
-    });
+// ----------------- Auth State Listener -----------------
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    fetchPosts();
+    fetchRecommendedJobs();
   }
 });
+
+// ----------------- Post Creation -----------------
+if (postForm) {
+  postForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = postText.value.trim();
+    const user = auth.currentUser;
+    if (text && user) {
+      await addDoc(collection(db, "posts"), {
+        text,
+        uid: user.uid,
+        email: user.email,
+        createdAt: serverTimestamp(),
+      });
+      postText.value = "";
+    }
+  });
+}
+
+// ----------------- Real-time Feed -----------------
+function fetchPosts() {
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  onSnapshot(q, (snapshot) => {
+    postsContainer.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const post = docSnap.data();
+      const div = document.createElement("div");
+      div.classList.add("post-card");
+      div.innerHTML = `
+        <p>${post.text}</p>
+        <small>By: ${post.email || "Unknown"}</small>
+        <button data-id="${docSnap.id}" class="delete-post">Delete</button>
+      `;
+      postsContainer.appendChild(div);
+    });
+  });
+}
+
+// ----------------- Delete Post -----------------
+postsContainer.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("delete-post")) {
+    const id = e.target.getAttribute("data-id");
+    await deleteDoc(doc(db, "posts", id));
+  }
+});
+
+// ----------------- Login/Signup -----------------
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = loginForm["login-email"].value;
+    const password = loginForm["login-password"].value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      loginPopup.style.display = "none";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
+
+if (signupForm) {
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = signupForm["signup-email"].value;
+    const password = signupForm["signup-password"].value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      signupPopup.style.display = "none";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
+
+// ----------------- Logout -----------------
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth);
+  });
+}
+
+// ----------------- Job Search & Recommendations -----------------
+if (jobSearchForm) {
+  jobSearchForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const queryText = jobSearchInput.value.toLowerCase().trim();
+    fetchRecommendedJobs(queryText);
+  });
+}
+
+async function fetchRecommendedJobs(queryFilter = "") {
+  recommendedJobsContainer.innerHTML = "";
+  const jobsSnapshot = await getDocs(collection(db, "jobs"));
+  jobsSnapshot.forEach((docSnap) => {
+    const job = docSnap.data();
+    if (
+      queryFilter === "" ||
+      job.title.toLowerCase().includes(queryFilter) ||
+      job.description.toLowerCase().includes(queryFilter)
+    ) {
+      const jobCard = document.createElement("div");
+      jobCard.classList.add("job-card");
+      jobCard.innerHTML = `
+        <h4>${job.title}</h4>
+        <p>${job.description}</p>
+        <small>${job.location || "Remote"}</small>
+      `;
+      recommendedJobsContainer.appendChild(jobCard);
+    }
+  });
+}
