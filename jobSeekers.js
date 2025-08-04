@@ -153,30 +153,28 @@ renderJobs(allJobs);
 
 // ========= DASHBOARD ENHANCEMENTS ========= //
 
-// 1. Set welcome name (you can replace this with Firebase user later)
+// Profile greeting and progress bar setup (will update with real user info later)
 const userNameEl = document.getElementById("userName");
 if (userNameEl) {
-  // Placeholder name — you can replace with Firebase user info later
   userNameEl.textContent = "Future Rockstar";
 }
 
-// 2. Set profile completion % (simple placeholder logic)
 const profileProgressEl = document.getElementById("profileProgress");
 const progressFill = document.getElementById("progressFill");
 if (profileProgressEl && progressFill) {
-  const completionPercent = 60; // You can calculate this based on resume, skills, etc.
+  const completionPercent = 60;
   profileProgressEl.textContent = `${completionPercent}%`;
   progressFill.style.width = `${completionPercent}%`;
 }
 
-// 3. Show Suggested Jobs (e.g., jobs that are remote or high-paying)
+// Suggested jobs logic
 function showSuggestedJobs() {
   const suggestedEl = document.getElementById("suggestedJobs");
   if (!suggestedEl) return;
 
   const suggestions = allJobs.filter(job =>
     job.workSetup === "remote" || job.salary > 100000
-  ).slice(0, 3); // show top 3 only
+  ).slice(0, 3);
 
   if (suggestions.length === 0) {
     suggestedEl.innerHTML = "<p>No suggestions yet.</p>";
@@ -200,37 +198,8 @@ function showSuggestedJobs() {
 }
 showSuggestedJobs();
 
-// 4. Resume & Links Saver (basic localStorage mock or console logging)
-window.saveResumeLinks = function () {
-  const resume = document.getElementById("resumeUpload")?.files[0];
-  const linkedin = document.getElementById("linkedinInput")?.value.trim();
-  const portfolio = document.getElementById("portfolioInput")?.value.trim();
+// Firestore profile save/load
 
-  console.log("Saving Resume + Links:");
-  if (resume) console.log("Resume File:", resume.name);
-  if (linkedin) console.log("LinkedIn URL:", linkedin);
-  if (portfolio) console.log("Portfolio URL:", portfolio);
-
-  alert("Your resume and links have been saved (not really, just logged for now)");
-
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const auth = getAuth();
-
-      }
-    }
-  });
-onAuthStateChanged(auth, (user) => {
-  const userNameEl = document.getElementById("userName");
-  if (user) {
-    const displayName = user.displayName || user.email?.split("@")[0] || "Job Seeker";
-    if (userNameEl) userNameEl.textContent = displayName;
-
-    loadUserProfile(user.uid); // See next step
-  } else {
-    if (userNameEl) userNameEl.textContent = "Guest";
-    }
-  });
 async function loadUserProfile(uid) {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
@@ -242,8 +211,44 @@ async function loadUserProfile(uid) {
       const resumeLabel = document.createElement("p");
       resumeLabel.textContent = `Saved Resume: ${data.resumeName}`;
       document.getElementById("resumeUpload").after(resumeLabel);
-      }
     }
   }
-};
+}
 
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const displayName = user.displayName || user.email?.split("@")[0] || "Job Seeker";
+    if (userNameEl) userNameEl.textContent = displayName;
+
+    loadUserProfile(user.uid);
+  } else {
+    if (userNameEl) userNameEl.textContent = "Guest";
+  }
+});
+
+window.saveResumeLinks = async function () {
+  const resume = document.getElementById("resumeUpload")?.files[0];
+  const linkedin = document.getElementById("linkedinInput")?.value.trim();
+  const portfolio = document.getElementById("portfolioInput")?.value.trim();
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("You must be logged in to save your profile.");
+    return;
+  }
+
+  const userDoc = doc(db, "users", user.uid);
+  try {
+    await setDoc(userDoc, {
+      displayName: user.displayName || "",
+      linkedin,
+      portfolio,
+      resumeName: resume?.name || ""
+    }, { merge: true });
+
+    alert("Profile saved successfully!");
+  } catch (error) {
+    console.error("Error saving profile:", error);
+    alert("Something went wrong while saving.");
+  }
+};
