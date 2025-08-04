@@ -92,11 +92,11 @@ signUpForm.addEventListener("submit", async e => {
   }
 });
 
-// ======= Sign In Handler =======
+// ======= Sign In Handler (FIXED IDS) =======
 signInForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const email = document.getElementById("signInEmail").value.trim();
-  const password = document.getElementById("signInPassword").value.trim();
+  const email = document.getElementById("companyEmail").value.trim();
+  const password = document.getElementById("companyPassword").value.trim();
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -164,7 +164,7 @@ function loadEmployerJobs(userEmail) {
   // Clear listings
   jobListings.innerHTML = `<p>Loading your jobs...</p>`;
 
-  // Query for jobs posted by this user
+  // Create query filtering jobs by postedBy == current user email
   const jobsQuery = query(
     collection(db, "jobs"),
     where("postedBy", "==", userEmail),
@@ -235,4 +235,3 @@ onAuthStateChanged(auth, user => {
     resetUIOnSignOut();
   }
 });
-
