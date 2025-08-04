@@ -38,9 +38,11 @@ const dashboardSection = document.getElementById("dashboardSection");
 const authSection = document.getElementById("authSection");
 
 const companyNameInput = document.getElementById("companyName");
-const companyBioInput = document.getElementById("companyBio");
+const companyDescriptionInput = document.getElementById("companyDescription");
 const companyWebsiteInput = document.getElementById("companyWebsite");
-const saveProfileBtn = document.getElementById("saveCompanyProfile");
+const companyLogoUrlInput = document.getElementById("companyLogoUrl");
+const companyContactInput = document.getElementById("companyContact");
+const companyProfileForm = document.getElementById("companyProfileForm");
 
 // ======= Toggle sign-up / sign-in form views =======
 showSignUpBtn.addEventListener("click", e => {
@@ -66,6 +68,9 @@ async function updateUIOnSignIn(user) {
   jobPostForm.style.display = "block";
   dashboardSection.style.display = "block";
   authSection.style.display = "none";
+
+  companyContactInput.value = user.email;  // set contact email readonly input
+
   await loadCompanyProfile(user.uid);
   loadEmployerJobs(user.email);
 }
@@ -80,9 +85,12 @@ function resetUIOnSignOut() {
   dashboardSection.style.display = "none";
   authSection.style.display = "block";
   jobListings.innerHTML = `<p>Please sign in to view your job listings.</p>`;
+
   companyNameInput.value = "";
-  companyBioInput.value = "";
+  companyDescriptionInput.value = "";
   companyWebsiteInput.value = "";
+  companyLogoUrlInput.value = "";
+  companyContactInput.value = "";
 }
 
 // ======= Sign Up Handler =======
@@ -122,29 +130,37 @@ signOutBtn.addEventListener("click", async () => {
   resetUIOnSignOut();
 });
 
-// ======= Save Company Profile =======
-saveProfileBtn.addEventListener("click", async () => {
+// ======= Save Company Profile Handler =======
+companyProfileForm.addEventListener("submit", async e => {
+  e.preventDefault();
   const user = auth.currentUser;
   if (!user) return;
 
   const companyName = companyNameInput.value.trim();
-  const bio = companyBioInput.value.trim();
+  const description = companyDescriptionInput.value.trim();
   const website = companyWebsiteInput.value.trim();
+  const logoUrl = companyLogoUrlInput.value.trim();
+  const contactEmail = companyContactInput.value.trim();
 
-  if (!companyName || !bio || !website) {
-    alert("Please complete all profile fields.");
+  if (!companyName || !description || !website || !contactEmail) {
+    alert("Please fill out all required company profile fields.");
     return;
   }
 
   try {
     await setDoc(doc(db, "companies", user.uid), {
-      email: user.email,
+      email: contactEmail,
       companyName,
-      bio,
+      description,
       website,
+      logoUrl,
+      contactEmail,
       updatedAt: new Date(),
     });
-    alert("Company profile saved.");
+    document.getElementById("profileSaveStatus").textContent = "Company profile saved.";
+    setTimeout(() => {
+      document.getElementById("profileSaveStatus").textContent = "";
+    }, 3000);
   } catch (error) {
     alert("Error saving profile: " + error.message);
   }
@@ -158,8 +174,17 @@ async function loadCompanyProfile(uid) {
   if (snap.exists()) {
     const data = snap.data();
     companyNameInput.value = data.companyName || "";
-    companyBioInput.value = data.bio || "";
+    companyDescriptionInput.value = data.description || "";
     companyWebsiteInput.value = data.website || "";
+    companyLogoUrlInput.value = data.logoUrl || "";
+    companyContactInput.value = data.contactEmail || "";
+  } else {
+    // Clear if no profile
+    companyNameInput.value = "";
+    companyDescriptionInput.value = "";
+    companyWebsiteInput.value = "";
+    companyLogoUrlInput.value = "";
+    companyContactInput.value = "";
   }
 }
 
@@ -205,6 +230,7 @@ jobPostForm.addEventListener("submit", async e => {
       postedAt: new Date(),
       companyName: companyInfo.companyName || "",
       companyWebsite: companyInfo.website || "",
+      companyLogoUrl: companyInfo.logoUrl || "",
     });
 
     alert("Job posted successfully!");
@@ -242,7 +268,7 @@ function loadEmployerJobs(userEmail) {
       const jobCard = document.createElement("div");
       jobCard.classList.add("job-card");
 
-      const logo = job.logo || "assets/default-company-logo.png";
+      const logo = job.companyLogoUrl || "assets/default-company-logo.png";
 
       jobCard.innerHTML = `
         <div class="job-logo" style="background-image: url('${logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
@@ -282,3 +308,4 @@ onAuthStateChanged(auth, user => {
     resetUIOnSignOut();
   }
 });
+
