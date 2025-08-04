@@ -282,6 +282,31 @@
       </section>
     </div>
 
+    <!-- Company Profile Management -->
+<div class="post-job-box" id="companyProfileBox">
+  <h2>Company Profile</h2>
+  <form id="companyProfileForm">
+    <label for="companyName">Company Name</label>
+    <input id="companyName" type="text" required />
+
+    <label for="companyDescription">Company Description</label>
+    <textarea id="companyDescription" rows="3" required></textarea>
+
+    <label for="companyWebsite">Company Website</label>
+    <input id="companyWebsite" type="url" placeholder="https://yourcompany.com" />
+
+    <label for="companyLogoUrl">Logo URL</label>
+    <input id="companyLogoUrl" type="url" placeholder="https://yourlogo.png" />
+
+    <label for="companyContact">Contact Email</label>
+    <input id="companyContact" type="email" disabled />
+
+    <button type="submit">Save Profile</button>
+    <p id="profileSaveStatus" style="color:#4caf50; margin-top:0.5rem;"></p>
+  </form>
+</div>
+
+
     <!-- Premium -->
     <section class="premium-upgrade">
       <h2>Upgrade to Premium</h2>
