@@ -230,6 +230,66 @@
     </section>
   </main>
 
+  <!-- Job Details Modal -->
+<div id="jobModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="modalClose" class="modal-close">&times;</span>
+    <div class="modal-job-logo" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+    <h2 id="modalJobTitle"></h2>
+    <p><strong>Company:</strong> <span id="modalJobCompany"></span></p>
+    <p><strong>Location:</strong> <span id="modalJobLocation"></span></p>
+    <p><strong>Job Type:</strong> <span id="modalJobType"></span></p>
+    <p><strong>Work Setup:</strong> <span id="modalWorkSetup"></span></p>
+    <p><strong>Salary:</strong> <span id="modalSalary"></span></p>
+    <p><strong>Qualifications:</strong></p>
+    <ul id="modalQualifications"></ul>
+    <p><strong>Description:</strong></p>
+    <p id="modalDescription"></p>
+    <button id="modalApplyBtn" class="apply-btn">Apply Now</button>
+  </div>
+</div>
+
+<style>
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-content {
+    background: #222;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    color: #f5f5f5;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff6600;
+    cursor: pointer;
+  }
+  .modal-job-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+  #modalQualifications {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+</style>
+
+
   <script type="module" src="assets/main.js"></script>
   <script type="module" src="jobSeekers.js"></script>
 </body>
