@@ -90,7 +90,10 @@ async function fetchUserApplications(userId) {
 
 async function applyToJob(jobId) {
   const user = auth.currentUser;
-  if (!user) return alert("Please log in to apply.");
+ if (!user) {
+  showToast("Please log in to apply.", "error");
+  return;
+}
 
   if (userAppliedJobs.includes(jobId)) return;
 
