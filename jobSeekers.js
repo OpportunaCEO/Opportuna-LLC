@@ -191,4 +191,22 @@ onAuthStateChanged(auth, user => {
   } else {
     renderJobs(allJobs);
   }
+
+  // ===== Toast Notification System =====
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+
+  document.getElementById("toast-container").appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    toast.addEventListener("transitionend", () => toast.remove());
+  }, 3000);
+}
 });
