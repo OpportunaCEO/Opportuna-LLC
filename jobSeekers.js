@@ -90,10 +90,10 @@ async function fetchUserApplications(userId) {
 
 async function applyToJob(jobId) {
   const user = auth.currentUser;
- if (!user) {
-  showToast("Please log in to apply.", "error");
-  return;
-}
+  if (!user) {
+    showToast("Please log in to apply.", "error");
+    return;
+  }
 
   if (userAppliedJobs.includes(jobId)) return;
 
@@ -105,8 +105,10 @@ async function applyToJob(jobId) {
     });
     userAppliedJobs.push(jobId);
     renderJobs(allJobs);
+    showToast("Successfully applied to the job!", "success");
   } catch (error) {
     console.error("Error applying to job:", error);
+    showToast("Error applying to job. Please try again.", "error");
   }
 }
 
@@ -194,8 +196,9 @@ onAuthStateChanged(auth, user => {
   } else {
     renderJobs(allJobs);
   }
+});
 
-  // ===== Toast Notification System =====
+// ===== Toast Notification System =====
 function showToast(message, type = "success") {
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
@@ -212,4 +215,3 @@ function showToast(message, type = "success") {
     toast.addEventListener("transitionend", () => toast.remove());
   }, 3000);
 }
-});
