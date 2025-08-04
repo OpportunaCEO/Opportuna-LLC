@@ -231,5 +231,19 @@ onAuthStateChanged(auth, (user) => {
     if (userNameEl) userNameEl.textContent = "Guest";
     }
   });
+async function loadUserProfile(uid) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    if (data.linkedin) document.getElementById("linkedinInput").value = data.linkedin;
+    if (data.portfolio) document.getElementById("portfolioInput").value = data.portfolio;
+    if (data.resumeName) {
+      const resumeLabel = document.createElement("p");
+      resumeLabel.textContent = `Saved Resume: ${data.resumeName}`;
+      document.getElementById("resumeUpload").after(resumeLabel);
+      }
+    }
+  }
 };
 
