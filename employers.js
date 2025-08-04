@@ -4,7 +4,7 @@ import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { 
-  getFirestore, collection, addDoc, query, orderBy, onSnapshot, where, deleteDoc, doc 
+  getFirestore, collection, addDoc, query, orderBy, onSnapshot, where, deleteDoc, doc, setDoc, getDoc 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ======= Your Firebase config =======
@@ -37,6 +37,11 @@ const showSignInBtn = document.getElementById("showSignIn");
 const dashboardSection = document.getElementById("dashboardSection");
 const authSection = document.getElementById("authSection");
 
+const companyNameInput = document.getElementById("companyName");
+const companyBioInput = document.getElementById("companyBio");
+const companyWebsiteInput = document.getElementById("companyWebsite");
+const saveProfileBtn = document.getElementById("saveCompanyProfile");
+
 // ======= Toggle sign-up / sign-in form views =======
 showSignUpBtn.addEventListener("click", e => {
   e.preventDefault();
@@ -53,7 +58,7 @@ showSignInBtn.addEventListener("click", e => {
 });
 
 // ======= Update UI on sign-in =======
-function updateUIOnSignIn(user) {
+async function updateUIOnSignIn(user) {
   signInStatus.textContent = `Signed in as: ${user.email}`;
   signOutBtn.style.display = "inline-block";
   signInForm.style.display = "none";
@@ -61,6 +66,7 @@ function updateUIOnSignIn(user) {
   jobPostForm.style.display = "block";
   dashboardSection.style.display = "block";
   authSection.style.display = "none";
+  await loadCompanyProfile(user.uid);
   loadEmployerJobs(user.email);
 }
 
@@ -74,6 +80,9 @@ function resetUIOnSignOut() {
   dashboardSection.style.display = "none";
   authSection.style.display = "block";
   jobListings.innerHTML = `<p>Please sign in to view your job listings.</p>`;
+  companyNameInput.value = "";
+  companyBioInput.value = "";
+  companyWebsiteInput.value = "";
 }
 
 // ======= Sign Up Handler =======
@@ -92,7 +101,7 @@ signUpForm.addEventListener("submit", async e => {
   }
 });
 
-// ======= Sign In Handler (FIXED IDS) =======
+// ======= Sign In Handler =======
 signInForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("companyEmail").value.trim();
@@ -113,6 +122,47 @@ signOutBtn.addEventListener("click", async () => {
   resetUIOnSignOut();
 });
 
+// ======= Save Company Profile =======
+saveProfileBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const companyName = companyNameInput.value.trim();
+  const bio = companyBioInput.value.trim();
+  const website = companyWebsiteInput.value.trim();
+
+  if (!companyName || !bio || !website) {
+    alert("Please complete all profile fields.");
+    return;
+  }
+
+  try {
+    await setDoc(doc(db, "companies", user.uid), {
+      email: user.email,
+      companyName,
+      bio,
+      website,
+      updatedAt: new Date(),
+    });
+    alert("Company profile saved.");
+  } catch (error) {
+    alert("Error saving profile: " + error.message);
+  }
+});
+
+// ======= Load Company Profile on Login =======
+async function loadCompanyProfile(uid) {
+  const docRef = doc(db, "companies", uid);
+  const snap = await getDoc(docRef);
+
+  if (snap.exists()) {
+    const data = snap.data();
+    companyNameInput.value = data.companyName || "";
+    companyBioInput.value = data.bio || "";
+    companyWebsiteInput.value = data.website || "";
+  }
+}
+
 // ======= Post Job Handler =======
 jobPostForm.addEventListener("submit", async e => {
   e.preventDefault();
@@ -122,7 +172,6 @@ jobPostForm.addEventListener("submit", async e => {
     return;
   }
 
-  // Collect form values
   const title = document.getElementById("jobTitle").value.trim();
   const description = document.getElementById("jobDesc").value.trim();
   const category = document.getElementById("jobCategory").value;
@@ -140,6 +189,9 @@ jobPostForm.addEventListener("submit", async e => {
   const qualifications = qualificationsRaw.split(",").map(q => q.trim()).filter(Boolean);
 
   try {
+    const companySnap = await getDoc(doc(db, "companies", user.uid));
+    const companyInfo = companySnap.exists() ? companySnap.data() : {};
+
     await addDoc(collection(db, "jobs"), {
       title,
       description,
@@ -151,7 +203,10 @@ jobPostForm.addEventListener("submit", async e => {
       qualifications,
       postedBy: user.email,
       postedAt: new Date(),
+      companyName: companyInfo.companyName || "",
+      companyWebsite: companyInfo.website || "",
     });
+
     alert("Job posted successfully!");
     jobPostForm.reset();
   } catch (error) {
@@ -161,22 +216,18 @@ jobPostForm.addEventListener("submit", async e => {
 
 // ======= Load Jobs Posted by Current Employer =======
 function loadEmployerJobs(userEmail) {
-  // Clear listings
   jobListings.innerHTML = `<p>Loading your jobs...</p>`;
 
-  // Create query filtering jobs by postedBy == current user email
   const jobsQuery = query(
     collection(db, "jobs"),
     where("postedBy", "==", userEmail),
     orderBy("postedAt", "desc")
   );
 
-  // Unsubscribe previous listener if any
   if (window.jobsUnsubscribe) {
     window.jobsUnsubscribe();
   }
 
-  // Listen realtime to the jobs posted by this employer
   window.jobsUnsubscribe = onSnapshot(jobsQuery, snapshot => {
     if (snapshot.empty) {
       jobListings.innerHTML = `<p>You have no active job listings.</p>`;
@@ -188,19 +239,16 @@ function loadEmployerJobs(userEmail) {
       const job = docSnap.data();
       const jobId = docSnap.id;
 
-      // Job card container
       const jobCard = document.createElement("div");
       jobCard.classList.add("job-card");
 
-      // Job logo fallback
       const logo = job.logo || "assets/default-company-logo.png";
 
-      // Build inner HTML with Delete button
       jobCard.innerHTML = `
         <div class="job-logo" style="background-image: url('${logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
         <div class="job-info">
           <p class="job-title">${job.title}</p>
-          <p class="job-company">${job.postedBy}</p>
+          <p class="job-company">${job.companyName || job.postedBy}</p>
           <p class="job-location">${job.location}</p>
         </div>
         <button class="delete-btn" data-job-id="${jobId}">Delete</button>
@@ -209,7 +257,6 @@ function loadEmployerJobs(userEmail) {
       jobListings.appendChild(jobCard);
     });
 
-    // Attach delete handlers
     document.querySelectorAll(".delete-btn").forEach(btn => {
       btn.onclick = async () => {
         const jobIdToDelete = btn.getAttribute("data-job-id");
