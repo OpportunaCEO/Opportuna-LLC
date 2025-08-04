@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Premium | Opportuna</title>
   <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/premium.css" />
 </head>
 <body>
-  <nav class="top-nav">
+
+<nav class="top-nav">
   <div class="nav-center">
     <a href="index.html" class="nav-link">Home</a>
     <a href="jobSeekers.html" class="nav-link">Job Seekers</a>
@@ -26,21 +28,59 @@
   <a href="login.html" id="loginLink">Login</a>
 </nav>
 
+<main class="container">
+  <h1>Premium Membership</h1>
+  <p class="lead">Choose the perfect plan to take your career to the next level.</p>
 
-  <main class="container">
-    <h1>Premium Membership</h1>
-    <p>Upgrade to Premium to unlock exclusive features:</p>
-    <ul>
-      <li>Advanced job matching</li>
-      <li>Profile spotlight</li>
-      <li>Direct messaging with employers</li>
-      <li>Access to premium resources</li>
-    </ul>
+  <div class="plans">
+    <div class="plan-card" data-plan="basic">
+      <div>
+        <h2 class="plan-title">Basic</h2>
+        <p class="plan-price">$5<span style="font-size:1rem;">/mo</span></p>
+        <p class="plan-duration">Billed monthly</p>
+        <ul class="plan-features">
+          <li>Advanced job matching</li>
+          <li>Profile spotlight (limited)</li>
+          <li>Access to premium resources</li>
+        </ul>
+      </div>
+      <button class="upgrade-btn" data-plan="basic">Upgrade</button>
+    </div>
 
-    <button id="upgradeBtn">Upgrade Now</button>
-  </main>
+    <div class="plan-card" data-plan="pro">
+      <div>
+        <h2 class="plan-title">Pro</h2>
+        <p class="plan-price">$15<span style="font-size:1rem;">/mo</span></p>
+        <p class="plan-duration">Billed monthly</p>
+        <ul class="plan-features">
+          <li>All Basic features</li>
+          <li>Profile spotlight (priority)</li>
+          <li>Direct messaging with employers</li>
+          <li>Early access to new jobs</li>
+        </ul>
+      </div>
+      <button class="upgrade-btn" data-plan="pro">Upgrade</button>
+    </div>
 
-  <script type="module" src="assets/main.js"></script>
-  <script type="module" src="script.js"></script>
+    <div class="plan-card" data-plan="premium">
+      <div>
+        <h2 class="plan-title">Premium</h2>
+        <p class="plan-price">$30<span style="font-size:1rem;">/mo</span></p>
+        <p class="plan-duration">Billed monthly</p>
+        <ul class="plan-features">
+          <li>All Pro features</li>
+          <li>Featured profile on homepage</li>
+          <li>Unlimited direct messaging</li>
+          <li>1-on-1 career coaching sessions</li>
+        </ul>
+      </div>
+      <button class="upgrade-btn" data-plan="premium">Upgrade</button>
+    </div>
+  </div>
+
+  <p id="upgradeStatus" style="margin-top:2rem; font-weight:600; color: var(--light-orange);"></p>
+</main>
+
+<script type="module" src="assets/premium.js"></script>
 </body>
 </html>
