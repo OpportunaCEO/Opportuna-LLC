@@ -144,3 +144,67 @@ qualificationInput.addEventListener("input", filterJobs);
 
 // Initial render
 renderJobs(allJobs);
+
+// ========= DASHBOARD ENHANCEMENTS ========= //
+
+// 1. Set welcome name (you can replace this with Firebase user later)
+const userNameEl = document.getElementById("userName");
+if (userNameEl) {
+  // Placeholder name — you can replace with Firebase user info later
+  userNameEl.textContent = "Future Rockstar";
+}
+
+// 2. Set profile completion % (simple placeholder logic)
+const profileProgressEl = document.getElementById("profileProgress");
+const progressFill = document.getElementById("progressFill");
+if (profileProgressEl && progressFill) {
+  const completionPercent = 60; // You can calculate this based on resume, skills, etc.
+  profileProgressEl.textContent = `${completionPercent}%`;
+  progressFill.style.width = `${completionPercent}%`;
+}
+
+// 3. Show Suggested Jobs (e.g., jobs that are remote or high-paying)
+function showSuggestedJobs() {
+  const suggestedEl = document.getElementById("suggestedJobs");
+  if (!suggestedEl) return;
+
+  const suggestions = allJobs.filter(job =>
+    job.workSetup === "remote" || job.salary > 100000
+  ).slice(0, 3); // show top 3 only
+
+  if (suggestions.length === 0) {
+    suggestedEl.innerHTML = "<p>No suggestions yet.</p>";
+    return;
+  }
+
+  suggestions.forEach(job => {
+    const card = document.createElement("div");
+    card.className = "job-card";
+    card.innerHTML = `
+      <div class="job-logo" style="background-image: url('${job.logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+      <div class="job-info">
+        <p class="job-title">${job.title}</p>
+        <p class="job-company">${job.company}</p>
+        <p class="job-location">${job.location}</p>
+      </div>
+      <button class="apply-btn">Apply</button>
+    `;
+    suggestedEl.appendChild(card);
+  });
+}
+showSuggestedJobs();
+
+// 4. Resume & Links Saver (basic localStorage mock or console logging)
+window.saveResumeLinks = function () {
+  const resume = document.getElementById("resumeUpload")?.files[0];
+  const linkedin = document.getElementById("linkedinInput")?.value.trim();
+  const portfolio = document.getElementById("portfolioInput")?.value.trim();
+
+  console.log("Saving Resume + Links:");
+  if (resume) console.log("Resume File:", resume.name);
+  if (linkedin) console.log("LinkedIn URL:", linkedin);
+  if (portfolio) console.log("Portfolio URL:", portfolio);
+
+  alert("Your resume and links have been saved (not really, just logged for now)");
+};
+
