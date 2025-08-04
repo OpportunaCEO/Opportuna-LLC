@@ -217,19 +217,18 @@ window.saveResumeLinks = function () {
 
 const auth = getAuth();
 
+      }
+    }
+  });
 onAuthStateChanged(auth, (user) => {
+  const userNameEl = document.getElementById("userName");
   if (user) {
     const displayName = user.displayName || user.email?.split("@")[0] || "Job Seeker";
-    const userNameEl = document.getElementById("userName");
-    if (userNameEl) {
-      userNameEl.textContent = displayName;
-    }
+    if (userNameEl) userNameEl.textContent = displayName;
+
+    loadUserProfile(user.uid); // See next step
   } else {
-    // Not logged in — redirect or just show "Guest"
-    const userNameEl = document.getElementById("userName");
-    if (userNameEl) {
-      userNameEl.textContent = "Guest";
-      }
+    if (userNameEl) userNameEl.textContent = "Guest";
     }
   });
 };
