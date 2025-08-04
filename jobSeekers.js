@@ -1,8 +1,20 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Firebase imports
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const auth = getAuth();
-const db = getFirestore();
+import { app } from "./script.js";
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 const jobs = [
   {
@@ -38,17 +50,16 @@ const jobs = [
     qualifications: ["Bachelor's Degree", "SQL, Excel"],
     logo: "assets/finsolve-logo.png",
   },
-  // Add more jobs as needed
 ];
 
 function loadPostedJobs() {
   const storedJobs = JSON.parse(localStorage.getItem("postedJobs") || "[]");
   return storedJobs.map((job, index) => ({
-    id: 1000 + index, // ensure unique IDs to avoid collision with default jobs
+    id: 1000 + index,
     title: job.title,
     company: job.postedBy || "Unknown Company",
     location: job.location || "Various",
-    jobType: job.category || "",      // you stored this as "category" in employers.js
+    jobType: job.category || "",
     workSetup: job.workSetup || "",
     salary: job.salary || 0,
     qualifications: job.qualifications || [],
@@ -60,7 +71,6 @@ function loadPostedJobs() {
 const postedJobs = loadPostedJobs();
 const allJobs = [...jobs, ...postedJobs];
 
-// DOM elements
 const jobListings = document.getElementById("jobListings");
 const searchInput = document.getElementById("searchInput");
 const locationInput = document.getElementById("locationInput");
@@ -69,7 +79,34 @@ const workSetupSelect = document.getElementById("workSetupSelect");
 const salaryRangeSelect = document.getElementById("salaryRangeSelect");
 const qualificationInput = document.getElementById("qualificationInput");
 
-// Function to render jobs
+let userAppliedJobs = [];
+
+async function fetchUserApplications(userId) {
+  const q = query(collection(db, "applications"), where("userId", "==", userId));
+  const snapshot = await getDocs(q);
+  userAppliedJobs = snapshot.docs.map(doc => doc.data().jobId);
+  renderJobs(allJobs);
+}
+
+async function applyToJob(jobId) {
+  const user = auth.currentUser;
+  if (!user) return alert("Please log in to apply.");
+
+  if (userAppliedJobs.includes(jobId)) return;
+
+  try {
+    await addDoc(collection(db, "applications"), {
+      userId: user.uid,
+      jobId,
+      appliedAt: new Date().toISOString()
+    });
+    userAppliedJobs.push(jobId);
+    renderJobs(allJobs);
+  } catch (error) {
+    console.error("Error applying to job:", error);
+  }
+}
+
 function renderJobs(filteredJobs) {
   jobListings.innerHTML = "";
 
@@ -79,24 +116,34 @@ function renderJobs(filteredJobs) {
   }
 
   filteredJobs.forEach(job => {
+    const applied = userAppliedJobs.includes(job.id);
+
     const jobCard = document.createElement("div");
     jobCard.classList.add("job-card");
 
     jobCard.innerHTML = `
-      <div class="job-logo" style="background-image: url('${job.logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+      <div class="job-logo" style="background-image: url('${job.logo}');"></div>
       <div class="job-info">
         <p class="job-title">${job.title}</p>
         <p class="job-company">${job.company}</p>
         <p class="job-location">${job.location}</p>
       </div>
-      <button class="apply-btn">Apply</button>
+      <button class="apply-btn" data-job-id="${job.id}" ${applied ? "disabled" : ""}>
+        ${applied ? "Applied" : "Apply"}
+      </button>
     `;
 
     jobListings.appendChild(jobCard);
   });
+
+  document.querySelectorAll(".apply-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const jobId = parseInt(btn.getAttribute("data-job-id"));
+      applyToJob(jobId);
+    });
+  });
 }
 
-// Filter function
 function filterJobs() {
   const searchTerm = searchInput.value.toLowerCase();
   const locationTerm = locationInput.value.toLowerCase();
@@ -106,20 +153,12 @@ function filterJobs() {
   const qualificationTerm = qualificationInput.value.toLowerCase();
 
   const filtered = allJobs.filter(job => {
-    // Search term match (job title or company)
     const matchesSearch = job.title.toLowerCase().includes(searchTerm) ||
                           job.company.toLowerCase().includes(searchTerm);
-
-    // Location match
     const matchesLocation = locationTerm === "" || job.location.toLowerCase().includes(locationTerm);
-
-    // Job type match
     const matchesJobType = jobType === "" || job.jobType === jobType;
-
-    // Work setup match
     const matchesWorkSetup = workSetup === "" || job.workSetup === workSetup;
 
-    // Salary range match
     let matchesSalary = true;
     if (salaryRange !== "") {
       const [min, max] = salaryRange.split("-").map(s => s.includes("+") ? Number.MAX_SAFE_INTEGER : parseInt(s));
@@ -131,7 +170,6 @@ function filterJobs() {
       }
     }
 
-    // Qualifications match (checks if qualification input is contained in any qualification)
     const matchesQualification = qualificationTerm === "" || job.qualifications.some(q => q.toLowerCase().includes(qualificationTerm));
 
     return matchesSearch && matchesLocation && matchesJobType && matchesWorkSetup && matchesSalary && matchesQualification;
@@ -140,7 +178,6 @@ function filterJobs() {
   renderJobs(filtered);
 }
 
-// Event listeners for live filtering
 searchInput.addEventListener("input", filterJobs);
 locationInput.addEventListener("input", filterJobs);
 jobTypeSelect.addEventListener("change", filterJobs);
@@ -148,172 +185,10 @@ workSetupSelect.addEventListener("change", filterJobs);
 salaryRangeSelect.addEventListener("change", filterJobs);
 qualificationInput.addEventListener("input", filterJobs);
 
-// Initial render
-renderJobs(allJobs);
-
-// ========= DASHBOARD ENHANCEMENTS ========= //
-
-// Profile greeting and progress bar setup (will update with real user info later)
-const userNameEl = document.getElementById("userName");
-if (userNameEl) {
-  userNameEl.textContent = "Future Rockstar";
-}
-
-const profileProgressEl = document.getElementById("profileProgress");
-const progressFill = document.getElementById("progressFill");
-if (profileProgressEl && progressFill) {
-  const completionPercent = 60;
-  profileProgressEl.textContent = `${completionPercent}%`;
-  progressFill.style.width = `${completionPercent}%`;
-}
-
-// Suggested jobs logic
-function showSuggestedJobs() {
-  const suggestedEl = document.getElementById("suggestedJobs");
-  if (!suggestedEl) return;
-
-  const suggestions = allJobs.filter(job =>
-    job.workSetup === "remote" || job.salary > 100000
-  ).slice(0, 3);
-
-  if (suggestions.length === 0) {
-    suggestedEl.innerHTML = "<p>No suggestions yet.</p>";
-    return;
-  }
-
-  suggestions.forEach(job => {
-    const card = document.createElement("div");
-    card.className = "job-card";
-    card.innerHTML = `
-      <div class="job-logo" style="background-image: url('${job.logo}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
-      <div class="job-info">
-        <p class="job-title">${job.title}</p>
-        <p class="job-company">${job.company}</p>
-        <p class="job-location">${job.location}</p>
-      </div>
-      <button class="apply-btn">Apply</button>
-    `;
-    suggestedEl.appendChild(card);
-  });
-}
-showSuggestedJobs();
-
-// ---- MODAL INTEGRATION ---- //
-
-// Get modal elements
-const jobModal = document.getElementById("jobModal");
-const modalClose = document.getElementById("modalClose");
-const modalJobLogo = jobModal.querySelector(".modal-job-logo");
-const modalJobTitle = document.getElementById("modalJobTitle");
-const modalJobCompany = document.getElementById("modalJobCompany");
-const modalJobLocation = document.getElementById("modalJobLocation");
-const modalJobType = document.getElementById("modalJobType");
-const modalWorkSetup = document.getElementById("modalWorkSetup");
-const modalSalary = document.getElementById("modalSalary");
-const modalQualifications = document.getElementById("modalQualifications");
-const modalDescription = document.getElementById("modalDescription");
-const modalApplyBtn = document.getElementById("modalApplyBtn");
-
-// Function to open modal with job data
-function openJobModal(job) {
-  modalJobLogo.style.backgroundImage = `url('${job.logo}')`;
-  modalJobTitle.textContent = job.title;
-  modalJobCompany.textContent = job.company;
-  modalJobLocation.textContent = job.location;
-  modalJobType.textContent = job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1);
-  modalWorkSetup.textContent = job.workSetup.charAt(0).toUpperCase() + job.workSetup.slice(1);
-  modalSalary.textContent = job.salary ? `$${job.salary.toLocaleString()}` : "N/A";
-  
-  // Clear and add qualifications list items
-  modalQualifications.innerHTML = "";
-  job.qualifications.forEach(q => {
-    const li = document.createElement("li");
-    li.textContent = q;
-    modalQualifications.appendChild(li);
-  });
-
-  modalDescription.textContent = job.description || "No description provided.";
-
-  jobModal.style.display = "flex";
-}
-
-// Close modal handler
-modalClose.addEventListener("click", () => {
-  jobModal.style.display = "none";
-});
-
-// Close modal if clicking outside modal content
-jobModal.addEventListener("click", (e) => {
-  if (e.target === jobModal) {
-    jobModal.style.display = "none";
-  }
-});
-
-// Delegate click on apply buttons in job listings to open modal
-jobListings.addEventListener("click", (e) => {
-  if (e.target.classList.contains("apply-btn")) {
-    const jobCard = e.target.closest(".job-card");
-    const title = jobCard.querySelector(".job-title").textContent;
-
-    // Find the job object by title (assuming titles are unique)
-    const job = allJobs.find(j => j.title === title);
-    if (job) {
-      openJobModal(job);
-    }
-  }
-});
-
-// Firestore profile save/load
-
-async function loadUserProfile(uid) {
-  const docRef = doc(db, "users", uid);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    if (data.linkedin) document.getElementById("linkedinInput").value = data.linkedin;
-    if (data.portfolio) document.getElementById("portfolioInput").value = data.portfolio;
-    if (data.resumeName) {
-      const resumeLabel = document.createElement("p");
-      resumeLabel.textContent = `Saved Resume: ${data.resumeName}`;
-      document.getElementById("resumeUpload").after(resumeLabel);
-    }
-  }
-}
-
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (user) {
-    const displayName = user.displayName || user.email?.split("@")[0] || "Job Seeker";
-    if (userNameEl) userNameEl.textContent = displayName;
-
-    loadUserProfile(user.uid);
+    fetchUserApplications(user.uid);
   } else {
-    if (userNameEl) userNameEl.textContent = "Guest";
+    renderJobs(allJobs);
   }
 });
-
-window.saveResumeLinks = async function () {
-  const resume = document.getElementById("resumeUpload")?.files[0];
-  const linkedin = document.getElementById("linkedinInput")?.value.trim();
-  const portfolio = document.getElementById("portfolioInput")?.value.trim();
-
-  const user = auth.currentUser;
-  if (!user) {
-    alert("You must be logged in to save your profile.");
-    return;
-  }
-
-  const userDoc = doc(db, "users", user.uid);
-  try {
-    await setDoc(userDoc, {
-      displayName: user.displayName || "",
-      linkedin,
-      portfolio,
-      resumeName: resume?.name || ""
-    }, { merge: true });
-
-    alert("Profile saved successfully!");
-  } catch (error) {
-    console.error("Error saving profile:", error);
-    alert("Something went wrong while saving.");
-  }
-};
