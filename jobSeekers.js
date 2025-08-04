@@ -206,5 +206,25 @@ window.saveResumeLinks = function () {
   if (portfolio) console.log("Portfolio URL:", portfolio);
 
   alert("Your resume and links have been saved (not really, just logged for now)");
+
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const displayName = user.displayName || user.email?.split("@")[0] || "Job Seeker";
+    const userNameEl = document.getElementById("userName");
+    if (userNameEl) {
+      userNameEl.textContent = displayName;
+    }
+  } else {
+    // Not logged in — redirect or just show "Guest"
+    const userNameEl = document.getElementById("userName");
+    if (userNameEl) {
+      userNameEl.textContent = "Guest";
+      }
+    }
+  });
 };
 
