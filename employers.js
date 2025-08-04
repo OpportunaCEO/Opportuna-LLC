@@ -211,4 +211,29 @@ function loadEmployerJobs(userEmail) {
     });
 
     // Attach delete handlers
-    document.querySelectorAll(".del
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.onclick = async () => {
+        const jobIdToDelete = btn.getAttribute("data-job-id");
+        const confirmDelete = confirm("Are you sure you want to delete this job?");
+        if (!confirmDelete) return;
+
+        try {
+          await deleteDoc(doc(db, "jobs", jobIdToDelete));
+          alert("Job deleted.");
+        } catch (error) {
+          alert("Failed to delete job: " + error.message);
+        }
+      };
+    });
+  });
+}
+
+// ======= Listen for Auth State Changes =======
+onAuthStateChanged(auth, user => {
+  if (user) {
+    updateUIOnSignIn(user);
+  } else {
+    resetUIOnSignOut();
+  }
+});
+
