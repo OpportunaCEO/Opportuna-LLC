@@ -198,6 +198,47 @@ function showSuggestedJobs() {
 }
 showSuggestedJobs();
 
+// Create a simple modal for Apply button
+const modal = document.createElement("div");
+modal.id = "applyModal";
+modal.style.cssText = `
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+`;
+modal.innerHTML = `
+  <div style="background:#222; padding: 2rem; border-radius: 10px; max-width: 400px; width: 90%; color:#fff; text-align:center;">
+    <h2>Apply for Job</h2>
+    <p id="modalJobTitle"></p>
+    <button id="closeModalBtn" style="margin-top:1rem; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; background:#ff6600; color:#fff;">Close</button>
+  </div>
+`;
+document.body.appendChild(modal);
+
+const modalJobTitle = document.getElementById("modalJobTitle");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const applyModal = document.getElementById("applyModal");
+
+// Close modal function
+closeModalBtn.addEventListener("click", () => {
+  applyModal.style.display = "none";
+});
+
+// Attach event delegation for apply buttons
+jobListings.addEventListener("click", (e) => {
+  if (e.target.classList.contains("apply-btn")) {
+    const jobCard = e.target.closest(".job-card");
+    const titleEl = jobCard.querySelector(".job-title");
+    modalJobTitle.textContent = `You are applying for: ${titleEl.textContent}`;
+    applyModal.style.display = "flex";
+  }
+});
+
+
 // Firestore profile save/load
 
 async function loadUserProfile(uid) {
