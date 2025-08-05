@@ -65,14 +65,8 @@ toggleAuth.addEventListener("click", (e) => {
   displayNameInput.style.display = isLogin ? "none" : "block";
 });
 
-// Handle login/signup
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-
-  if (!persistenceSet) {
-    alert("Auth persistence not yet set. Please wait and try again.");
-    return;
-  }
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -84,21 +78,23 @@ loginForm.addEventListener("submit", async (e) => {
   }
 
   try {
+    // Always set persistence before sign-in or sign-up
+    await setPersistence(auth, browserLocalPersistence);
+
     if (isLogin) {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "index.html"; // redirect after login
+      window.location.href = "index.html";
     } else {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       if (displayName) {
         await updateProfile(userCred.user, { displayName });
       }
-      // Save profile info to Firestore
       await setDoc(doc(db, "profiles", userCred.user.uid), {
         email,
         displayName: displayName || null,
         createdAt: serverTimestamp()
       });
-      window.location.href = "index.html"; // redirect after signup
+      window.location.href = "index.html";
     }
   } catch (error) {
     alert("Error: " + error.message);
