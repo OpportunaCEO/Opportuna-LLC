@@ -59,13 +59,24 @@ const jobSearchForm = document.getElementById("job-search-form");
 const jobSearchInput = document.getElementById("job-search-input");
 const recommendedJobsContainer = document.getElementById("recommended-jobs");
 
-// ----------------- Auth State Listener -----------------
+// Safe event binding for post deletion
+if (postsContainer) {
+  postsContainer.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("delete-post")) {
+      const id = e.target.getAttribute("data-id");
+      await deleteDoc(doc(db, "posts", id));
+    }
+  });
+}
+
+// Safe fetch calls only when user is logged in AND elements exist
 onAuthStateChanged(auth, (user) => {
   if (user) {
     if (postsContainer) fetchPosts();
     if (recommendedJobsContainer) fetchRecommendedJobs();
   }
 });
+
 
 // ----------------- Post Creation -----------------
 if (postForm) {
