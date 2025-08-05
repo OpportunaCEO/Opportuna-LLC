@@ -46,7 +46,12 @@ const storage = getStorage(app);
 const postForm = document.getElementById("postForm");
 const postText = document.getElementById("postText");
 const postsContainer = document.getElementById("postsContainer");
-const logoutBtn = document.getElementById("logoutBtn");
+
+// === NEW DOM ELEMENTS FOR AUTH UI
+const loginLink = document.getElementById("loginLink");          // Login nav link
+const userDropdown = document.getElementById("userDropdown");    // Profile dropdown container
+const logoutBtn = document.getElementById("logoutBtn");          // Logout button/link
+
 const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 const loginPopup = document.getElementById("loginPopup");
@@ -59,7 +64,7 @@ const jobSearchForm = document.getElementById("jobSearchForm");
 const jobSearchInput = document.getElementById("jobSearchInput");
 const recommendedJobsContainer = document.getElementById("recommendedJobs");
 
-// Safe event binding for post deletion
+// ----------------- Safe event binding for post deletion -----------------
 if (postsContainer) {
   postsContainer.addEventListener("click", async (e) => {
     if (e.target.classList.contains("delete-post")) {
@@ -69,14 +74,36 @@ if (postsContainer) {
   });
 }
 
-// Safe fetch calls only when user is logged in AND elements exist
+// ----------------- Auth State Listener and UI Update -----------------
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // User logged in: show profile dropdown, hide login link
+    if (loginLink) loginLink.style.display = "none";
+    if (userDropdown) userDropdown.style.display = "block";
+
+    // Fetch posts and recommended jobs only if containers exist
     if (postsContainer) fetchPosts();
     if (recommendedJobsContainer) fetchRecommendedJobs();
+  } else {
+    // User NOT logged in: show login link, hide profile dropdown
+    if (loginLink) loginLink.style.display = "block";
+    if (userDropdown) userDropdown.style.display = "none";
   }
 });
 
+// ----------------- Logout Button -----------------
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out");
+        window.location.href = "login.html"; // Redirect after logout
+      })
+      .catch((error) => {
+        console.error("Sign out error:", error);
+      });
+  });
+}
 
 // ----------------- Post Creation -----------------
 if (postForm) {
@@ -115,17 +142,7 @@ function fetchPosts() {
   });
 }
 
-if (postsContainer) {
-  postsContainer.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("delete-post")) {
-      const id = e.target.getAttribute("data-id");
-      await deleteDoc(doc(db, "posts", id));
-    }
-  });
-}
-
-
-// ----------------- Login/Signup -----------------
+// ----------------- Login/Signup Popup Handlers -----------------
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -133,7 +150,7 @@ if (loginForm) {
     const password = loginForm["login-password"].value;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      loginPopup.style.display = "none";
+      if (loginPopup) loginPopup.style.display = "none";
     } catch (err) {
       alert(err.message);
     }
@@ -147,17 +164,10 @@ if (signupForm) {
     const password = signupForm["signup-password"].value;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      signupPopup.style.display = "none";
+      if (signupPopup) signupPopup.style.display = "none";
     } catch (err) {
       alert(err.message);
     }
-  });
-}
-
-// ----------------- Logout -----------------
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth);
   });
 }
 
@@ -191,3 +201,4 @@ async function fetchRecommendedJobs(queryFilter = "") {
     }
   });
 }
+
