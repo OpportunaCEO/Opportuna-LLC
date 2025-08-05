@@ -115,13 +115,15 @@ function fetchPosts() {
   });
 }
 
-// ----------------- Delete Post -----------------
-postsContainer.addEventListener("click", async (e) => {
-  if (e.target.classList.contains("delete-post")) {
-    const id = e.target.getAttribute("data-id");
-    await deleteDoc(doc(db, "posts", id));
-  }
-});
+if (postsContainer) {
+  postsContainer.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("delete-post")) {
+      const id = e.target.getAttribute("data-id");
+      await deleteDoc(doc(db, "posts", id));
+    }
+  });
+}
+
 
 // ----------------- Login/Signup -----------------
 if (loginForm) {
