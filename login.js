@@ -101,16 +101,10 @@ loginForm.addEventListener("submit", async (e) => {
   }
 });
 
-// Google Sign-In
 googleBtn.addEventListener("click", async () => {
-  if (!persistenceSet) {
-    alert("Auth persistence not yet set. Please wait and try again.");
-    return;
-  }
-
   try {
+    await setPersistence(auth, browserLocalPersistence);
     const result = await signInWithPopup(auth, provider);
-    // Optionally, you can check if new user and save profile to Firestore here if you want
     window.location.href = "index.html";
   } catch (error) {
     alert("Google Sign-in failed: " + error.message);
