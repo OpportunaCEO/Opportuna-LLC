@@ -62,8 +62,8 @@ const recommendedJobsContainer = document.getElementById("recommended-jobs");
 // ----------------- Auth State Listener -----------------
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    fetchPosts();
-    fetchRecommendedJobs();
+    if (postsContainer) fetchPosts();
+    if (recommendedJobsContainer) fetchRecommendedJobs();
   }
 });
 
