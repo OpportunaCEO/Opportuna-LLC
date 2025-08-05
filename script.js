@@ -43,21 +43,21 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // ----------------- DOM Elements -----------------
-const postForm = document.getElementById("post-form");
-const postText = document.getElementById("post-text");
-const postsContainer = document.getElementById("posts-container");
-const logoutBtn = document.getElementById("logout-btn");
+const postForm = document.getElementById("postForm");
+const postText = document.getElementById("postText");
+const postsContainer = document.getElementById("postsContainer");
+const logoutBtn = document.getElementById("logoutBtn");
 const loginForm = document.getElementById("loginForm");
-const signupForm = document.getElementById("signup-form");
-const loginPopup = document.getElementById("login-popup");
-const signupPopup = document.getElementById("signup-popup");
-const loginBtn = document.getElementById("login-btn");
-const signupBtn = document.getElementById("signup-btn");
-const closeBtns = document.querySelectorAll(".close-popup");
-const quickStats = document.getElementById("quick-stats");
-const jobSearchForm = document.getElementById("job-search-form");
-const jobSearchInput = document.getElementById("job-search-input");
-const recommendedJobsContainer = document.getElementById("recommended-jobs");
+const signupForm = document.getElementById("signupForm");
+const loginPopup = document.getElementById("loginPopup");
+const signupPopup = document.getElementById("signupPopup");
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const closeBtns = document.querySelectorAll(".closePopup");
+const quickStats = document.getElementById("quickStats");
+const jobSearchForm = document.getElementById("jobSearchForm");
+const jobSearchInput = document.getElementById("jobSearchInput");
+const recommendedJobsContainer = document.getElementById("recommendedJobs");
 
 // Safe event binding for post deletion
 if (postsContainer) {
